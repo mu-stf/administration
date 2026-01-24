@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء حساب - نظام إدارة المحل</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="icon">🏪</div>
+            <h1>إنشاء حساب جديد</h1>
+            <p>أنشئ حسابك للبدء في إدارة محلك</p>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="email">البريد الإلكتروني</label>
+                    <input type="email" id="email" class="form-control" placeholder="example@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">كلمة المرور</label>
+                    <input type="password" id="password" class="form-control" placeholder="8 أحرف على الأقل" required
+                        minlength="8">
+                    <small class="text-muted">يجب أن تكون 8 أحرف على الأقل</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">تأكيد كلمة المرور</label>
+                    <input type="password" id="confirmPassword" class="form-control" placeholder="أعد إدخال كلمة المرور"
+                        required>
+                </div>
+
+                <div id="errorMessage" class="alert alert-danger hidden"></div>
+                <div id="successMessage" class="alert alert-success hidden"></div>
+
+                <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
+                    إنشاء الحساب
+                </button>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <p>لديك حساب بالفعل؟ <a href="index.html">تسجيل الدخول</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/utils.js"></script>
+
+    <script>
+        // التحقق من وجود Supabase config
+        if (typeof SUPABASE_CONFIG === 'undefined') {
+            document.getElementById('errorMessage').textContent = 'خطأ: لم يتم العثور على ملف التكوين. الرجاء إنشاء js/config.js';
+            document.getElementById('errorMessage').classList.remove('hidden');
+            document.getElementById('submitBtn').disabled = true;
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // إخفاء الرسائل
+            errorDiv.classList.add('hidden');
+            successDiv.classList.add('hidden');
+
+            // التحقق من تطابق كلمة المرور
+            if (password !== confirmPassword) {
+                errorDiv.textContent = 'كلمتا المرور غير متطابقتين';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            // التحقق من طول كلمة المرور
+            if (password.length < 8) {
+                errorDiv.textContent = 'كلمة المرور يجب أن تكون 8 أحرف على الأقل';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'جاري إنشاء الحساب...';
+
+                // التسجيل عبر Supabase
+                const { user, session } = await SupabaseDB.signUp(email, password);
+
+                successDiv.textContent = 'تم إنشاء الحساب بنجاح! سيتم تحويلك لتسجيل الدخول...';
+                successDiv.classList.remove('hidden');
+
+                // الانتقال لصفحة تسجيل الدخول
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+
+            } catch (error) {
+                console.error('خطأ في التسجيل:', error);
+
+                let errorMessage = 'حدث خطأ أثناء إنشاء الحساب';
+
+                if (error.message.includes('already registered')) {
+                    errorMessage = 'هذا البريد الإلكتروني مسجل مسبقاً';
+                } else if (error.message.includes('Invalid email')) {
+                    errorMessage = 'البريد الإلكتروني غير صحيح';
+                } else if (error.message.includes('Password')) {
+                    errorMessage = 'كلمة المرور ضعيفة جداً';
+                } else {
+                    errorMessage = error.message;
+                }
+
+                errorDiv.textContent = errorMessage;
+                errorDiv.classList.remove('hidden');
+
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'إنشاء الحساب';
+            }
+        });
+    </script>
+</body>
+
+</html>
