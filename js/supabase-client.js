@@ -340,6 +340,68 @@ const SupabaseDB = {
         return data;
     },
 
+    // ===== المدفوعات (Payments) =====
+
+    async getPayments(userId) {
+        const { data, error } = await this.client
+            .from('payments')
+            .select('*, customers(name), invoices(invoice_number)')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return data || [];
+    },
+
+    async getCustomerPayments(customerId) {
+        const { data, error } = await this.client
+            .from('payments')
+            .select('*, invoices(invoice_number)')
+            .eq('customer_id', customerId)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return data || [];
+    },
+
+    async addPayment(userId, payment) {
+        const { data, error } = await this.client
+            .from('payments')
+            .insert([{ ...payment, user_id: userId }])
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        // تحديث balance الزبون
+        if (payment.customer_id && payment.amount > 0) {
+            const { data: customer } = await this.client
+                .from('customers')
+                .select('balance')
+                .eq('id', payment.customer_id)
+                .single();
+
+            if (customer) {
+                await this.updateCustomer(payment.customer_id, {
+                    balance: (customer.balance || 0) - payment.amount
+                });
+            }
+        }
+
+        return data;
+    },
+
+    async getCustomerBalance(customerId) {
+        const { data, error } = await this.client
+            .from('customers')
+            .select('balance')
+            .eq('id', customerId)
+            .single();
+
+        if (error) throw error;
+        return data?.balance || 0;
+    },
+
     // ===== الإحصائيات =====
 
     async getStatistics(userId, startDate, endDate) {

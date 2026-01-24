@@ -35,6 +35,8 @@
                 </li>
                 <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">👥</span>الزبائن</a>
                 </li>
+                <li class="nav-item"><a href="customer-accounts.html" class="nav-link"><span
+                            class="icon">💰</span>حسابات</a></li>
                 <li class="nav-item"><a href="supplies.html" class="nav-link active"><span
                             class="icon">📥</span>التوريدات</a></li>
                 <li class="nav-item"><a href="statistics.html" class="nav-link"><span
@@ -47,28 +49,204 @@
         <main class="main-content">
             <div class="card">
                 <div class="card-header">
-                    <h2>📥 التوريدات</h2>
+                    <h2>📥 إدارة التوريدات</h2>
+                    <button class="btn btn-primary" onclick="openSupplyModal()">➕ إضافة توريد</button>
                 </div>
                 <div class="card-body">
-                    <p class="text-muted" style="text-align: center; padding: 40px;">قريباً... استخدم المنتجات لإدارة
-                        المخزون حالياً</p>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>التاريخ</th>
+                                    <th>المنتج</th>
+                                    <th>الكمية</th>
+                                    <th>سعر الشراء</th>
+                                    <th>الإجمالي</th>
+                                    <th>ملاحظات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="suppliesTable">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">لا توجد توريدات بعد</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- نافذة إضافة توريد -->
+    <div class="modal-overlay" id="supplyModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>إضافة توريد جديد</h3>
+                <button class="modal-close" onclick="closeSupplyModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="supplyForm">
+                    <div class="form-group">
+                        <label>المنتج *</label>
+                        <select id="productId" class="form-control" required onchange="updatePriceFromProduct()">
+                            <option value="">اختر منتج...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>الكمية *</label>
+                        <input type="number" id="quantity" class="form-control" min="1" required
+                            oninput="calculateTotal()">
+                    </div>
+                    <div class="form-group">
+                        <label>سعر الشراء (للوحدة) *</label>
+                        <input type="number" id="purchasePrice" class="form-control" min="0" step="100" required
+                            oninput="calculateTotal()">
+                    </div>
+                    <div class="form-group">
+                        <label>الإجمالي</label>
+                        <input type="text" id="totalCost" class="form-control" readonly
+                            style="background: #f1f5f9; font-weight: 600;">
+                    </div>
+                    <div class="form-group">
+                        <label>ملاحظات</label>
+                        <textarea id="notes" class="form-control" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="saveSupply()">💾 حفظ</button>
+                <button class="btn btn-secondary" onclick="closeSupplyModal()">إلغاء</button>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/page-protection.js"></script>
+    <script src="js/utils.js"></script>
     <script>
-        protectPage().then(async (authorized) => {
-            if (authorized) {
-                const { profile } = await getCurrentUserData();
-                document.getElementById('storeName').textContent = profile.store_name;
-                hideLoading();
+        let currentUser = null;
+        let products = [];
+        let supplies = [];
+
+        protectPage().then(authorized => { if (authorized) loadPage(); });
+
+        async function loadPage() {
+            const { user, profile } = await getCurrentUserData();
+            currentUser = user;
+            document.getElementById('storeName').textContent = profile.store_name;
+
+            products = await SupabaseDB.getProducts(user.id);
+            await loadSupplies();
+
+            // ملء dropdown المنتجات
+            const productSelect = document.getElementById('productId');
+            productSelect.innerHTML = '<option value="">اختر منتج...</option>' +
+                products.map(p => `<option value="${p.id}" data-price="${p.purchase_price}">${p.name} (مخزون حالي: ${p.stock})</option>`).join('');
+
+            hideLoading();
+        }
+
+        async function loadSupplies() {
+            try {
+                supplies = await SupabaseDB.getSupplies(currentUser.id);
+                renderSupplies();
+            } catch (error) {
+                console.error('خطأ في تحميل التوريدات:', error);
+                alert('حدث خطأ في تحميل التوريدات');
             }
-        });
+        }
+
+        function renderSupplies() {
+            const tbody = document.getElementById('suppliesTable');
+            if (supplies.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">لا توجد توريدات بعد</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = supplies.map(s => {
+                const product = products.find(p => p.id === s.product_id);
+                const productName = product ? product.name : s.product_id;
+                const total = s.quantity * s.purchase_price;
+
+                return `
+                    <tr>
+                        <td>${new Date(s.date).toLocaleDateString('ar-IQ')}</td>
+                        <td><strong>${productName}</strong></td>
+                        <td>${s.quantity}</td>
+                        <td>${s.purchase_price.toLocaleString()} د.ع</td>
+                        <td><strong>${total.toLocaleString()} د.ع</strong></td>
+                        <td>${s.notes || '-'}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function openSupplyModal() {
+            if (products.length === 0) {
+                alert('يرجى إضافة منتجات أولاً!');
+                window.location.href = 'products.html';
+                return;
+            }
+            document.getElementById('supplyModal').classList.add('active');
+            document.getElementById('supplyForm').reset();
+            document.getElementById('totalCost').value = '0 د.ع';
+        }
+
+        function closeSupplyModal() {
+            document.getElementById('supplyModal').classList.remove('active');
+        }
+
+        function updatePriceFromProduct() {
+            const select = document.getElementById('productId');
+            const selectedOption = select.options[select.selectedIndex];
+            if (selectedOption && selectedOption.value) {
+                const price = selectedOption.getAttribute('data-price') || 0;
+                document.getElementById('purchasePrice').value = price;
+                calculateTotal();
+            }
+        }
+
+        function calculateTotal() {
+            const quantity = parseInt(document.getElementById('quantity').value) || 0;
+            const price = parseFloat(document.getElementById('purchasePrice').value) || 0;
+            const total = quantity * price;
+            document.getElementById('totalCost').value = total.toLocaleString() + ' د.ع';
+        }
+
+        async function saveSupply() {
+            const productId = document.getElementById('productId').value;
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const purchasePrice = parseFloat(document.getElementById('purchasePrice').value);
+            const notes = document.getElementById('notes').value.trim();
+
+            if (!productId || !quantity || !purchasePrice) {
+                alert('يرجى تعبئة جميع الحقول المطلوبة');
+                return;
+            }
+
+            try {
+                const supplyData = {
+                    product_id: productId,
+                    quantity: quantity,
+                    purchase_price: purchasePrice,
+                    date: new Date().toISOString(),
+                    notes: notes
+                };
+
+                await SupabaseDB.addSupply(currentUser.id, supplyData);
+                alert('✅ تم إضافة التوريد بنجاح!');
+                closeSupplyModal();
+                await loadSupplies();
+
+                // تحديث قائمة المنتجات
+                products = await SupabaseDB.getProducts(currentUser.id);
+            } catch (error) {
+                console.error('خطأ في حفظ التوريد:', error);
+                alert('حدث خطأ: ' + error.message);
+            }
+        }
     </script>
 </body>
 
