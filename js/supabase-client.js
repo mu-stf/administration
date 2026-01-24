@@ -250,8 +250,24 @@ const SupabaseDB = {
             }
         }
 
+        // إذا كانت آجل، تحديث balance الزبون
+        if (invoice.payment_type === 'credit' && invoice.customer_id && invoice.remaining_amount > 0) {
+            const { data: customer } = await this.client
+                .from('customers')
+                .select('balance')
+                .eq('id', invoice.customer_id)
+                .single();
+
+            if (customer) {
+                await this.updateCustomer(invoice.customer_id, {
+                    balance: (customer.balance || 0) + invoice.remaining_amount
+                });
+            }
+        }
+
         return { ...invoiceData, invoice_items: itemsData };
     },
+
 
     async cancelInvoice(invoiceId) {
         // الحصول على الفاتورة وعناصرها
