@@ -4,87 +4,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الزبائن - نظام إدارة المحل</title>
+    <title>الزب
+
+        ائن - نظام إدارة المحل</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-    <!-- Header -->
+    <div id="loadingOverlay"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
+        <div style="text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 20px;">🏪</div>
+            <div style="font-size: 18px; color: #666;">جاري التحميل...</div>
+        </div>
+    </div>
+
     <header class="header">
         <h1>🏪 <span id="storeName">نظام إدارة المحل</span></h1>
         <div class="header-actions">
-            <button class="btn" onclick="App.logout()">
-                🚪 تسجيل الخروج
-            </button>
+            <button class="btn" onclick="logout()">🚪 تسجيل الخروج</button>
         </div>
     </header>
 
     <div class="main-layout">
-        <!-- Sidebar -->
         <nav class="sidebar">
             <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="dashboard.html" class="nav-link">
-                        <span class="icon">📊</span>
-                        لوحة التحكم
-                    </a>
+                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">📊</span>لوحة
+                        التحكم</a></li>
+                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">➕</span>فاتورة
+                        جديدة</a></li>
+                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">📋</span>الفواتير</a>
                 </li>
-                <li class="nav-item">
-                    <a href="new-invoice.html" class="nav-link">
-                        <span class="icon">➕</span>
-                        فاتورة جديدة
-                    </a>
+                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">📦</span>المنتجات</a>
                 </li>
-                <li class="nav-item">
-                    <a href="invoices.html" class="nav-link">
-                        <span class="icon">📋</span>
-                        الفواتير
-                    </a>
+                <li class="nav-item"><a href="customers.html" class="nav-link active"><span
+                            class="icon">👥</span>الزبائن</a></li>
+                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">📥</span>التوريدات</a>
                 </li>
-                <li class="nav-item">
-                    <a href="products.html" class="nav-link">
-                        <span class="icon">📦</span>
-                        المنتجات
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="customers.html" class="nav-link active">
-                        <span class="icon">👥</span>
-                        الزبائن
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="supplies.html" class="nav-link">
-                        <span class="icon">📥</span>
-                        التوريدات
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="statistics.html" class="nav-link">
-                        <span class="icon">📈</span>
-                        الإحصائيات
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="settings.html" class="nav-link">
-                        <span class="icon">⚙️</span>
-                        الإعدادات
-                    </a>
+                <li class="nav-item"><a href="statistics.html" class="nav-link"><span
+                            class="icon">📈</span>الإحصائيات</a></li>
+                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">⚙️</span>الإعدادات</a>
                 </li>
             </ul>
         </nav>
 
-        <!-- Main Content -->
         <main class="main-content">
             <div class="card">
                 <div class="card-header">
                     <h2>👥 إدارة الزبائن</h2>
-                    <button class="btn btn-primary" onclick="openCustomerModal()">
-                        ➕ إضافة زبون
-                    </button>
+                    <button class="btn btn-primary" onclick="openCustomerModal()">➕ إضافة زبون</button>
                 </div>
                 <div class="card-body">
-                    <!-- Search -->
                     <div class="filters-bar">
                         <div class="search-box">
                             <span class="search-icon">🔍</span>
@@ -92,23 +62,19 @@
                                 onkeyup="filterCustomers()">
                         </div>
                     </div>
-
-                    <!-- Customers Table -->
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>اسم الزبون</th>
-                                    <th>رقم الهاتف</th>
-                                    <th>تاريخ الإضافة</th>
+                                    <th>الاسم</th>
+                                    <th>الهاتف</th>
+                                    <th>العنوان</th>
                                     <th>الإجراءات</th>
                                 </tr>
                             </thead>
                             <tbody id="customersTable">
                                 <tr>
-                                    <td colspan="4" class="text-center text-muted">
-                                        لا يوجد زبائن بعد
-                                    </td>
+                                    <td colspan="4" class="text-center text-muted">لا يوجد زبائن بعد</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -118,9 +84,8 @@
         </main>
     </div>
 
-    <!-- Customer Modal -->
     <div class="modal-overlay" id="customerModal">
-        <div class="modal" style="max-width: 450px;">
+        <div class="modal">
             <div class="modal-header">
                 <h3 id="modalTitle">إضافة زبون جديد</h3>
                 <button class="modal-close" onclick="closeCustomerModal()">×</button>
@@ -128,85 +93,88 @@
             <div class="modal-body">
                 <form id="customerForm">
                     <input type="hidden" id="customerId">
-
                     <div class="form-group">
-                        <label for="customerName">اسم الزبون *</label>
+                        <label>اسم الزبون *</label>
                         <input type="text" id="customerName" class="form-control" required>
                     </div>
-
                     <div class="form-group">
-                        <label for="customerPhone">رقم الهاتف (اختياري)</label>
-                        <input type="tel" id="customerPhone" class="form-control" placeholder="07XXXXXXXXX">
+                        <label>رقم الهاتف</label>
+                        <input type="tel" id="customerPhone" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>العنوان</label>
+                        <input type="text" id="customerAddress" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>ملاحظات</label>
+                        <textarea id="customerNotes" class="form-control" rows="3"></textarea>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" onclick="saveCustomer()">
-                    💾 حفظ
-                </button>
-                <button class="btn btn-secondary" onclick="closeCustomerModal()">
-                    إلغاء
-                </button>
+                <button class="btn btn-primary" onclick="saveCustomer()">💾 حفظ</button>
+                <button class="btn btn-secondary" onclick="closeCustomerModal()">إلغاء</button>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/page-protection.js"></script>
     <script src="js/utils.js"></script>
-    <script src="js/app.js"></script>
     <script>
-        // حماية الصفحة
-        if (!App.protectPage()) {
-            throw new Error('Unauthorized');
+        let currentUser = null;
+        let allCustomers = [];
+
+        protectPage().then(authorized => {
+            if (authorized) loadPage();
+        });
+
+        async function loadPage() {
+            const { user, profile } = await getCurrentUserData();
+            currentUser = user;
+            document.getElementById('storeName').textContent = profile.store_name;
+            await loadCustomers();
+            hideLoading();
         }
 
-        // تحميل اسم المحل
-        document.getElementById('storeName').textContent = App.getSettings().storeName;
+        async function loadCustomers() {
+            try {
+                allCustomers = await SupabaseDB.getCustomers(currentUser.id);
+                renderCustomers(allCustomers);
+            } catch (error) {
+                console.error('خطأ في تحميل الزبائن:', error);
+                alert('حدث خطأ في تحميل الزبائن');
+            }
+        }
 
-        // تحميل الزبائن
-        function loadCustomers() {
-            const customers = App.getCustomers();
+        function renderCustomers(customers) {
             const tbody = document.getElementById('customersTable');
-
             if (customers.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="4" class="text-center text-muted">
-                            لا يوجد زبائن بعد
-                        </td>
-                    </tr>
-                `;
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">لا يوجد زبائن بعد</td></tr>';
                 return;
             }
 
             tbody.innerHTML = customers.map(c => `
-                <tr data-name="${c.name.toLowerCase()}">
+                <tr data-name="${(c.name || '').toLowerCase()}">
                     <td><strong>${c.name}</strong></td>
                     <td>${c.phone || '-'}</td>
-                    <td>${Utils.formatDate(c.createdAt)}</td>
+                    <td>${c.address || '-'}</td>
                     <td class="actions">
-                        <button class="btn btn-sm btn-primary" onclick="editCustomer('${c.id}')" title="تعديل">
-                            ✏️
-                        </button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteCustomer('${c.id}')" title="حذف">
-                            🗑️
-                        </button>
+                        <button class="btn btn-sm btn-primary" onclick='editCustomer(${JSON.stringify(c).replace(/'/g, "&apos;")})' title="تعديل">✏️</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteCustomer('${c.id}', '${c.name}')" title="حذف">🗑️</button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        // فلترة الزبائن
         function filterCustomers() {
             const query = document.getElementById('searchInput').value.toLowerCase();
-            const rows = document.querySelectorAll('#customersTable tr[data-name]');
-
-            rows.forEach(row => {
-                const name = row.dataset.name;
-                row.style.display = name.includes(query) ? '' : 'none';
-            });
+            const filtered = query ? allCustomers.filter(c => c.name.toLowerCase().includes(query)) : allCustomers;
+            renderCustomers(filtered);
         }
 
-        // فتح نافذة إضافة/تعديل زبون
         function openCustomerModal(customer = null) {
             document.getElementById('customerModal').classList.add('active');
             document.getElementById('customerForm').reset();
@@ -216,64 +184,64 @@
                 document.getElementById('customerId').value = customer.id;
                 document.getElementById('customerName').value = customer.name;
                 document.getElementById('customerPhone').value = customer.phone || '';
+                document.getElementById('customerAddress').value = customer.address || '';
+                document.getElementById('customerNotes').value = customer.notes || '';
             } else {
                 document.getElementById('modalTitle').textContent = 'إضافة زبون جديد';
                 document.getElementById('customerId').value = '';
             }
         }
 
-        // إغلاق نافذة الزبون
         function closeCustomerModal() {
             document.getElementById('customerModal').classList.remove('active');
         }
 
-        // حفظ الزبون
-        function saveCustomer() {
+        async function saveCustomer() {
             const id = document.getElementById('customerId').value;
             const customerData = {
                 name: document.getElementById('customerName').value.trim(),
-                phone: document.getElementById('customerPhone').value.trim()
+                phone: document.getElementById('customerPhone').value.trim() || null,
+                address: document.getElementById('customerAddress').value.trim() || null,
+                notes: document.getElementById('customerNotes').value.trim() || null
             };
 
             if (!customerData.name) {
-                Utils.showAlert('يرجى إدخال اسم الزبون', 'danger');
+                alert('يرجى إدخال اسم الزبون');
                 return;
             }
 
-            if (id) {
-                App.updateCustomer(id, customerData);
-                Utils.showAlert('تم تحديث الزبون بنجاح', 'success');
-            } else {
-                App.addCustomer(customerData);
-                Utils.showAlert('تم إضافة الزبون بنجاح', 'success');
-            }
-
-            closeCustomerModal();
-            loadCustomers();
-        }
-
-        // تعديل زبون
-        function editCustomer(id) {
-            const customer = App.getCustomerById(id);
-            if (customer) {
-                openCustomerModal(customer);
+            try {
+                if (id) {
+                    await SupabaseDB.updateCustomer(id, customerData);
+                    Utils.showAlert && Utils.showAlert('تم تحديث الزبون بنجاح', 'success') || alert('تم التحديث');
+                } else {
+                    await SupabaseDB.addCustomer(currentUser.id, customerData);
+                    Utils.showAlert && Utils.showAlert('تم إضافة الزبون بنجاح', 'success') || alert('تم الإضافة');
+                }
+                closeCustomerModal();
+                await loadCustomers();
+            } catch (error) {
+                console.error('خطأ في حفظ الزبون:', error);
+                alert('حدث خطأ أثناء الحفظ');
             }
         }
 
-        // حذف زبون
-        async function deleteCustomer(id) {
-            const customer = App.getCustomerById(id);
-            const confirmed = await Utils.confirm(`هل أنت متأكد من حذف "${customer.name}"؟`);
-
-            if (confirmed) {
-                App.deleteCustomer(id);
-                Utils.showAlert('تم حذف الزبون', 'success');
-                loadCustomers();
-            }
+        function editCustomer(customer) {
+            openCustomerModal(customer);
         }
 
-        // تحميل الصفحة
-        loadCustomers();
+        async function deleteCustomer(id, name) {
+            if (!confirm(`هل أنت متأكد من حذف "${name}"؟`)) return;
+
+            try {
+                await SupabaseDB.deleteCustomer(id);
+                Utils.showAlert && Utils.showAlert('تم حذف الزبون', 'success') || alert('تم الحذف');
+                await loadCustomers();
+            } catch (error) {
+                console.error('خطأ في الحذف:', error);
+                alert('حدث خطأ أثناء الحذف');
+            }
+        }
     </script>
 </body>
 

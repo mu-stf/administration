@@ -9,12 +9,21 @@
 </head>
 
 <body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
+        <div style="text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 20px;">🏪</div>
+            <div style="font-size: 18px; color: #666;">جاري التحميل...</div>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="header">
         <h1>🏪 <span id="storeName">نظام إدارة المحل</span></h1>
         <div class="header-actions">
             <span id="currentDate"></span>
-            <button class="btn" onclick="App.logout()">
+            <button class="btn" onclick="logout()">
                 🚪 تسجيل الخروج
             </button>
         </div>
@@ -192,75 +201,151 @@
         </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/app.js"></script>
     <script>
-        // حماية الصفحة
-        if (!App.protectPage()) {
-            throw new Error('Unauthorized');
+        const dashboardFlag = sessionStorage.getItem('in_dashboard');
+
+        // حماية الصفحة مع Supabase
+        async function protectDashboard() {
+            if (dashboardFlag) {
+                sessionStorage.removeItem('in_dashboard');
+                return true;
+            }
+
+            sessionStorage.setItem('in_dashboard', 'true');
+
+            try {
+                const session = await SupabaseDB.getSession();
+                if (!session) {
+                    sessionStorage.removeItem('in_dashboard');
+                    window.location.href = 'index.html';
+                    return false;
+                }
+
+                const user = await SupabaseDB.getCurrentUser();
+
+                // التحقق من إكمال setup
+                try {
+                    const profile = await SupabaseDB.getProfile(user.id);
+                    if (!profile || profile.store_name === ' المحل') {
+                        sessionStorage.removeItem('in_dashboard');
+                        window.location.href = 'setup.html';
+                        return false;
+                    }
+                } catch (error) {
+                    sessionStorage.removeItem('in_dashboard');
+                    window.location.href = 'setup.html';
+                    return false;
+                }
+
+                sessionStorage.removeItem('in_dashboard');
+                return true;
+            } catch (error) {
+                console.error('خطأ في المصادقة:', error);
+                sessionStorage.removeItem('in_dashboard');
+                window.location.href = 'index.html';
+                return false;
+            }
+        }
+
+        // التحقق من الحماية ثم تحميل البيانات
+        protectDashboard().then(isAuthorized => {
+            if (isAuthorized) {
+                loadDashboard();
+                hideLoading();
+            }
+        });
+
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) overlay.style.display = 'none';
+        }
+
+        // تسجيل الخروج
+        async function logout() {
+            try {
+                await SupabaseDB.signOut();
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('خطأ في تسجيل الخروج:', error);
+                alert('حدث خطأ أثناء تسجيل الخروج');
+            }
         }
 
         // تحميل البيانات
-        function loadDashboard() {
-            // تحميل اسم المحل
-            const settings = App.getSettings();
-            document.getElementById('storeName').textContent = settings.storeName;
+        async function loadDashboard() {
+            try {
+                const user = await SupabaseDB.getCurrentUser();
+                const profile = await SupabaseDB.getProfile(user.id);
 
-            // عرض التاريخ
-            document.getElementById('currentDate').textContent = Utils.formatDate(new Date());
+                // تحميل اسم المحل
+                document.getElementById('storeName').textContent = profile.store_name || 'نظام إدارة المحل';
 
-            // إحصائيات اليوم
-            const today = new Date();
-            const stats = App.getStatistics(
-                Utils.getStartOfDay(today),
-                Utils.getEndOfDay(today)
-            );
+                // عرض التاريخ
+                document.getElementById('currentDate').textContent = Utils.formatDate(new Date());
 
-            document.getElementById('todayInvoices').textContent = stats.invoiceCount;
-            document.getElementById('todaySales').textContent = Utils.formatCurrency(stats.totalSales);
-            document.getElementById('todayProfit').textContent = Utils.formatCurrency(stats.profit);
+                // جلب البيانات من Supabase
+                const stats = await SupabaseDB.getStatistics(
+                    user.id,
+                    Utils.getStartOfDay(new Date()),
+                    Utils.getEndOfDay(new Date())
+                );
 
-            // المنتجات منخفضة المخزون
-            const products = App.getProducts();
-            const lowStockProducts = products.filter(p => p.stock <= 5);
-            document.getElementById('lowStock').textContent = lowStockProducts.length;
+                document.getElementById('todayInvoices').textContent = stats.invoiceCount;
+                document.getElementById('todaySales').textContent = Utils.formatCurrency(stats.totalSales);
+                document.getElementById('todayProfit').textContent = Utils.formatCurrency(stats.profit);
 
-            // عرض آخر الفواتير
-            const invoices = App.getInvoices()
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .slice(0, 5);
+                // المنتجات منخفضة المخزون
+                const products = await SupabaseDB.getProducts(user.id);
+                const lowStockProducts = products.filter(p => p.stock <= p.min_stock);
+                document.getElementById('lowStock').textContent = lowStockProducts.length;
 
-            const invoicesTable = document.getElementById('recentInvoices');
-            if (invoices.length > 0) {
-                invoicesTable.innerHTML = invoices.map(inv => `
-                    <tr>
-                        <td><a href="print-invoice.html?id=${inv.id}">${inv.invoiceNumber}</a></td>
-                        <td>${Utils.formatDateTime(inv.date)}</td>
-                        <td>${inv.customerName || '-'}</td>
-                        <td>${Utils.formatCurrency(inv.total)}</td>
-                        <td>
-                            <span class="badge ${inv.status === 'active' ? 'badge-success' : 'badge-danger'}">
-                                ${inv.status === 'active' ? 'نشطة' : 'ملغاة'}
-                            </span>
-                        </td>
-                    </tr>
-                `).join('');
-            }
+                // عرض آخر الفواتير
+                const invoices = await SupabaseDB.getInvoices(user.id);
+                const recentInvoices = invoices
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .slice(0, 5);
 
-            // عرض المنتجات منخفضة المخزون
-            const lowStockTable = document.getElementById('lowStockProducts');
-            if (lowStockProducts.length > 0) {
-                lowStockTable.innerHTML = lowStockProducts.map(p => `
-                    <tr>
-                        <td>${p.name}</td>
-                        <td class="stock-low">${p.stock}</td>
-                        <td>
-                            <a href="supplies.html?product=${p.id}" class="btn btn-sm btn-warning">
-                                📥 توريد
-                            </a>
-                        </td>
-                    </tr>
-                `).join('');
+                const invoicesTable = document.getElementById('recentInvoices');
+                if (recentInvoices.length > 0) {
+                    invoicesTable.innerHTML = recentInvoices.map(inv => `
+                        <tr>
+                            <td><a href="print-invoice.html?id=${inv.id}">${inv.invoice_number}</a></td>
+                            <td>${Utils.formatDateTime(inv.date)}</td>
+                            <td>${inv.customer_name || '-'}</td>
+                            <td>${Utils.formatCurrency(inv.final_total)}</td>
+                            <td>
+                                <span class="badge ${inv.status === 'active' ? 'badge-success' : 'badge-danger'}">
+                                    ${inv.status === 'active' ? 'نشطة' : 'ملغاة'}
+                                </span>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+
+                // عرض المنتجات منخفضة المخزون
+                const lowStockTable = document.getElementById('lowStockProducts');
+                if (lowStockProducts.length > 0) {
+                    lowStockTable.innerHTML = lowStockProducts.map(p => `
+                        <tr>
+                            <td>${p.name}</td>
+                            <td class="stock-low">${p.stock}</td>
+                            <td>
+                                <a href="supplies.html?product=${p.id}" class="btn btn-sm btn-warning">
+                                    📥 توريد
+                                </a>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('خطأ في تحميل البيانات:', error);
+                // عرض رسالة خطأ للمستخدم
+                document.getElementById('storeName').textContent = 'خطأ في تحميل البيانات';
             }
         }
 

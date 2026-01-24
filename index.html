@@ -9,7 +9,16 @@
 </head>
 
 <body>
-    <div class="auth-container">
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
+        <div style="text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 20px;">🏪</div>
+            <div style="font-size: 18px; color: #666;">جاري التحميل...</div>
+        </div>
+    </div>
+
+    <div class="auth-container" style="opacity: 0; transition: opacity 0.3s;">
         <div class="auth-box">
             <div class="icon">🏪</div>
             <h1>نظام إدارة المحل</h1>
@@ -45,6 +54,12 @@
     <script src="js/utils.js"></script>
 
     <script>
+        // حماية من infinite loops
+        const redirectFlag = sessionStorage.getItem('redirect_from_login');
+        if (redirectFlag) {
+            sessionStorage.removeItem('redirect_from_login');
+        }
+
         // التحقق من وجود Supabase config
         if (typeof SUPABASE_CONFIG === 'undefined') {
             document.getElementById('errorMessage').textContent = 'خطأ: لم يتم العثور على ملف التكوين. الرجاء إنشاء js/config.js';
@@ -52,16 +67,34 @@
             document.getElementById('loginBtn').disabled = true;
         }
 
-        // التحقق من وجود جلسة نشطة
+        // التحقق من وجود جلسة نشطة (فقط مرة واحدة)
         async function checkSession() {
+            if (redirectFlag) {
+                hideLoading();
+                return;
+            }
+
             try {
                 const session = await SupabaseDB.getSession();
                 if (session) {
+                    console.log('جلسة نشطة موجودة، التحويل إلى dashboard');
+                    sessionStorage.setItem('redirect_from_login', 'true');
                     window.location.href = 'dashboard.html';
+                } else {
+                    hideLoading();
                 }
             } catch (error) {
                 console.log('لا توجد جلسة نشطة');
+                hideLoading();
             }
+        }
+
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            const container = document.querySelector('.auth-container');
+
+            if (overlay) overlay.style.display = 'none';
+            if (container) container.style.opacity = '1';
         }
 
         checkSession();

@@ -6,203 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>طباعة الفاتورة - نظام إدارة المحل</title>
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        @media print {
-            body {
-                background: white !important;
-            }
-
-            .no-print {
-                display: none !important;
-            }
-
-            .print-invoice {
-                box-shadow: none !important;
-                margin: 0 !important;
-                padding: 20px !important;
-            }
-        }
-    </style>
 </head>
 
-<body style="background: var(--gray-200);">
-    <!-- Print Actions -->
-    <div class="no-print" style="padding: 20px; text-align: center; background: var(--primary);">
-        <button class="btn btn-primary" onclick="window.print()" style="background: white; color: var(--primary);">
-            🖨️ طباعة الفاتورة
-        </button>
-        <a href="invoices.html" class="btn btn-secondary" style="margin-right: 10px;">
-            ← العودة للفواتير
-        </a>
-        <a href="new-invoice.html" class="btn btn-success" style="margin-right: 10px;">
-            ➕ فاتورة جديدة
-        </a>
-    </div>
-
-    <!-- Invoice -->
-    <div class="print-invoice" id="invoice">
-        <!-- Header -->
-        <div class="header" style="border-bottom: 3px solid var(--primary); padding-bottom: 20px;">
-            <h1 id="invoiceStoreName" style="margin: 0;">المحل</h1>
-            <div style="display: flex; justify-content: center; gap: 30px; margin-top: 10px; color: var(--gray-600);">
-                <span id="storePhone"></span>
-                <span id="storeAddress"></span>
-            </div>
-        </div>
-
-        <!-- Invoice Info -->
-        <div class="info-row" style="margin-top: 20px;">
-            <div class="info-item">
-                <label>رقم الفاتورة</label>
-                <span id="invoiceNumber">-</span>
-            </div>
-            <div class="info-item">
-                <label>التاريخ</label>
-                <span id="invoiceDate">-</span>
-            </div>
-            <div class="info-item">
-                <label>الوقت</label>
-                <span id="invoiceTime">-</span>
-            </div>
-            <div class="info-item">
-                <label>المندوب</label>
-                <span id="agentName">-</span>
-            </div>
-        </div>
-
-        <!-- Customer Info -->
-        <div id="customerSection"
-            style="background: var(--gray-100); padding: 12px 20px; border-radius: 8px; margin-bottom: 20px;">
-            <strong>الزبون:</strong> <span id="customerName">-</span>
-        </div>
-
-        <!-- Cancelled Badge -->
-        <div id="cancelledBadge"
-            style="display: none; background: var(--danger); color: white; padding: 10px 20px; border-radius: 8px; text-align: center; margin-bottom: 20px; font-size: 18px;">
-            ⚠️ هذه الفاتورة ملغاة
-        </div>
-
-        <!-- Items Table -->
-        <table class="table" style="margin-bottom: 20px;">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>المنتج</th>
-                    <th>الكمية</th>
-                    <th>السعر</th>
-                    <th>الإجمالي</th>
-                </tr>
-            </thead>
-            <tbody id="itemsTable">
-            </tbody>
-        </table>
-
-        <!-- Summary -->
-        <div class="invoice-summary">
-            <div class="row">
-                <span>عدد المنتجات:</span>
-                <span id="itemCount">0</span>
-            </div>
-            <div class="row total-row" style="font-size: 24px;">
-                <span>الإجمالي:</span>
-                <span id="totalAmount">0 د.ع</span>
-            </div>
-        </div>
-
-        <!-- Notes -->
-        <div id="notesSection"
-            style="margin-top: 20px; padding: 15px; background: var(--gray-100); border-radius: 8px; display: none;">
-            <strong>ملاحظات:</strong>
-            <p id="invoiceNotes" style="margin: 5px 0 0 0;"></p>
-        </div>
-
-        <!-- Footer -->
-        <div style="margin-top: 40px; text-align: center; color: var(--gray-500); font-size: 14px;">
-            <p>شكراً لتعاملكم معنا</p>
-            <p id="footerPhone"></p>
+<body>
+    <div id="loadingOverlay"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
+        <div style="text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 20px;">🏪</div>
+            <div style="font-size: 18px; color: #666;">جاري التحميل...</div>
         </div>
     </div>
 
-    <script src="js/utils.js"></script>
-    <script src="js/app.js"></script>
+    <div class="invoice-print">
+        <div style="text-align: center; padding: 40px;">
+            <h2>طباعة الفاتورة</h2>
+            <p class="text-muted">قريباً...</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/page-protection.js"></script>
     <script>
-        // الحصول على معرف الفاتورة
-        const urlParams = new URLSearchParams(window.location.search);
-        const invoiceId = urlParams.get('id');
-
-        if (!invoiceId) {
-            window.location.href = 'invoices.html';
-        }
-
-        // تحميل الفاتورة
-        function loadInvoice() {
-            const invoice = App.getInvoiceById(invoiceId);
-
-            if (!invoice) {
-                alert('الفاتورة غير موجودة');
-                window.location.href = 'invoices.html';
-                return;
+        protectPage().then(async (authorized) => {
+            if (authorized) {
+                hideLoading();
+                // TODO: تحميل الفاتورة من URL params
             }
-
-            const settings = App.getSettings();
-
-            // معلومات المحل
-            document.getElementById('invoiceStoreName').textContent = settings.storeName;
-            document.getElementById('storePhone').textContent = settings.phone ? `📞 ${settings.phone}` : '';
-            document.getElementById('storeAddress').textContent = settings.address ? `📍 ${settings.address}` : '';
-            document.getElementById('footerPhone').textContent = settings.phone || '';
-
-            // معلومات الفاتورة
-            document.getElementById('invoiceNumber').textContent = invoice.invoiceNumber;
-
-            const date = new Date(invoice.date);
-            document.getElementById('invoiceDate').textContent = Utils.formatDate(date);
-            document.getElementById('invoiceTime').textContent = date.toLocaleTimeString('ar-IQ', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-
-            document.getElementById('agentName').textContent = settings.agentName || '-';
-
-            // معلومات الزبون
-            if (invoice.customerName) {
-                document.getElementById('customerName').textContent = invoice.customerName;
-            } else {
-                document.getElementById('customerSection').style.display = 'none';
-            }
-
-            // حالة الفاتورة
-            if (invoice.status === 'cancelled') {
-                document.getElementById('cancelledBadge').style.display = 'block';
-            }
-
-            // المنتجات
-            const itemsTable = document.getElementById('itemsTable');
-            itemsTable.innerHTML = invoice.items.map((item, index) => `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${item.productName}</td>
-                    <td>${item.quantity}</td>
-                    <td>${Utils.formatCurrency(item.salePrice)}</td>
-                    <td>${Utils.formatCurrency(item.salePrice * item.quantity)}</td>
-                </tr>
-            `).join('');
-
-            // الإجماليات
-            document.getElementById('itemCount').textContent = invoice.items.length;
-            document.getElementById('totalAmount').textContent = Utils.formatCurrency(invoice.total);
-
-            // الملاحظات
-            if (invoice.notes) {
-                document.getElementById('notesSection').style.display = 'block';
-                document.getElementById('invoiceNotes').textContent = invoice.notes;
-            }
-
-            // تحديث عنوان الصفحة
-            document.title = `فاتورة ${invoice.invoiceNumber} - ${settings.storeName}`;
-        }
-
-        loadInvoice();
+        });
     </script>
 </body>
 

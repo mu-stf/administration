@@ -1,6 +1,22 @@
 -- =========================================
 -- نظام إدارة المحل - Supabase Database Setup
 -- =========================================
+-- هذا السكريبت سينظف البيانات القديمة ويبدأ من الصفر
+
+-- حذف الجداول القديمة إن وجدت (بالترتيب العكسي)
+DROP TABLE IF EXISTS supplies CASCADE;
+DROP TABLE IF EXISTS invoice_items CASCADE;
+DROP TABLE IF EXISTS invoices CASCADE;
+DROP TABLE IF EXISTS customers CASCADE;
+DROP TABLE IF EXISTS products CASCADE;
+DROP TABLE IF EXISTS profiles CASCADE;
+
+-- حذف الـ triggers القديمة
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+
+-- حذف الـ functions القديمة
+DROP FUNCTION IF EXISTS public.handle_new_user() CASCADE;
+DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE;
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -8,7 +24,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- =========================================
 -- 1. جدول profiles - ملفات المستخدمين
 -- =========================================
-CREATE TABLE IF NOT EXISTS profiles (
+CREATE TABLE profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     store_name TEXT DEFAULT 'المحل',
     phone TEXT,
@@ -23,7 +39,7 @@ CREATE TABLE IF NOT EXISTS profiles (
 -- =========================================
 -- 2. جدول products - المنتجات
 -- =========================================
-CREATE TABLE IF NOT EXISTS products (
+CREATE TABLE products (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
     name TEXT NOT NULL,
@@ -40,7 +56,7 @@ CREATE TABLE IF NOT EXISTS products (
 -- =========================================
 -- 3. جدول customers - الزبائن
 -- =========================================
-CREATE TABLE IF NOT EXISTS customers (
+CREATE TABLE customers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
     name TEXT NOT NULL,
@@ -54,7 +70,7 @@ CREATE TABLE IF NOT EXISTS customers (
 -- =========================================
 -- 4. جدول invoices - الفواتير
 -- =========================================
-CREATE TABLE IF NOT EXISTS invoices (
+CREATE TABLE invoices (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
     invoice_number TEXT NOT NULL,
@@ -73,7 +89,7 @@ CREATE TABLE IF NOT EXISTS invoices (
 -- =========================================
 -- 5. جدول invoice_items - عناصر الفاتورة
 -- =========================================
-CREATE TABLE IF NOT EXISTS invoice_items (
+CREATE TABLE invoice_items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     invoice_id UUID REFERENCES invoices(id) ON DELETE CASCADE NOT NULL,
     product_id UUID REFERENCES products(id) ON DELETE SET NULL,
@@ -88,7 +104,7 @@ CREATE TABLE IF NOT EXISTS invoice_items (
 -- =========================================
 -- 6. جدول supplies - التوريدات
 -- =========================================
-CREATE TABLE IF NOT EXISTS supplies (
+CREATE TABLE supplies (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
     product_id UUID REFERENCES products(id) ON DELETE CASCADE NOT NULL,
@@ -102,15 +118,15 @@ CREATE TABLE IF NOT EXISTS supplies (
 -- =========================================
 -- INDEXES for better performance
 -- =========================================
-CREATE INDEX IF NOT EXISTS idx_products_user_id ON products(user_id);
-CREATE INDEX IF NOT EXISTS idx_products_barcode ON products(barcode);
-CREATE INDEX IF NOT EXISTS idx_customers_user_id ON customers(user_id);
-CREATE INDEX IF NOT EXISTS idx_invoices_user_id ON invoices(user_id);
-CREATE INDEX IF NOT EXISTS idx_invoices_status ON invoices(status);
-CREATE INDEX IF NOT EXISTS idx_invoices_date ON invoices(date);
-CREATE INDEX IF NOT EXISTS idx_invoice_items_invoice_id ON invoice_items(invoice_id);
-CREATE INDEX IF NOT EXISTS idx_supplies_user_id ON supplies(user_id);
-CREATE INDEX IF NOT EXISTS idx_supplies_product_id ON supplies(product_id);
+CREATE INDEX idx_products_user_id ON products(user_id);
+CREATE INDEX idx_products_barcode ON products(barcode);
+CREATE INDEX idx_customers_user_id ON customers(user_id);
+CREATE INDEX idx_invoices_user_id ON invoices(user_id);
+CREATE INDEX idx_invoices_status ON invoices(status);
+CREATE INDEX idx_invoices_date ON invoices(date);
+CREATE INDEX idx_invoice_items_invoice_id ON invoice_items(invoice_id);
+CREATE INDEX idx_supplies_user_id ON supplies(user_id);
+CREATE INDEX idx_supplies_product_id ON supplies(product_id);
 
 -- =========================================
 -- ROW LEVEL SECURITY (RLS)
@@ -295,11 +311,10 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Trigger to create profile automatically
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- =========================================
--- تم الانتهاء من الإعداد بنجاح!
+-- ✅ تم الانتهاء من الإعداد بنجاح!
 -- =========================================

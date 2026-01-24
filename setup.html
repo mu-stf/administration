@@ -58,12 +58,22 @@
     <script src="js/utils.js"></script>
     <script>
         let currentUser = null;
+        const setupFlag = sessionStorage.getItem('in_setup');
 
         // التحقق من تسجيل الدخول
         async function checkAuth() {
+            // منع infinite loop
+            if (setupFlag) {
+                sessionStorage.removeItem('in_setup');
+                return;
+            }
+
+            sessionStorage.setItem('in_setup', 'true');
+
             try {
                 const session = await SupabaseDB.getSession();
                 if (!session) {
+                    sessionStorage.removeItem('in_setup');
                     window.location.href = 'index.html';
                     return;
                 }
@@ -75,13 +85,18 @@
                     const profile = await SupabaseDB.getProfile(currentUser.id);
                     if (profile && profile.store_name !== 'المحل') {
                         // المستخدم أكمل الإعداد مسبقاً
+                        sessionStorage.removeItem('in_setup');
+                        sessionStorage.setItem('setup_complete', 'true');
                         window.location.href = 'dashboard.html';
                     }
                 } catch (error) {
                     console.log('لم يتم إعداد الملف الشخصي بعد');
                 }
+
+                sessionStorage.removeItem('in_setup');
             } catch (error) {
                 console.error('خطأ في التحقق:', error);
+                sessionStorage.removeItem('in_setup');
                 window.location.href = 'index.html';
             }
         }

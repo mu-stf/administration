@@ -9,82 +9,50 @@
 </head>
 
 <body>
-    <!-- Header -->
+    <div id="loadingOverlay"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
+        <div style="text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 20px;">🏪</div>
+            <div style="font-size: 18px; color: #666;">جاري التحميل...</div>
+        </div>
+    </div>
+
     <header class="header">
         <h1>🏪 <span id="storeName">نظام إدارة المحل</span></h1>
         <div class="header-actions">
-            <button class="btn" onclick="App.logout()">
-                🚪 تسجيل الخروج
-            </button>
+            <button class="btn" onclick="logout()">🚪 تسجيل الخروج</button>
         </div>
     </header>
 
     <div class="main-layout">
-        <!-- Sidebar -->
         <nav class="sidebar">
             <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="dashboard.html" class="nav-link">
-                        <span class="icon">📊</span>
-                        لوحة التحكم
-                    </a>
+                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">📊</span>لوحة
+                        التحكم</a></li>
+                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">➕</span>فاتورة
+                        جديدة</a></li>
+                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">📋</span>الفواتير</a>
                 </li>
-                <li class="nav-item">
-                    <a href="new-invoice.html" class="nav-link">
-                        <span class="icon">➕</span>
-                        فاتورة جديدة
-                    </a>
+                <li class="nav-item"><a href="products.html" class="nav-link active"><span
+                            class="icon">📦</span>المنتجات</a></li>
+                <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">👥</span>الزبائن</a>
                 </li>
-                <li class="nav-item">
-                    <a href="invoices.html" class="nav-link">
-                        <span class="icon">📋</span>
-                        الفواتير
-                    </a>
+                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">📥</span>التوريدات</a>
                 </li>
-                <li class="nav-item">
-                    <a href="products.html" class="nav-link active">
-                        <span class="icon">📦</span>
-                        المنتجات
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="customers.html" class="nav-link">
-                        <span class="icon">👥</span>
-                        الزبائن
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="supplies.html" class="nav-link">
-                        <span class="icon">📥</span>
-                        التوريدات
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="statistics.html" class="nav-link">
-                        <span class="icon">📈</span>
-                        الإحصائيات
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="settings.html" class="nav-link">
-                        <span class="icon">⚙️</span>
-                        الإعدادات
-                    </a>
+                <li class="nav-item"><a href="statistics.html" class="nav-link"><span
+                            class="icon">📈</span>الإحصائيات</a></li>
+                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">⚙️</span>الإعدادات</a>
                 </li>
             </ul>
         </nav>
 
-        <!-- Main Content -->
         <main class="main-content">
             <div class="card">
                 <div class="card-header">
                     <h2>📦 إدارة المنتجات</h2>
-                    <button class="btn btn-primary" onclick="openProductModal()">
-                        ➕ إضافة منتج
-                    </button>
+                    <button class="btn btn-primary" onclick="openProductModal()">➕ إضافة منتج</button>
                 </div>
                 <div class="card-body">
-                    <!-- Search -->
                     <div class="filters-bar">
                         <div class="search-box">
                             <span class="search-icon">🔍</span>
@@ -92,14 +60,12 @@
                                 onkeyup="filterProducts()">
                         </div>
                     </div>
-
-                    <!-- Products Table -->
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
                                 <tr>
                                     <th>الاسم</th>
-                                    <th>SKU</th>
+                                    <th>الباركود</th>
                                     <th>سعر الشراء</th>
                                     <th>سعر البيع</th>
                                     <th>المخزون</th>
@@ -108,9 +74,7 @@
                             </thead>
                             <tbody id="productsTable">
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted">
-                                        لا توجد منتجات بعد
-                                    </td>
+                                    <td colspan="6" class="text-center text-muted">لا توجد منتجات بعد</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -120,7 +84,6 @@
         </main>
     </div>
 
-    <!-- Product Modal -->
     <div class="modal-overlay" id="productModal">
         <div class="modal">
             <div class="modal-header">
@@ -130,141 +93,98 @@
             <div class="modal-body">
                 <form id="productForm">
                     <input type="hidden" id="productId">
-
                     <div class="form-group">
-                        <label for="productName">اسم المنتج *</label>
+                        <label>اسم المنتج *</label>
                         <input type="text" id="productName" class="form-control" required>
                     </div>
-
                     <div class="form-group">
-                        <label for="productSku">SKU (اختياري)</label>
-                        <input type="text" id="productSku" class="form-control">
+                        <label>الباركود</label>
+                        <input type="text" id="productBarcode" class="form-control">
                     </div>
-
                     <div class="form-group">
-                        <label for="purchasePrice">سعر الشراء *</label>
+                        <label>سعر الشراء *</label>
                         <input type="number" id="purchasePrice" class="form-control" min="0" step="100" required>
                     </div>
-
                     <div class="form-group">
-                        <label for="salePrice">سعر البيع *</label>
+                        <label>سعر البيع *</label>
                         <input type="number" id="salePrice" class="form-control" min="0" step="100" required>
                     </div>
-
                     <div class="form-group">
-                        <label for="stock">الكمية في المخزون *</label>
+                        <label>المخزون *</label>
                         <input type="number" id="stock" class="form-control" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>الحد الأدنى للمخزون</label>
+                        <input type="number" id="minStock" class="form-control" min="0" value="5">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" onclick="saveProduct()">
-                    💾 حفظ
-                </button>
-                <button class="btn btn-secondary" onclick="closeProductModal()">
-                    إلغاء
-                </button>
+                <button class="btn btn-primary" onclick="saveProduct()">💾 حفظ</button>
+                <button class="btn btn-secondary" onclick="closeProductModal()">إلغاء</button>
             </div>
         </div>
     </div>
 
-    <!-- Stock Adjustment Modal -->
-    <div class="modal-overlay" id="stockModal">
-        <div class="modal" style="max-width: 400px;">
-            <div class="modal-header">
-                <h3>تعديل المخزون</h3>
-                <button class="modal-close" onclick="closeStockModal()">×</button>
-            </div>
-            <div class="modal-body">
-                <p id="stockProductName" style="font-weight: 600; margin-bottom: 16px;"></p>
-                <input type="hidden" id="stockProductId">
-
-                <div class="form-group">
-                    <label>الكمية الحالية</label>
-                    <input type="text" id="currentStock" class="form-control" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label>تعديل الكمية (+ للزيادة، - للإنقاص)</label>
-                    <input type="number" id="stockAdjustment" class="form-control" placeholder="مثال: 10 أو -5">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" onclick="adjustStock()">
-                    ✓ تطبيق
-                </button>
-                <button class="btn btn-secondary" onclick="closeStockModal()">
-                    إلغاء
-                </button>
-            </div>
-        </div>
-    </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/page-protection.js"></script>
     <script src="js/utils.js"></script>
-    <script src="js/app.js"></script>
     <script>
-        // حماية الصفحة
-        if (!App.protectPage()) {
-            throw new Error('Unauthorized');
+        let currentUser = null;
+        let allProducts = [];
+
+        protectPage().then(authorized => {
+            if (authorized) loadPage();
+        });
+
+        async function loadPage() {
+            const { user, profile } = await getCurrentUserData();
+            currentUser = user;
+            document.getElementById('storeName').textContent = profile.store_name;
+            await loadProducts();
+            hideLoading();
         }
 
-        // تحميل اسم المحل
-        document.getElementById('storeName').textContent = App.getSettings().storeName;
+        async function loadProducts() {
+            try {
+                allProducts = await SupabaseDB.getProducts(currentUser.id);
+                renderProducts(allProducts);
+            } catch (error) {
+                console.error('خطأ في تحميل المنتجات:', error);
+                alert('حدث خطأ في تحميل المنتجات');
+            }
+        }
 
-        // تحميل المنتجات
-        function loadProducts() {
-            const products = App.getProducts();
+        function renderProducts(products) {
             const tbody = document.getElementById('productsTable');
-
             if (products.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="text-center text-muted">
-                            لا توجد منتجات بعد
-                        </td>
-                    </tr>
-                `;
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">لا توجد منتجات بعد</td></tr>';
                 return;
             }
 
             tbody.innerHTML = products.map(p => `
-                <tr data-name="${p.name.toLowerCase()}">
+                <tr data-name="${(p.name || '').toLowerCase()}">
                     <td><strong>${p.name}</strong></td>
-                    <td>${p.sku || '-'}</td>
-                    <td>${Utils.formatCurrency(p.purchasePrice)}</td>
-                    <td>${Utils.formatCurrency(p.salePrice)}</td>
-                    <td>
-                        <span class="${p.stock <= 5 ? 'stock-low' : 'stock-ok'}">
-                            ${p.stock}
-                        </span>
-                    </td>
+                    <td>${p.barcode || '-'}</td>
+                    <td>${Utils.formatCurrency(p.purchase_price)}</td>
+                    <td>${Utils.formatCurrency(p.sale_price)}</td>
+                    <td><span class="${p.stock <= p.min_stock ? 'stock-low' : 'stock-ok'}">${p.stock}</span></td>
                     <td class="actions">
-                        <button class="btn btn-sm btn-secondary" onclick="openStockModal('${p.id}')" title="تعديل المخزون">
-                            📦
-                        </button>
-                        <button class="btn btn-sm btn-primary" onclick="editProduct('${p.id}')" title="تعديل">
-                            ✏️
-                        </button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteProduct('${p.id}')" title="حذف">
-                            🗑️
-                        </button>
+                        <button class="btn btn-sm btn-primary" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})' title="تعديل">✏️</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteProduct('${p.id}', '${p.name}')" title="حذف">🗑️</button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        // فلترة المنتجات
         function filterProducts() {
             const query = document.getElementById('searchInput').value.toLowerCase();
-            const rows = document.querySelectorAll('#productsTable tr[data-name]');
-
-            rows.forEach(row => {
-                const name = row.dataset.name;
-                row.style.display = name.includes(query) ? '' : 'none';
-            });
+            const filtered = query ? allProducts.filter(p => p.name.toLowerCase().includes(query)) : allProducts;
+            renderProducts(filtered);
         }
 
-        // فتح نافذة إضافة/تعديل منتج
         function openProductModal(product = null) {
             document.getElementById('productModal').classList.add('active');
             document.getElementById('productForm').reset();
@@ -273,112 +193,69 @@
                 document.getElementById('modalTitle').textContent = 'تعديل المنتج';
                 document.getElementById('productId').value = product.id;
                 document.getElementById('productName').value = product.name;
-                document.getElementById('productSku').value = product.sku || '';
-                document.getElementById('purchasePrice').value = product.purchasePrice;
-                document.getElementById('salePrice').value = product.salePrice;
+                document.getElementById('productBarcode').value = product.barcode || '';
+                document.getElementById('purchasePrice').value = product.purchase_price;
+                document.getElementById('salePrice').value = product.sale_price;
                 document.getElementById('stock').value = product.stock;
+                document.getElementById('minStock').value = product.min_stock || 5;
             } else {
                 document.getElementById('modalTitle').textContent = 'إضافة منتج جديد';
                 document.getElementById('productId').value = '';
             }
         }
 
-        // إغلاق نافذة المنتج
         function closeProductModal() {
             document.getElementById('productModal').classList.remove('active');
         }
 
-        // حفظ المنتج
-        function saveProduct() {
+        async function saveProduct() {
             const id = document.getElementById('productId').value;
             const productData = {
                 name: document.getElementById('productName').value.trim(),
-                sku: document.getElementById('productSku').value.trim(),
-                purchasePrice: parseFloat(document.getElementById('purchasePrice').value) || 0,
-                salePrice: parseFloat(document.getElementById('salePrice').value) || 0,
-                stock: parseInt(document.getElementById('stock').value) || 0
+                barcode: document.getElementById('productBarcode').value.trim() || null,
+                purchase_price: parseFloat(document.getElementById('purchasePrice').value) || 0,
+                sale_price: parseFloat(document.getElementById('salePrice').value) || 0,
+                stock: parseInt(document.getElementById('stock').value) || 0,
+                min_stock: parseInt(document.getElementById('minStock').value) || 5
             };
 
             if (!productData.name) {
-                Utils.showAlert('يرجى إدخال اسم المنتج', 'danger');
+                alert('يرجى إدخال اسم المنتج');
                 return;
             }
 
-            if (id) {
-                App.updateProduct(id, productData);
-                Utils.showAlert('تم تحديث المنتج بنجاح', 'success');
-            } else {
-                App.addProduct(productData);
-                Utils.showAlert('تم إضافة المنتج بنجاح', 'success');
-            }
-
-            closeProductModal();
-            loadProducts();
-        }
-
-        // تعديل منتج
-        function editProduct(id) {
-            const product = App.getProductById(id);
-            if (product) {
-                openProductModal(product);
+            try {
+                if (id) {
+                    await SupabaseDB.updateProduct(id, productData);
+                    Utils.showAlert && Utils.showAlert('تم تحديث المنتج بنجاح', 'success') || alert('تم التحديث');
+                } else {
+                    await SupabaseDB.addProduct(currentUser.id, productData);
+                    Utils.showAlert && Utils.showAlert('تم إضافة المنتج بنجاح', 'success') || alert('تم الإضافة');
+                }
+                closeProductModal();
+                await loadProducts();
+            } catch (error) {
+                console.error('خطأ في حفظ المنتج:', error);
+                alert('حدث خطأ أثناء الحفظ');
             }
         }
 
-        // حذف منتج
-        async function deleteProduct(id) {
-            const product = App.getProductById(id);
-            const confirmed = await Utils.confirm(`هل أنت متأكد من حذف "${product.name}"؟`);
+        function editProduct(product) {
+            openProductModal(product);
+        }
 
-            if (confirmed) {
-                App.deleteProduct(id);
-                Utils.showAlert('تم حذف المنتج', 'success');
-                loadProducts();
+        async function deleteProduct(id, name) {
+            if (!confirm(`هل أنت متأكد من حذف "${name}"؟`)) return;
+
+            try {
+                await SupabaseDB.deleteProduct(id);
+                Utils.showAlert && Utils.showAlert('تم حذف المنتج', 'success') || alert('تم الحذف');
+                await loadProducts();
+            } catch (error) {
+                console.error('خطأ في الحذف:', error);
+                alert('حدث خطأ أثناء الحذف');
             }
         }
-
-        // فتح نافذة تعديل المخزون
-        function openStockModal(id) {
-            const product = App.getProductById(id);
-            if (!product) return;
-
-            document.getElementById('stockModal').classList.add('active');
-            document.getElementById('stockProductId').value = id;
-            document.getElementById('stockProductName').textContent = product.name;
-            document.getElementById('currentStock').value = product.stock;
-            document.getElementById('stockAdjustment').value = '';
-        }
-
-        // إغلاق نافذة المخزون
-        function closeStockModal() {
-            document.getElementById('stockModal').classList.remove('active');
-        }
-
-        // تعديل المخزون
-        function adjustStock() {
-            const id = document.getElementById('stockProductId').value;
-            const adjustment = parseInt(document.getElementById('stockAdjustment').value) || 0;
-
-            if (adjustment === 0) {
-                Utils.showAlert('يرجى إدخال كمية التعديل', 'warning');
-                return;
-            }
-
-            const product = App.getProductById(id);
-            const newStock = product.stock + adjustment;
-
-            if (newStock < 0) {
-                Utils.showAlert('لا يمكن أن يكون المخزون سالباً', 'danger');
-                return;
-            }
-
-            App.updateProduct(id, { stock: newStock });
-            Utils.showAlert(`تم تعديل المخزون: ${product.stock} → ${newStock}`, 'success');
-            closeStockModal();
-            loadProducts();
-        }
-
-        // تحميل الصفحة
-        loadProducts();
     </script>
 </body>
 

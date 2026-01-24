@@ -7,9 +7,19 @@ if (typeof SUPABASE_CONFIG === 'undefined') {
     console.error('⚠️ لم يتم العثور على ملف التكوين! الرجاء إنشاء js/config.js');
 }
 
-// إنشاء Supabase client
+// إنشاء Supabase client (واحد مشترك لجميع الصفحات)
 const { createClient } = supabase;
-const supabaseClient = SUPABASE_CONFIG ? createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey) : null;
+const supabaseClient = SUPABASE_CONFIG ? createClient(
+    SUPABASE_CONFIG.url,
+    SUPABASE_CONFIG.anonKey,
+    {
+        auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: false
+        }
+    }
+) : null;
 
 const SupabaseDB = {
     client: supabaseClient,
