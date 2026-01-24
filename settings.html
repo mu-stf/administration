@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الإعدادات - نظام إدارة المحل</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1>🏪 <span id="storeName">نظام إدارة المحل</span></h1>
+        <div class="header-actions">
+            <button class="btn" onclick="App.logout()">
+                🚪 تسجيل الخروج
+            </button>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <span class="icon">📊</span>
+                        لوحة التحكم
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="new-invoice.html" class="nav-link">
+                        <span class="icon">➕</span>
+                        فاتورة جديدة
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="invoices.html" class="nav-link">
+                        <span class="icon">📋</span>
+                        الفواتير
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="products.html" class="nav-link">
+                        <span class="icon">📦</span>
+                        المنتجات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="customers.html" class="nav-link">
+                        <span class="icon">👥</span>
+                        الزبائن
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="supplies.html" class="nav-link">
+                        <span class="icon">📥</span>
+                        التوريدات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="statistics.html" class="nav-link">
+                        <span class="icon">📈</span>
+                        الإحصائيات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html" class="nav-link active">
+                        <span class="icon">⚙️</span>
+                        الإعدادات
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>⚙️ إعدادات المحل</h2>
+                </div>
+                <div class="card-body">
+                    <form id="settingsForm" style="max-width: 600px;">
+                        <div class="form-group">
+                            <label for="storeNameInput">اسم المحل</label>
+                            <input type="text" id="storeNameInput" class="form-control" placeholder="أدخل اسم المحل">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">رقم الهاتف</label>
+                            <input type="tel" id="phone" class="form-control" placeholder="07XXXXXXXXX">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address">العنوان</label>
+                            <input type="text" id="address" class="form-control" placeholder="عنوان المحل">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="agentName">اسم المندوب</label>
+                            <input type="text" id="agentName" class="form-control" placeholder="اسم المندوب أو البائع">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="invoicePrefix">بادئة رقم الفاتورة</label>
+                            <input type="text" id="invoicePrefix" class="form-control" placeholder="مثال: INV">
+                            <small class="text-muted">سيظهر رقم الفاتورة بهذا الشكل: INV-00001</small>
+                        </div>
+
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                💾 حفظ الإعدادات
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Change Password Section -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h2>🔐 تغيير كلمة المرور</h2>
+                </div>
+                <div class="card-body">
+                    <form id="passwordForm" style="max-width: 600px;">
+                        <div class="form-group">
+                            <label for="currentPassword">كلمة المرور الحالية</label>
+                            <input type="password" id="currentPassword" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="newPassword">كلمة المرور الجديدة</label>
+                            <input type="password" id="newPassword" class="form-control" required minlength="4">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmNewPassword">تأكيد كلمة المرور الجديدة</label>
+                            <input type="password" id="confirmNewPassword" class="form-control" required minlength="4">
+                        </div>
+
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-warning">
+                                🔑 تغيير كلمة المرور
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Data Management -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h2>💾 إدارة البيانات</h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        ⚠️ تحذير: البيانات مخزنة في المتصفح فقط. عند مسح بيانات المتصفح ستُفقد جميع البيانات.
+                    </div>
+
+                    <div class="d-flex gap-2" style="flex-wrap: wrap; margin-top: 16px;">
+                        <button class="btn btn-secondary" onclick="exportData()">
+                            📤 تصدير البيانات
+                        </button>
+                        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">
+                            📥 استيراد البيانات
+                        </button>
+                        <input type="file" id="importFile" accept=".json" style="display: none;"
+                            onchange="importData(event)">
+                        <button class="btn btn-danger" onclick="clearAllData()">
+                            🗑️ مسح جميع البيانات
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // حماية الصفحة
+        if (!App.protectPage()) {
+            throw new Error('Unauthorized');
+        }
+
+        // تحميل الإعدادات
+        function loadSettings() {
+            const settings = App.getSettings();
+
+            document.getElementById('storeName').textContent = settings.storeName;
+            document.getElementById('storeNameInput').value = settings.storeName;
+            document.getElementById('phone').value = settings.phone || '';
+            document.getElementById('address').value = settings.address || '';
+            document.getElementById('agentName').value = settings.agentName || '';
+            document.getElementById('invoicePrefix').value = settings.invoicePrefix || 'INV';
+        }
+
+        // حفظ الإعدادات
+        document.getElementById('settingsForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const settings = {
+                storeName: document.getElementById('storeNameInput').value.trim() || 'المحل',
+                phone: document.getElementById('phone').value.trim(),
+                address: document.getElementById('address').value.trim(),
+                agentName: document.getElementById('agentName').value.trim(),
+                invoicePrefix: document.getElementById('invoicePrefix').value.trim() || 'INV'
+            };
+
+            App.saveSettings(settings);
+            document.getElementById('storeName').textContent = settings.storeName;
+            Utils.showAlert('تم حفظ الإعدادات بنجاح', 'success');
+        });
+
+        // تغيير كلمة المرور
+        document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+            // التحقق من كلمة المرور الحالية
+            const isValid = await App.verifyPassword(currentPassword);
+            if (!isValid) {
+                Utils.showAlert('كلمة المرور الحالية غير صحيحة', 'danger');
+                return;
+            }
+
+            // التحقق من تطابق كلمة المرور الجديدة
+            if (newPassword !== confirmNewPassword) {
+                Utils.showAlert('كلمة المرور الجديدة غير متطابقة', 'danger');
+                return;
+            }
+
+            // التحقق من طول كلمة المرور
+            if (newPassword.length < 4) {
+                Utils.showAlert('كلمة المرور يجب أن تكون 4 أحرف على الأقل', 'danger');
+                return;
+            }
+
+            // تحديث كلمة المرور
+            await App.setupPassword(newPassword);
+            Utils.showAlert('تم تغيير كلمة المرور بنجاح', 'success');
+
+            // مسح النموذج
+            document.getElementById('passwordForm').reset();
+        });
+
+        // تصدير البيانات
+        function exportData() {
+            const data = {
+                settings: App.getSettings(),
+                products: App.getProducts(),
+                customers: App.getCustomers(),
+                invoices: App.getInvoices(),
+                supplies: App.getSupplies(),
+                invoiceNumber: localStorage.getItem(App.KEYS.INVOICE_NUMBER),
+                exportDate: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `store-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            Utils.showAlert('تم تصدير البيانات بنجاح', 'success');
+        }
+
+        // استيراد البيانات
+        async function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const confirmed = await Utils.confirm('سيتم استبدال جميع البيانات الحالية. هل تريد المتابعة؟');
+            if (!confirmed) {
+                event.target.value = '';
+                return;
+            }
+
+            try {
+                const text = await file.text();
+                const data = JSON.parse(text);
+
+                // استعادة البيانات
+                if (data.settings) App.saveSettings(data.settings);
+                if (data.products) App.saveProducts(data.products);
+                if (data.customers) App.saveCustomers(data.customers);
+                if (data.invoices) App.saveInvoices(data.invoices);
+                if (data.supplies) App.saveSupplies(data.supplies);
+                if (data.invoiceNumber) localStorage.setItem(App.KEYS.INVOICE_NUMBER, data.invoiceNumber);
+
+                Utils.showAlert('تم استيراد البيانات بنجاح', 'success');
+                loadSettings();
+            } catch (error) {
+                Utils.showAlert('خطأ في قراءة الملف', 'danger');
+            }
+
+            event.target.value = '';
+        }
+
+        // مسح جميع البيانات
+        async function clearAllData() {
+            const confirmed = await Utils.confirm('هل أنت متأكد من مسح جميع البيانات؟ هذا الإجراء لا يمكن التراجع عنه!');
+            if (!confirmed) return;
+
+            const doubleConfirm = await Utils.confirm('تأكيد نهائي: سيتم مسح جميع المنتجات والفواتير والزبائن. هل تريد المتابعة؟');
+            if (!doubleConfirm) return;
+
+            // مسح جميع البيانات ما عدا كلمة المرور والجلسة
+            localStorage.removeItem(App.KEYS.SETTINGS);
+            localStorage.removeItem(App.KEYS.PRODUCTS);
+            localStorage.removeItem(App.KEYS.CUSTOMERS);
+            localStorage.removeItem(App.KEYS.INVOICES);
+            localStorage.removeItem(App.KEYS.SUPPLIES);
+            localStorage.removeItem(App.KEYS.INVOICE_NUMBER);
+
+            // إعادة الإعدادات الافتراضية
+            App.saveSettings({
+                storeName: 'المحل',
+                phone: '',
+                address: '',
+                agentName: '',
+                invoicePrefix: 'INV'
+            });
+            localStorage.setItem(App.KEYS.INVOICE_NUMBER, '1');
+
+            Utils.showAlert('تم مسح جميع البيانات', 'success');
+            loadSettings();
+        }
+
+        // تحميل الصفحة
+        loadSettings();
+    </script>
+</body>
+
+</html>

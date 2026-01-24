@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الإحصائيات - نظام إدارة المحل</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1>🏪 <span id="storeName">نظام إدارة المحل</span></h1>
+        <div class="header-actions">
+            <span id="currentDate"></span>
+            <button class="btn" onclick="App.logout()">
+                🚪 تسجيل الخروج
+            </button>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <span class="icon">📊</span>
+                        لوحة التحكم
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="new-invoice.html" class="nav-link">
+                        <span class="icon">➕</span>
+                        فاتورة جديدة
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="invoices.html" class="nav-link">
+                        <span class="icon">📋</span>
+                        الفواتير
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="products.html" class="nav-link">
+                        <span class="icon">📦</span>
+                        المنتجات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="customers.html" class="nav-link">
+                        <span class="icon">👥</span>
+                        الزبائن
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="supplies.html" class="nav-link">
+                        <span class="icon">📥</span>
+                        التوريدات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="statistics.html" class="nav-link active">
+                        <span class="icon">📈</span>
+                        الإحصائيات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html" class="nav-link">
+                        <span class="icon">⚙️</span>
+                        الإعدادات
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Filters -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h2>🔍 الفترة الزمنية</h2>
+                </div>
+                <div class="card-body">
+                    <div class="filters-bar">
+                        <button class="btn btn-primary" onclick="setPeriod('today')">اليوم</button>
+                        <button class="btn btn-secondary" onclick="setPeriod('week')">هذا الأسبوع</button>
+                        <button class="btn btn-secondary" onclick="setPeriod('month')">هذا الشهر</button>
+                        <button class="btn btn-secondary" onclick="setPeriod('year')">هذه السنة</button>
+                        <button class="btn btn-secondary" onclick="toggleCustomPeriod()">فترة مخصصة</button>
+                    </div>
+                    <div id="customPeriod" class="hidden" style="margin-top: 20px;">
+                        <div class="d-flex gap-2" style="flex-wrap: wrap;">
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label for="startDate">من تاريخ</label>
+                                <input type="date" id="startDate" class="form-control">
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label for="endDate">إلى تاريخ</label>
+                                <input type="date" id="endDate" class="form-control">
+                            </div>
+                            <div class="form-group" style="align-self: flex-end;">
+                                <button class="btn btn-success" onclick="applyCustomPeriod()">
+                                    تطبيق
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">📋</div>
+                    <div class="stat-info">
+                        <h3 id="statInvoices">0</h3>
+                        <p>عدد الفواتير</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">💰</div>
+                    <div class="stat-info">
+                        <h3 id="statSales">0 د.ع</h3>
+                        <p>إجمالي المبيعات</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">📦</div>
+                    <div class="stat-info">
+                        <h3 id="statCost">0 د.ع</h3>
+                        <p>إجمالي التكلفة</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                        📈
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="statProfit">0 د.ع</h3>
+                        <p>صافي الربح</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Products -->
+            <div class="card" style="margin-top: 24px;">
+                <div class="card-header">
+                    <h2>🏆 المنتجات الأكثر مبيعاً</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>المنتج</th>
+                                    <th>الكمية المباعة</th>
+                                    <th>إجمالي المبيعات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topProductsTable">
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">
+                                        لا توجد بيانات للفترة المحددة
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // حماية الصفحة
+        if (!App.protectPage()) {
+            throw new Error('Unauthorized');
+        }
+
+        let currentStartDate = null;
+        let currentEndDate = null;
+
+        // تحميل البيانات
+        function loadPage() {
+            // تحميل اسم المحل
+            const settings = App.getSettings();
+            document.getElementById('storeName').textContent = settings.storeName;
+
+            // عرض التاريخ
+            document.getElementById('currentDate').textContent = Utils.formatDate(new Date());
+
+            // تعيين الفترة الافتراضية (اليوم)
+            setPeriod('today');
+        }
+
+        // تعيين الفترة
+        function setPeriod(period) {
+            const now = new Date();
+
+            switch (period) {
+                case 'today':
+                    currentStartDate = Utils.getStartOfDay(now);
+                    currentEndDate = Utils.getEndOfDay(now);
+                    break;
+                case 'week':
+                    currentStartDate = new Date(now);
+                    currentStartDate.setDate(now.getDate() - 7);
+                    currentStartDate = Utils.getStartOfDay(currentStartDate);
+                    currentEndDate = Utils.getEndOfDay(now);
+                    break;
+                case 'month':
+                    currentStartDate = Utils.getStartOfMonth(now);
+                    currentEndDate = Utils.getEndOfMonth(now);
+                    break;
+                case 'year':
+                    currentStartDate = Utils.getStartOfYear(now);
+                    currentEndDate = Utils.getEndOfYear(now);
+                    break;
+            }
+
+            // تحديث أزرار الفلتر
+            document.querySelectorAll('.filters-bar .btn').forEach(btn => {
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-secondary');
+            });
+            event.target.classList.remove('btn-secondary');
+            event.target.classList.add('btn-primary');
+
+            // إخفاء الفترة المخصصة
+            document.getElementById('customPeriod').classList.add('hidden');
+
+            // تحديث الإحصائيات
+            updateStatistics();
+        }
+
+        // تبديل عرض الفترة المخصصة
+        function toggleCustomPeriod() {
+            const customPeriod = document.getElementById('customPeriod');
+            customPeriod.classList.toggle('hidden');
+
+            // تحديث أزرار الفلتر
+            document.querySelectorAll('.filters-bar .btn').forEach(btn => {
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-secondary');
+            });
+            event.target.classList.remove('btn-secondary');
+            event.target.classList.add('btn-primary');
+        }
+
+        // تطبيق الفترة المخصصة
+        function applyCustomPeriod() {
+            const startDateInput = document.getElementById('startDate').value;
+            const endDateInput = document.getElementById('endDate').value;
+
+            if (!startDateInput || !endDateInput) {
+                Utils.showAlert('يرجى تحديد تاريخ البداية والنهاية', 'danger');
+                return;
+            }
+
+            currentStartDate = Utils.getStartOfDay(new Date(startDateInput));
+            currentEndDate = Utils.getEndOfDay(new Date(endDateInput));
+
+            if (currentStartDate > currentEndDate) {
+                Utils.showAlert('تاريخ البداية يجب أن يكون قبل تاريخ النهاية', 'danger');
+                return;
+            }
+
+            updateStatistics();
+        }
+
+        // تحديث الإحصائيات
+        function updateStatistics() {
+            const stats = App.getStatistics(currentStartDate, currentEndDate);
+
+            // تحديث البطاقات
+            document.getElementById('statInvoices').textContent = stats.invoiceCount;
+            document.getElementById('statSales').textContent = Utils.formatCurrency(stats.totalSales);
+            document.getElementById('statCost').textContent = Utils.formatCurrency(stats.totalCost);
+            document.getElementById('statProfit').textContent = Utils.formatCurrency(stats.profit);
+
+            // تحديث جدول المنتجات الأكثر مبيعاً
+            displayTopProducts(stats.topProducts);
+        }
+
+        // عرض المنتجات الأكثر مبيعاً
+        function displayTopProducts(topProducts) {
+            const tbody = document.getElementById('topProductsTable');
+
+            if (topProducts.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">
+                            لا توجد بيانات للفترة المحددة
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = topProducts.map((product, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${product.productName}</td>
+                    <td class="stock-ok">${product.quantity}</td>
+                    <td class="stock-ok">${Utils.formatCurrency(product.total)}</td>
+                </tr>
+            `).join('');
+        }
+
+        loadPage();
+    </script>
+</body>
+
+</html>

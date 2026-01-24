@@ -1,0 +1,32 @@
+# ملفات التكوين الحساسة
+js/config.js
+.env
+.env.local
+
+# ملفات النظام
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# مجلدات IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ملفات مؤقتة
+*.log
+*.tmp
+*.bak
+*.cache
+
+# Node modules (إذا تم استخدامها لاحقاً)
+node_modules/
+package-lock.json
+yarn.lock
+
+# ملفات البناء
+dist/
+build/
+.cache/

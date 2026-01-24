@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المنتجات - نظام إدارة المحل</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1>🏪 <span id="storeName">نظام إدارة المحل</span></h1>
+        <div class="header-actions">
+            <button class="btn" onclick="App.logout()">
+                🚪 تسجيل الخروج
+            </button>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <span class="icon">📊</span>
+                        لوحة التحكم
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="new-invoice.html" class="nav-link">
+                        <span class="icon">➕</span>
+                        فاتورة جديدة
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="invoices.html" class="nav-link">
+                        <span class="icon">📋</span>
+                        الفواتير
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="products.html" class="nav-link active">
+                        <span class="icon">📦</span>
+                        المنتجات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="customers.html" class="nav-link">
+                        <span class="icon">👥</span>
+                        الزبائن
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="supplies.html" class="nav-link">
+                        <span class="icon">📥</span>
+                        التوريدات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="statistics.html" class="nav-link">
+                        <span class="icon">📈</span>
+                        الإحصائيات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html" class="nav-link">
+                        <span class="icon">⚙️</span>
+                        الإعدادات
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>📦 إدارة المنتجات</h2>
+                    <button class="btn btn-primary" onclick="openProductModal()">
+                        ➕ إضافة منتج
+                    </button>
+                </div>
+                <div class="card-body">
+                    <!-- Search -->
+                    <div class="filters-bar">
+                        <div class="search-box">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" id="searchInput" placeholder="البحث عن منتج..."
+                                onkeyup="filterProducts()">
+                        </div>
+                    </div>
+
+                    <!-- Products Table -->
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>الاسم</th>
+                                    <th>SKU</th>
+                                    <th>سعر الشراء</th>
+                                    <th>سعر البيع</th>
+                                    <th>المخزون</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTable">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">
+                                        لا توجد منتجات بعد
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">إضافة منتج جديد</h3>
+                <button class="modal-close" onclick="closeProductModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <input type="hidden" id="productId">
+
+                    <div class="form-group">
+                        <label for="productName">اسم المنتج *</label>
+                        <input type="text" id="productName" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productSku">SKU (اختياري)</label>
+                        <input type="text" id="productSku" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="purchasePrice">سعر الشراء *</label>
+                        <input type="number" id="purchasePrice" class="form-control" min="0" step="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="salePrice">سعر البيع *</label>
+                        <input type="number" id="salePrice" class="form-control" min="0" step="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stock">الكمية في المخزون *</label>
+                        <input type="number" id="stock" class="form-control" min="0" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="saveProduct()">
+                    💾 حفظ
+                </button>
+                <button class="btn btn-secondary" onclick="closeProductModal()">
+                    إلغاء
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Adjustment Modal -->
+    <div class="modal-overlay" id="stockModal">
+        <div class="modal" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>تعديل المخزون</h3>
+                <button class="modal-close" onclick="closeStockModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <p id="stockProductName" style="font-weight: 600; margin-bottom: 16px;"></p>
+                <input type="hidden" id="stockProductId">
+
+                <div class="form-group">
+                    <label>الكمية الحالية</label>
+                    <input type="text" id="currentStock" class="form-control" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>تعديل الكمية (+ للزيادة، - للإنقاص)</label>
+                    <input type="number" id="stockAdjustment" class="form-control" placeholder="مثال: 10 أو -5">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="adjustStock()">
+                    ✓ تطبيق
+                </button>
+                <button class="btn btn-secondary" onclick="closeStockModal()">
+                    إلغاء
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // حماية الصفحة
+        if (!App.protectPage()) {
+            throw new Error('Unauthorized');
+        }
+
+        // تحميل اسم المحل
+        document.getElementById('storeName').textContent = App.getSettings().storeName;
+
+        // تحميل المنتجات
+        function loadProducts() {
+            const products = App.getProducts();
+            const tbody = document.getElementById('productsTable');
+
+            if (products.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">
+                            لا توجد منتجات بعد
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = products.map(p => `
+                <tr data-name="${p.name.toLowerCase()}">
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.sku || '-'}</td>
+                    <td>${Utils.formatCurrency(p.purchasePrice)}</td>
+                    <td>${Utils.formatCurrency(p.salePrice)}</td>
+                    <td>
+                        <span class="${p.stock <= 5 ? 'stock-low' : 'stock-ok'}">
+                            ${p.stock}
+                        </span>
+                    </td>
+                    <td class="actions">
+                        <button class="btn btn-sm btn-secondary" onclick="openStockModal('${p.id}')" title="تعديل المخزون">
+                            📦
+                        </button>
+                        <button class="btn btn-sm btn-primary" onclick="editProduct('${p.id}')" title="تعديل">
+                            ✏️
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteProduct('${p.id}')" title="حذف">
+                            🗑️
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // فلترة المنتجات
+        function filterProducts() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#productsTable tr[data-name]');
+
+            rows.forEach(row => {
+                const name = row.dataset.name;
+                row.style.display = name.includes(query) ? '' : 'none';
+            });
+        }
+
+        // فتح نافذة إضافة/تعديل منتج
+        function openProductModal(product = null) {
+            document.getElementById('productModal').classList.add('active');
+            document.getElementById('productForm').reset();
+
+            if (product) {
+                document.getElementById('modalTitle').textContent = 'تعديل المنتج';
+                document.getElementById('productId').value = product.id;
+                document.getElementById('productName').value = product.name;
+                document.getElementById('productSku').value = product.sku || '';
+                document.getElementById('purchasePrice').value = product.purchasePrice;
+                document.getElementById('salePrice').value = product.salePrice;
+                document.getElementById('stock').value = product.stock;
+            } else {
+                document.getElementById('modalTitle').textContent = 'إضافة منتج جديد';
+                document.getElementById('productId').value = '';
+            }
+        }
+
+        // إغلاق نافذة المنتج
+        function closeProductModal() {
+            document.getElementById('productModal').classList.remove('active');
+        }
+
+        // حفظ المنتج
+        function saveProduct() {
+            const id = document.getElementById('productId').value;
+            const productData = {
+                name: document.getElementById('productName').value.trim(),
+                sku: document.getElementById('productSku').value.trim(),
+                purchasePrice: parseFloat(document.getElementById('purchasePrice').value) || 0,
+                salePrice: parseFloat(document.getElementById('salePrice').value) || 0,
+                stock: parseInt(document.getElementById('stock').value) || 0
+            };
+
+            if (!productData.name) {
+                Utils.showAlert('يرجى إدخال اسم المنتج', 'danger');
+                return;
+            }
+
+            if (id) {
+                App.updateProduct(id, productData);
+                Utils.showAlert('تم تحديث المنتج بنجاح', 'success');
+            } else {
+                App.addProduct(productData);
+                Utils.showAlert('تم إضافة المنتج بنجاح', 'success');
+            }
+
+            closeProductModal();
+            loadProducts();
+        }
+
+        // تعديل منتج
+        function editProduct(id) {
+            const product = App.getProductById(id);
+            if (product) {
+                openProductModal(product);
+            }
+        }
+
+        // حذف منتج
+        async function deleteProduct(id) {
+            const product = App.getProductById(id);
+            const confirmed = await Utils.confirm(`هل أنت متأكد من حذف "${product.name}"؟`);
+
+            if (confirmed) {
+                App.deleteProduct(id);
+                Utils.showAlert('تم حذف المنتج', 'success');
+                loadProducts();
+            }
+        }
+
+        // فتح نافذة تعديل المخزون
+        function openStockModal(id) {
+            const product = App.getProductById(id);
+            if (!product) return;
+
+            document.getElementById('stockModal').classList.add('active');
+            document.getElementById('stockProductId').value = id;
+            document.getElementById('stockProductName').textContent = product.name;
+            document.getElementById('currentStock').value = product.stock;
+            document.getElementById('stockAdjustment').value = '';
+        }
+
+        // إغلاق نافذة المخزون
+        function closeStockModal() {
+            document.getElementById('stockModal').classList.remove('active');
+        }
+
+        // تعديل المخزون
+        function adjustStock() {
+            const id = document.getElementById('stockProductId').value;
+            const adjustment = parseInt(document.getElementById('stockAdjustment').value) || 0;
+
+            if (adjustment === 0) {
+                Utils.showAlert('يرجى إدخال كمية التعديل', 'warning');
+                return;
+            }
+
+            const product = App.getProductById(id);
+            const newStock = product.stock + adjustment;
+
+            if (newStock < 0) {
+                Utils.showAlert('لا يمكن أن يكون المخزون سالباً', 'danger');
+                return;
+            }
+
+            App.updateProduct(id, { stock: newStock });
+            Utils.showAlert(`تم تعديل المخزون: ${product.stock} → ${newStock}`, 'success');
+            closeStockModal();
+            loadProducts();
+        }
+
+        // تحميل الصفحة
+        loadProducts();
+    </script>
+</body>
+
+</html>

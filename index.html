@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - نظام إدارة المحل</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="icon">🏪</div>
+            <h1>نظام إدارة المحل</h1>
+            <p>قم بتسجيل الدخول للوصول إلى لوحة التحكم</p>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="password">كلمة المرور</label>
+                    <input type="password" id="password" class="form-control" placeholder="أدخل كلمة المرور" required>
+                </div>
+
+                <div id="errorMessage" class="alert alert-danger hidden"></div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    تسجيل الدخول
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // التحقق من عدم وجود كلمة مرور
+        if (!App.hasPassword()) {
+            window.location.href = 'setup.html';
+        }
+
+        // التحقق من وجود جلسة
+        if (App.isAuthenticated()) {
+            window.location.href = 'dashboard.html';
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('errorMessage');
+
+            // إخفاء رسالة الخطأ
+            errorDiv.classList.add('hidden');
+
+            // التحقق من كلمة المرور
+            const isValid = await App.verifyPassword(password);
+
+            if (isValid) {
+                // إنشاء جلسة
+                App.createSession();
+
+                Utils.showAlert('تم تسجيل الدخول بنجاح!', 'success');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 500);
+            } else {
+                errorDiv.textContent = 'كلمة المرور غير صحيحة';
+                errorDiv.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>

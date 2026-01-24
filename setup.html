@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إعداد كلمة المرور - نظام إدارة المحل</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="icon">🔐</div>
+            <h1>مرحباً بك!</h1>
+            <p>قم بإعداد كلمة المرور للوصول إلى نظام إدارة المحل</p>
+            
+            <form id="setupForm">
+                <div class="form-group">
+                    <label for="password">كلمة المرور</label>
+                    <input type="password" id="password" class="form-control" 
+                           placeholder="أدخل كلمة المرور" required minlength="4">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">تأكيد كلمة المرور</label>
+                    <input type="password" id="confirmPassword" class="form-control" 
+                           placeholder="أعد إدخال كلمة المرور" required minlength="4">
+                </div>
+                
+                <div id="errorMessage" class="alert alert-danger hidden"></div>
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    إعداد كلمة المرور
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // التحقق من وجود كلمة مرور مسبقاً
+        if (App.hasPassword()) {
+            window.location.href = 'index.html';
+        }
+
+        document.getElementById('setupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorDiv = document.getElementById('errorMessage');
+            
+            // إخفاء رسالة الخطأ
+            errorDiv.classList.add('hidden');
+            
+            // التحقق من تطابق كلمة المرور
+            if (password !== confirmPassword) {
+                errorDiv.textContent = 'كلمة المرور غير متطابقة';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            
+            // التحقق من طول كلمة المرور
+            if (password.length < 4) {
+                errorDiv.textContent = 'كلمة المرور يجب أن تكون 4 أحرف على الأقل';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            
+            // إعداد كلمة المرور
+            await App.setupPassword(password);
+            
+            // التحويل لصفحة تسجيل الدخول
+            Utils.showAlert('تم إعداد كلمة المرور بنجاح!', 'success');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

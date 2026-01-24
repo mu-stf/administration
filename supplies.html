@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التوريدات - نظام إدارة المحل</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1>🏪 <span id="storeName">نظام إدارة المحل</span></h1>
+        <div class="header-actions">
+            <span id="currentDate"></span>
+            <button class="btn" onclick="App.logout()">
+                🚪 تسجيل الخروج
+            </button>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <span class="icon">📊</span>
+                        لوحة التحكم
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="new-invoice.html" class="nav-link">
+                        <span class="icon">➕</span>
+                        فاتورة جديدة
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="invoices.html" class="nav-link">
+                        <span class="icon">📋</span>
+                        الفواتير
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="products.html" class="nav-link">
+                        <span class="icon">📦</span>
+                        المنتجات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="customers.html" class="nav-link">
+                        <span class="icon">👥</span>
+                        الزبائن
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="supplies.html" class="nav-link active">
+                        <span class="icon">📥</span>
+                        التوريدات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="statistics.html" class="nav-link">
+                        <span class="icon">📈</span>
+                        الإحصائيات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html" class="nav-link">
+                        <span class="icon">⚙️</span>
+                        الإعدادات
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Add Supply Form -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h2>📥 إضافة توريد جديد</h2>
+                </div>
+                <div class="card-body">
+                    <form id="supplyForm">
+                        <div class="d-flex gap-2" style="flex-wrap: wrap;">
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label for="productSelect">المنتج *</label>
+                                <select id="productSelect" class="form-control" required>
+                                    <option value="">اختر المنتج</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 150px;">
+                                <label for="quantity">الكمية *</label>
+                                <input type="number" id="quantity" class="form-control" min="1" required>
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 150px;">
+                                <label for="purchasePrice">سعر الشراء (للوحدة) *</label>
+                                <input type="number" id="purchasePrice" class="form-control" min="0" step="0.01"
+                                    required>
+                            </div>
+                            <div class="form-group" style="flex: 2; min-width: 200px;">
+                                <label for="notes">ملاحظات</label>
+                                <input type="text" id="notes" class="form-control" placeholder="ملاحظات اختيارية">
+                            </div>
+                            <div class="form-group" style="align-self: flex-end;">
+                                <button type="submit" class="btn btn-success">
+                                    ➕ إضافة توريد
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Supplies List -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>📋 سجل التوريدات</h2>
+                    <div class="filters-bar" style="margin: 0;">
+                        <div class="search-box">
+                            <input type="text" id="searchSupplies" placeholder="بحث في التوريدات...">
+                            <span class="search-icon">🔍</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>التاريخ</th>
+                                    <th>المنتج</th>
+                                    <th>الكمية</th>
+                                    <th>سعر الشراء</th>
+                                    <th>الإجمالي</th>
+                                    <th>ملاحظات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="suppliesTable">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">
+                                        لا توجد توريدات بعد
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // حماية الصفحة
+        if (!App.protectPage()) {
+            throw new Error('Unauthorized');
+        }
+
+        // تحميل البيانات
+        function loadPage() {
+            // تحميل اسم المحل
+            const settings = App.getSettings();
+            document.getElementById('storeName').textContent = settings.storeName;
+
+            // عرض التاريخ
+            document.getElementById('currentDate').textContent = Utils.formatDate(new Date());
+
+            // تحميل المنتجات في القائمة المنسدلة
+            loadProducts();
+
+            // عرض التوريدات
+            displaySupplies();
+        }
+
+        // تحميل المنتجات
+        function loadProducts() {
+            const products = App.getProducts();
+            const select = document.getElementById('productSelect');
+
+            select.innerHTML = '<option value="">اختر المنتج</option>';
+            products.forEach(product => {
+                const option = document.createElement('option');
+                option.value = product.id;
+                option.textContent = `${product.name} (المخزون الحالي: ${product.stock})`;
+                select.appendChild(option);
+            });
+        }
+
+        // عرض التوريدات
+        function displaySupplies(filter = '') {
+            const supplies = App.getSupplies();
+            const tbody = document.getElementById('suppliesTable');
+
+            // فلترة التوريدات
+            const filteredSupplies = supplies.filter(supply => {
+                if (!filter) return true;
+                const searchLower = filter.toLowerCase();
+                return supply.productName.toLowerCase().includes(searchLower) ||
+                    (supply.notes && supply.notes.toLowerCase().includes(searchLower));
+            });
+
+            // ترتيب حسب التاريخ (الأحدث أولاً)
+            filteredSupplies.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            if (filteredSupplies.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">
+                            ${filter ? 'لا توجد نتائج للبحث' : 'لا توجد توريدات بعد'}
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filteredSupplies.map(supply => {
+                const total = supply.quantity * supply.purchasePrice;
+                return `
+                    <tr>
+                        <td>${Utils.formatDateTime(supply.date)}</td>
+                        <td>${supply.productName}</td>
+                        <td>${supply.quantity}</td>
+                        <td>${Utils.formatCurrency(supply.purchasePrice)}</td>
+                        <td class="stock-ok">${Utils.formatCurrency(total)}</td>
+                        <td>${supply.notes || '-'}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // إضافة توريد جديد
+        document.getElementById('supplyForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const productId = document.getElementById('productSelect').value;
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const purchasePrice = parseFloat(document.getElementById('purchasePrice').value);
+            const notes = document.getElementById('notes').value.trim();
+
+            if (!productId) {
+                Utils.showAlert('يرجى اختيار المنتج', 'danger');
+                return;
+            }
+
+            const product = App.getProductById(productId);
+            if (!product) {
+                Utils.showAlert('المنتج غير موجود', 'danger');
+                return;
+            }
+
+            // إضافة التوريد
+            const supply = App.addSupply({
+                productId: productId,
+                productName: product.name,
+                quantity: quantity,
+                purchasePrice: purchasePrice,
+                notes: notes
+            });
+
+            Utils.showAlert('تم إضافة التوريد بنجاح', 'success');
+
+            // إعادة تعيين النموذج
+            document.getElementById('supplyForm').reset();
+
+            // تحديث العرض
+            loadProducts();
+            displaySupplies();
+        });
+
+        // البحث في التوريدات
+        document.getElementById('searchSupplies').addEventListener('input', (e) => {
+            displaySupplies(e.target.value);
+        });
+
+        // التحقق من معامل URL للمنتج المحدد
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('product');
+        if (productId) {
+            document.getElementById('productSelect').value = productId;
+            document.getElementById('quantity').focus();
+        }
+
+        loadPage();
+    </script>
+</body>
+
+</html>

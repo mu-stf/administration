@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فاتورة جديدة - نظام إدارة المحل</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1>🏪 <span id="storeName">نظام إدارة المحل</span></h1>
+        <div class="header-actions">
+            <button class="btn" onclick="App.logout()">
+                🚪 تسجيل الخروج
+            </button>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <span class="icon">📊</span>
+                        لوحة التحكم
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="new-invoice.html" class="nav-link active">
+                        <span class="icon">➕</span>
+                        فاتورة جديدة
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="invoices.html" class="nav-link">
+                        <span class="icon">📋</span>
+                        الفواتير
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="products.html" class="nav-link">
+                        <span class="icon">📦</span>
+                        المنتجات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="customers.html" class="nav-link">
+                        <span class="icon">👥</span>
+                        الزبائن
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="supplies.html" class="nav-link">
+                        <span class="icon">📥</span>
+                        التوريدات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="statistics.html" class="nav-link">
+                        <span class="icon">📈</span>
+                        الإحصائيات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html" class="nav-link">
+                        <span class="icon">⚙️</span>
+                        الإعدادات
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>➕ فاتورة جديدة</h2>
+                    <span id="invoiceNumber" class="badge badge-info" style="font-size: 16px;"></span>
+                </div>
+                <div class="card-body">
+                    <!-- Customer Selection -->
+                    <div class="form-group" style="max-width: 400px;">
+                        <label for="customerSelect">الزبون (اختياري)</label>
+                        <select id="customerSelect" class="form-control">
+                            <option value="">-- بدون زبون --</option>
+                        </select>
+                    </div>
+
+                    <!-- Add Product -->
+                    <div class="quick-add">
+                        <div class="form-group flex-1">
+                            <label for="productSelect">المنتج</label>
+                            <select id="productSelect" class="form-control">
+                                <option value="">-- اختر منتج --</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="width: 120px;">
+                            <label for="quantity">الكمية</label>
+                            <input type="number" id="quantity" class="form-control" value="1" min="1">
+                        </div>
+                        <button class="btn btn-primary" onclick="addItem()" style="margin-bottom: 0;">
+                            ➕ إضافة
+                        </button>
+                    </div>
+
+                    <!-- Invoice Items -->
+                    <div class="invoice-items" id="invoiceItems">
+                        <div class="empty-state" id="emptyState">
+                            <div class="icon">📝</div>
+                            <h3>لا توجد منتجات</h3>
+                            <p>قم بإضافة منتجات للفاتورة</p>
+                        </div>
+                    </div>
+
+                    <!-- Invoice Summary -->
+                    <div class="invoice-summary" id="invoiceSummary" style="display: none;">
+                        <div class="row">
+                            <span>عدد المنتجات:</span>
+                            <span id="itemCount">0</span>
+                        </div>
+                        <div class="row total-row">
+                            <span>الإجمالي:</span>
+                            <span id="totalAmount">0 د.ع</span>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="form-group mt-3">
+                        <label for="notes">ملاحظات (اختياري)</label>
+                        <textarea id="notes" class="form-control" rows="2"
+                            placeholder="أي ملاحظات إضافية..."></textarea>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-flex gap-2 mt-3">
+                        <button class="btn btn-success" onclick="saveInvoice()" id="saveBtn" disabled>
+                            💾 حفظ الفاتورة
+                        </button>
+                        <button class="btn btn-secondary" onclick="clearInvoice()">
+                            🗑️ مسح الكل
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // حماية الصفحة
+        if (!App.protectPage()) {
+            throw new Error('Unauthorized');
+        }
+
+        // المتغيرات العامة
+        let invoiceItems = [];
+        let products = [];
+
+        // تحميل البيانات
+        function loadData() {
+            const settings = App.getSettings();
+            document.getElementById('storeName').textContent = settings.storeName;
+            document.getElementById('invoiceNumber').textContent = App.getNextInvoiceNumber();
+
+            // تحميل الزبائن
+            const customers = App.getCustomers();
+            const customerSelect = document.getElementById('customerSelect');
+            customers.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.id;
+                option.textContent = c.name + (c.phone ? ` (${c.phone})` : '');
+                customerSelect.appendChild(option);
+            });
+
+            // تحميل المنتجات
+            products = App.getProducts().filter(p => p.stock > 0);
+            const productSelect = document.getElementById('productSelect');
+            products.forEach(p => {
+                const option = document.createElement('option');
+                option.value = p.id;
+                option.textContent = `${p.name} - ${Utils.formatCurrency(p.salePrice)} (متوفر: ${p.stock})`;
+                productSelect.appendChild(option);
+            });
+        }
+
+        // إضافة منتج للفاتورة
+        function addItem() {
+            const productId = document.getElementById('productSelect').value;
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+
+            if (!productId) {
+                Utils.showAlert('يرجى اختيار منتج', 'warning');
+                return;
+            }
+
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            // التحقق من الكمية المتاحة
+            const existingItem = invoiceItems.find(i => i.productId === productId);
+            const totalQuantity = (existingItem ? existingItem.quantity : 0) + quantity;
+
+            if (totalQuantity > product.stock) {
+                Utils.showAlert(`الكمية المطلوبة أكثر من المتوفر (${product.stock})`, 'danger');
+                return;
+            }
+
+            if (existingItem) {
+                existingItem.quantity = totalQuantity;
+            } else {
+                invoiceItems.push({
+                    productId: product.id,
+                    productName: product.name,
+                    quantity: quantity,
+                    salePrice: product.salePrice,
+                    purchasePrice: product.purchasePrice
+                });
+            }
+
+            // إعادة تعيين الإدخال
+            document.getElementById('productSelect').value = '';
+            document.getElementById('quantity').value = 1;
+
+            renderItems();
+        }
+
+        // عرض المنتجات
+        function renderItems() {
+            const container = document.getElementById('invoiceItems');
+            const emptyState = document.getElementById('emptyState');
+            const summary = document.getElementById('invoiceSummary');
+            const saveBtn = document.getElementById('saveBtn');
+
+            if (invoiceItems.length === 0) {
+                container.innerHTML = '';
+                container.appendChild(emptyState);
+                emptyState.style.display = 'block';
+                summary.style.display = 'none';
+                saveBtn.disabled = true;
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            saveBtn.disabled = false;
+            summary.style.display = 'block';
+
+            container.innerHTML = invoiceItems.map((item, index) => `
+                <div class="invoice-item">
+                    <span class="product-name">${item.productName}</span>
+                    <div class="quantity-control">
+                        <button onclick="updateQuantity(${index}, -1)">−</button>
+                        <span>${item.quantity}</span>
+                        <button onclick="updateQuantity(${index}, 1)">+</button>
+                    </div>
+                    <span class="item-total">${Utils.formatCurrency(item.salePrice * item.quantity)}</span>
+                    <span class="remove-btn" onclick="removeItem(${index})">🗑️</span>
+                </div>
+            `).join('');
+
+            // حساب الإجمالي
+            const total = invoiceItems.reduce((sum, item) => sum + (item.salePrice * item.quantity), 0);
+            document.getElementById('itemCount').textContent = invoiceItems.length;
+            document.getElementById('totalAmount').textContent = Utils.formatCurrency(total);
+        }
+
+        // تحديث الكمية
+        function updateQuantity(index, change) {
+            const item = invoiceItems[index];
+            const product = products.find(p => p.id === item.productId);
+            const newQuantity = item.quantity + change;
+
+            if (newQuantity < 1) {
+                removeItem(index);
+                return;
+            }
+
+            if (newQuantity > product.stock) {
+                Utils.showAlert(`الحد الأقصى المتوفر: ${product.stock}`, 'warning');
+                return;
+            }
+
+            item.quantity = newQuantity;
+            renderItems();
+        }
+
+        // حذف منتج
+        function removeItem(index) {
+            invoiceItems.splice(index, 1);
+            renderItems();
+        }
+
+        // مسح الكل
+        function clearInvoice() {
+            invoiceItems = [];
+            document.getElementById('customerSelect').value = '';
+            document.getElementById('notes').value = '';
+            renderItems();
+        }
+
+        // حفظ الفاتورة
+        async function saveInvoice() {
+            if (invoiceItems.length === 0) {
+                Utils.showAlert('يرجى إضافة منتجات للفاتورة', 'warning');
+                return;
+            }
+
+            const customerSelect = document.getElementById('customerSelect');
+            const customer = customerSelect.value ?
+                App.getCustomerById(customerSelect.value) : null;
+
+            const total = invoiceItems.reduce((sum, item) =>
+                sum + (item.salePrice * item.quantity), 0
+            );
+
+            const invoiceData = {
+                customerId: customer ? customer.id : null,
+                customerName: customer ? customer.name : null,
+                items: invoiceItems.map(item => ({ ...item })),
+                total: total,
+                notes: document.getElementById('notes').value.trim()
+            };
+
+            const invoice = App.createInvoice(invoiceData);
+
+            Utils.showAlert('تم حفظ الفاتورة بنجاح!', 'success');
+
+            // إعادة تعيين الصفحة
+            setTimeout(() => {
+                window.location.href = `print-invoice.html?id=${invoice.id}`;
+            }, 1000);
+        }
+
+        // تحميل الصفحة
+        loadData();
+        renderItems();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - نظام إدارة المحل</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1>🏪 <span id="storeName">نظام إدارة المحل</span></h1>
+        <div class="header-actions">
+            <span id="currentDate"></span>
+            <button class="btn" onclick="App.logout()">
+                🚪 تسجيل الخروج
+            </button>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link active">
+                        <span class="icon">📊</span>
+                        لوحة التحكم
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="new-invoice.html" class="nav-link">
+                        <span class="icon">➕</span>
+                        فاتورة جديدة
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="invoices.html" class="nav-link">
+                        <span class="icon">📋</span>
+                        الفواتير
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="products.html" class="nav-link">
+                        <span class="icon">📦</span>
+                        المنتجات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="customers.html" class="nav-link">
+                        <span class="icon">👥</span>
+                        الزبائن
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="supplies.html" class="nav-link">
+                        <span class="icon">📥</span>
+                        التوريدات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="statistics.html" class="nav-link">
+                        <span class="icon">📈</span>
+                        الإحصائيات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html" class="nav-link">
+                        <span class="icon">⚙️</span>
+                        الإعدادات
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">📋</div>
+                    <div class="stat-info">
+                        <h3 id="todayInvoices">0</h3>
+                        <p>فواتير اليوم</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">💰</div>
+                    <div class="stat-info">
+                        <h3 id="todaySales">0 د.ع</h3>
+                        <p>مبيعات اليوم</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">📈</div>
+                    <div class="stat-info">
+                        <h3 id="todayProfit">0 د.ع</h3>
+                        <p>أرباح اليوم</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon red">📦</div>
+                    <div class="stat-info">
+                        <h3 id="lowStock">0</h3>
+                        <p>منتجات منخفضة المخزون</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h2>⚡ إجراءات سريعة</h2>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex gap-2" style="flex-wrap: wrap;">
+                        <a href="new-invoice.html" class="btn btn-primary">
+                            ➕ فاتورة جديدة
+                        </a>
+                        <a href="products.html" class="btn btn-success">
+                            📦 إضافة منتج
+                        </a>
+                        <a href="supplies.html" class="btn btn-warning">
+                            📥 تسجيل توريد
+                        </a>
+                        <a href="statistics.html" class="btn btn-secondary">
+                            📊 عرض الإحصائيات
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Invoices -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h2>📋 آخر الفواتير</h2>
+                    <a href="invoices.html" class="btn btn-sm btn-secondary">عرض الكل</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>رقم الفاتورة</th>
+                                    <th>التاريخ</th>
+                                    <th>الزبون</th>
+                                    <th>الإجمالي</th>
+                                    <th>الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentInvoices">
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">
+                                        لا توجد فواتير بعد
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Low Stock Products -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>⚠️ منتجات منخفضة المخزون</h2>
+                    <a href="products.html" class="btn btn-sm btn-secondary">إدارة المنتجات</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>المنتج</th>
+                                    <th>الكمية المتبقية</th>
+                                    <th>إجراء</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lowStockProducts">
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">
+                                        لا توجد منتجات منخفضة المخزون
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // حماية الصفحة
+        if (!App.protectPage()) {
+            throw new Error('Unauthorized');
+        }
+
+        // تحميل البيانات
+        function loadDashboard() {
+            // تحميل اسم المحل
+            const settings = App.getSettings();
+            document.getElementById('storeName').textContent = settings.storeName;
+
+            // عرض التاريخ
+            document.getElementById('currentDate').textContent = Utils.formatDate(new Date());
+
+            // إحصائيات اليوم
+            const today = new Date();
+            const stats = App.getStatistics(
+                Utils.getStartOfDay(today),
+                Utils.getEndOfDay(today)
+            );
+
+            document.getElementById('todayInvoices').textContent = stats.invoiceCount;
+            document.getElementById('todaySales').textContent = Utils.formatCurrency(stats.totalSales);
+            document.getElementById('todayProfit').textContent = Utils.formatCurrency(stats.profit);
+
+            // المنتجات منخفضة المخزون
+            const products = App.getProducts();
+            const lowStockProducts = products.filter(p => p.stock <= 5);
+            document.getElementById('lowStock').textContent = lowStockProducts.length;
+
+            // عرض آخر الفواتير
+            const invoices = App.getInvoices()
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5);
+
+            const invoicesTable = document.getElementById('recentInvoices');
+            if (invoices.length > 0) {
+                invoicesTable.innerHTML = invoices.map(inv => `
+                    <tr>
+                        <td><a href="print-invoice.html?id=${inv.id}">${inv.invoiceNumber}</a></td>
+                        <td>${Utils.formatDateTime(inv.date)}</td>
+                        <td>${inv.customerName || '-'}</td>
+                        <td>${Utils.formatCurrency(inv.total)}</td>
+                        <td>
+                            <span class="badge ${inv.status === 'active' ? 'badge-success' : 'badge-danger'}">
+                                ${inv.status === 'active' ? 'نشطة' : 'ملغاة'}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            // عرض المنتجات منخفضة المخزون
+            const lowStockTable = document.getElementById('lowStockProducts');
+            if (lowStockProducts.length > 0) {
+                lowStockTable.innerHTML = lowStockProducts.map(p => `
+                    <tr>
+                        <td>${p.name}</td>
+                        <td class="stock-low">${p.stock}</td>
+                        <td>
+                            <a href="supplies.html?product=${p.id}" class="btn btn-sm btn-warning">
+                                📥 توريد
+                            </a>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        loadDashboard();
+    </script>
+</body>
+
+</html>

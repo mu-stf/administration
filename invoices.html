@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الفواتير - نظام إدارة المحل</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1>🏪 <span id="storeName">نظام إدارة المحل</span></h1>
+        <div class="header-actions">
+            <button class="btn" onclick="App.logout()">
+                🚪 تسجيل الخروج
+            </button>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <span class="icon">📊</span>
+                        لوحة التحكم
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="new-invoice.html" class="nav-link">
+                        <span class="icon">➕</span>
+                        فاتورة جديدة
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="invoices.html" class="nav-link active">
+                        <span class="icon">📋</span>
+                        الفواتير
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="products.html" class="nav-link">
+                        <span class="icon">📦</span>
+                        المنتجات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="customers.html" class="nav-link">
+                        <span class="icon">👥</span>
+                        الزبائن
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="supplies.html" class="nav-link">
+                        <span class="icon">📥</span>
+                        التوريدات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="statistics.html" class="nav-link">
+                        <span class="icon">📈</span>
+                        الإحصائيات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html" class="nav-link">
+                        <span class="icon">⚙️</span>
+                        الإعدادات
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>📋 الفواتير السابقة</h2>
+                    <a href="new-invoice.html" class="btn btn-primary">
+                        ➕ فاتورة جديدة
+                    </a>
+                </div>
+                <div class="card-body">
+                    <!-- Filters -->
+                    <div class="filters-bar">
+                        <div class="search-box">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" id="searchInvoice" placeholder="البحث برقم الفاتورة..."
+                                onkeyup="filterInvoices()">
+                        </div>
+                        <div class="form-group mb-0">
+                            <input type="date" id="dateFrom" class="form-control" onchange="filterInvoices()">
+                        </div>
+                        <div class="form-group mb-0">
+                            <input type="date" id="dateTo" class="form-control" onchange="filterInvoices()">
+                        </div>
+                        <div class="form-group mb-0">
+                            <select id="statusFilter" class="form-control" onchange="filterInvoices()">
+                                <option value="">كل الحالات</option>
+                                <option value="active">نشطة</option>
+                                <option value="cancelled">ملغاة</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Invoices Table -->
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>رقم الفاتورة</th>
+                                    <th>التاريخ</th>
+                                    <th>الزبون</th>
+                                    <th>عدد المنتجات</th>
+                                    <th>الإجمالي</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoicesTable">
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">
+                                        لا توجد فواتير بعد
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Summary -->
+                    <div class="invoice-summary mt-3" id="summary" style="display: none;">
+                        <div class="row">
+                            <span>إجمالي الفواتير:</span>
+                            <span id="totalInvoices">0</span>
+                        </div>
+                        <div class="row">
+                            <span>الفواتير النشطة:</span>
+                            <span id="activeInvoices">0</span>
+                        </div>
+                        <div class="row total-row">
+                            <span>إجمالي المبيعات (النشطة):</span>
+                            <span id="totalSales">0 د.ع</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // حماية الصفحة
+        if (!App.protectPage()) {
+            throw new Error('Unauthorized');
+        }
+
+        // تحميل اسم المحل
+        document.getElementById('storeName').textContent = App.getSettings().storeName;
+
+        let allInvoices = [];
+
+        // تحميل الفواتير
+        function loadInvoices() {
+            allInvoices = App.getInvoices().sort((a, b) =>
+                new Date(b.date) - new Date(a.date)
+            );
+            filterInvoices();
+        }
+
+        // فلترة الفواتير
+        function filterInvoices() {
+            const search = document.getElementById('searchInvoice').value.toLowerCase();
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+            const status = document.getElementById('statusFilter').value;
+
+            let filtered = allInvoices.filter(inv => {
+                // البحث برقم الفاتورة
+                if (search && !inv.invoiceNumber.toLowerCase().includes(search)) {
+                    return false;
+                }
+
+                // فلتر التاريخ
+                const invDate = new Date(inv.date).toISOString().split('T')[0];
+                if (dateFrom && invDate < dateFrom) return false;
+                if (dateTo && invDate > dateTo) return false;
+
+                // فلتر الحالة
+                if (status && inv.status !== status) return false;
+
+                return true;
+            });
+
+            renderInvoices(filtered);
+        }
+
+        // عرض الفواتير
+        function renderInvoices(invoices) {
+            const tbody = document.getElementById('invoicesTable');
+            const summary = document.getElementById('summary');
+
+            if (invoices.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            لا توجد فواتير
+                        </td>
+                    </tr>
+                `;
+                summary.style.display = 'none';
+                return;
+            }
+
+            summary.style.display = 'block';
+
+            tbody.innerHTML = invoices.map(inv => `
+                <tr>
+                    <td>
+                        <a href="print-invoice.html?id=${inv.id}">
+                            <strong>${inv.invoiceNumber}</strong>
+                        </a>
+                    </td>
+                    <td>${Utils.formatDateTime(inv.date)}</td>
+                    <td>${inv.customerName || '-'}</td>
+                    <td>${inv.items.length}</td>
+                    <td>${Utils.formatCurrency(inv.total)}</td>
+                    <td>
+                        <span class="badge ${inv.status === 'active' ? 'badge-success' : 'badge-danger'}">
+                            ${inv.status === 'active' ? 'نشطة' : 'ملغاة'}
+                        </span>
+                    </td>
+                    <td class="actions">
+                        <a href="print-invoice.html?id=${inv.id}" class="btn btn-sm btn-secondary" title="طباعة">
+                            🖨️
+                        </a>
+                        ${inv.status === 'active' ? `
+                            <button class="btn btn-sm btn-danger" onclick="cancelInvoice('${inv.id}')" title="إلغاء">
+                                ❌
+                            </button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('');
+
+            // حساب الإحصائيات
+            const activeInvoices = invoices.filter(i => i.status === 'active');
+            const totalSales = activeInvoices.reduce((sum, i) => sum + i.total, 0);
+
+            document.getElementById('totalInvoices').textContent = invoices.length;
+            document.getElementById('activeInvoices').textContent = activeInvoices.length;
+            document.getElementById('totalSales').textContent = Utils.formatCurrency(totalSales);
+        }
+
+        // إلغاء فاتورة
+        async function cancelInvoice(id) {
+            const invoice = App.getInvoiceById(id);
+            const confirmed = await Utils.confirm(
+                `هل أنت متأكد من إلغاء الفاتورة "${invoice.invoiceNumber}"؟\n` +
+                `سيتم إرجاع المنتجات للمخزون.`
+            );
+
+            if (confirmed) {
+                App.cancelInvoice(id);
+                Utils.showAlert('تم إلغاء الفاتورة وإرجاع المخزون', 'success');
+                loadInvoices();
+            }
+        }
+
+        // تحميل الصفحة
+        loadInvoices();
+    </script>
+</body>
+
+</html>
