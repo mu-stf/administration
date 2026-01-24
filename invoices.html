@@ -112,6 +112,7 @@
                         <td><span class="badge ${inv.status === 'active' ? 'badge-success' : 'badge-danger'}">${inv.status === 'active' ? 'نشطة' : 'ملغاة'}</span></td>
                         <td class="actions">
                             <a href="print-invoice.html?id=${inv.id}" class="btn btn-sm btn-secondary" title="طباعة">🖨️</a>
+                            ${inv.status === 'active' ? `<a href="edit-invoice.html?id=${inv.id}" class="btn btn-sm btn-primary" title="تعديل">✏️</a>` : ''}
                             ${inv.status === 'active' ? `<button class="btn btn-sm btn-danger" onclick="cancelInvoice('${inv.id}')" title="إلغاء">❌</button>` : ''}
                         </td>
                     </tr>

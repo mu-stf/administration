@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>التوريدات - نظام إدارة المحل</title>
+    <title>فواتير الشراء - نظام إدارة المحل</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -28,17 +28,17 @@
                 <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">📊</span>لوحة
                         التحكم</a></li>
                 <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">➕</span>فاتورة
-                        جديدة</a></li>
-                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">📋</span>الفواتير</a>
-                </li>
+                        مبيعات</a></li>
+                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">📋</span>فواتير
+                        المبيعات</a></li>
                 <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">📦</span>المنتجات</a>
                 </li>
                 <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">👥</span>الزبائن</a>
                 </li>
                 <li class="nav-item"><a href="customer-accounts.html" class="nav-link"><span
-                            class="icon">💰</span>حسابات</a></li>
-                <li class="nav-item"><a href="supplies.html" class="nav-link active"><span
-                            class="icon">📥</span>التوريدات</a></li>
+                            class="icon">💰</span>حسابات الزبائن</a></li>
+                <li class="nav-item"><a href="supplies.html" class="nav-link active"><span class="icon">📥</span>فواتير
+                        الشراء</a></li>
                 <li class="nav-item"><a href="statistics.html" class="nav-link"><span
                             class="icon">📈</span>الإحصائيات</a></li>
                 <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">⚙️</span>الإعدادات</a>
@@ -47,27 +47,55 @@
         </nav>
 
         <main class="main-content">
-            <div class="card">
+            <!-- الموردين -->
+            <div class="card" style="margin-bottom: 20px;">
                 <div class="card-header">
-                    <h2>📥 إدارة التوريدات</h2>
-                    <button class="btn btn-primary" onclick="openSupplyModal()">➕ إضافة توريد</button>
+                    <h2>🏢 الموردين</h2>
+                    <button class="btn btn-primary" onclick="openSupplierModal()">➕ إضافة مورد</button>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>التاريخ</th>
-                                    <th>المنتج</th>
-                                    <th>الكمية</th>
-                                    <th>سعر الشراء</th>
-                                    <th>الإجمالي</th>
-                                    <th>ملاحظات</th>
+                                    <th>اسم المورد</th>
+                                    <th>الهاتف</th>
+                                    <th>الرصيد</th>
+                                    <th>الإجراءات</th>
                                 </tr>
                             </thead>
-                            <tbody id="suppliesTable">
+                            <tbody id="suppliersTable">
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted">لا توجد توريدات بعد</td>
+                                    <td colspan="4" class="text-center text-muted">لا يوجد موردين</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- فواتير الشراء -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>📥 فواتير الشراء</h2>
+                    <a href="new-purchase-invoice.html" class="btn btn-success">➕ فاتورة شراء جديدة</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>رقم الفاتورة</th>
+                                    <th>التاريخ</th>
+                                    <th>المورد</th>
+                                    <th>الإجمالي</th>
+                                    <th>نوع الدفع</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoicesTable">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">لا توجد فواتير شراء</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -77,45 +105,30 @@
         </main>
     </div>
 
-    <!-- نافذة إضافة توريد -->
-    <div class="modal-overlay" id="supplyModal">
+    <!-- Modal إضافة مورد -->
+    <div class="modal-overlay" id="supplierModal">
         <div class="modal">
             <div class="modal-header">
-                <h3>إضافة توريد جديد</h3>
-                <button class="modal-close" onclick="closeSupplyModal()">×</button>
+                <h3>إضافة مورد جديد</h3>
+                <button class="modal-close" onclick="closeSupplierModal()">×</button>
             </div>
             <div class="modal-body">
-                <form id="supplyForm">
-                    <div class="form-group">
-                        <label>المنتج *</label>
-                        <select id="productId" class="form-control" required onchange="updatePriceFromProduct()">
-                            <option value="">اختر منتج...</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>الكمية *</label>
-                        <input type="number" id="quantity" class="form-control" min="1" required
-                            oninput="calculateTotal()">
-                    </div>
-                    <div class="form-group">
-                        <label>سعر الشراء (للوحدة) *</label>
-                        <input type="number" id="purchasePrice" class="form-control" min="0" step="100" required
-                            oninput="calculateTotal()">
-                    </div>
-                    <div class="form-group">
-                        <label>الإجمالي</label>
-                        <input type="text" id="totalCost" class="form-control" readonly
-                            style="background: #f1f5f9; font-weight: 600;">
-                    </div>
-                    <div class="form-group">
-                        <label>ملاحظات</label>
-                        <textarea id="notes" class="form-control" rows="2"></textarea>
-                    </div>
-                </form>
+                <div class="form-group">
+                    <label>اسم المورد *</label>
+                    <input type="text" id="supplierName" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>رقم الهاتف</label>
+                    <input type="text" id="supplierPhone" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>العنوان</label>
+                    <textarea id="supplierAddress" class="form-control" rows="2"></textarea>
+                </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" onclick="saveSupply()">💾 حفظ</button>
-                <button class="btn btn-secondary" onclick="closeSupplyModal()">إلغاء</button>
+                <button class="btn btn-primary" onclick="saveSupplier()">💾 حفظ</button>
+                <button class="btn btn-secondary" onclick="closeSupplierModal()">إلغاء</button>
             </div>
         </div>
     </div>
@@ -124,11 +137,10 @@
     <script src="js/config.js"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/page-protection.js"></script>
-    <script src="js/utils.js"></script>
     <script>
         let currentUser = null;
-        let products = [];
-        let supplies = [];
+        let suppliers = [];
+        let invoices = [];
 
         protectPage().then(authorized => { if (authorized) loadPage(); });
 
@@ -137,113 +149,131 @@
             currentUser = user;
             document.getElementById('storeName').textContent = profile.store_name;
 
-            products = await SupabaseDB.getProducts(user.id);
-            await loadSupplies();
-
-            // ملء dropdown المنتجات
-            const productSelect = document.getElementById('productId');
-            productSelect.innerHTML = '<option value="">اختر منتج...</option>' +
-                products.map(p => `<option value="${p.id}" data-price="${p.purchase_price}">${p.name} (مخزون حالي: ${p.stock})</option>`).join('');
-
+            await loadSuppliers();
+            await loadInvoices();
             hideLoading();
         }
 
-        async function loadSupplies() {
+        async function loadSuppliers() {
             try {
-                supplies = await SupabaseDB.getSupplies(currentUser.id);
-                renderSupplies();
+                suppliers = await SupabaseDB.getSuppliers(currentUser.id);
+                renderSuppliers();
             } catch (error) {
-                console.error('خطأ في تحميل التوريدات:', error);
-                alert('حدث خطأ في تحميل التوريدات');
+                console.error('خطأ في تحميل الموردين:', error);
             }
         }
 
-        function renderSupplies() {
-            const tbody = document.getElementById('suppliesTable');
-            if (supplies.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">لا توجد توريدات بعد</td></tr>';
+        function renderSuppliers() {
+            const tbody = document.getElementById('suppliersTable');
+            if (suppliers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">لا يوجد موردين</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = supplies.map(s => {
-                const product = products.find(p => p.id === s.product_id);
-                const productName = product ? product.name : s.product_id;
-                const total = s.quantity * s.purchase_price;
-
+            tbody.innerHTML = suppliers.map(s => {
+                const balanceColor = (s.balance || 0) > 0 ? '#dc2626' : '#10b981';
                 return `
                     <tr>
-                        <td>${new Date(s.date).toLocaleDateString('ar-IQ')}</td>
-                        <td><strong>${productName}</strong></td>
-                        <td>${s.quantity}</td>
-                        <td>${s.purchase_price.toLocaleString()} د.ع</td>
-                        <td><strong>${total.toLocaleString()} د.ع</strong></td>
-                        <td>${s.notes || '-'}</td>
+                        <td><strong>${s.name}</strong></td>
+                        <td>${s.phone || '-'}</td>
+                        <td style="color:${balanceColor}; font-weight:600;">${(s.balance || 0).toLocaleString()} د.ع</td>
+                        <td class="actions">
+                            ${(s.balance || 0) > 0 ? `<button class="btn btn-sm btn-success" onclick='paySupplier(${JSON.stringify(s).replace(/'/g, "&apos;")})'>💰 تسديد</button>` : ''}
+                        </td>
                     </tr>
                 `;
             }).join('');
         }
 
-        function openSupplyModal() {
-            if (products.length === 0) {
-                alert('يرجى إضافة منتجات أولاً!');
-                window.location.href = 'products.html';
+        async function loadInvoices() {
+            try {
+                const allSupplies = await SupabaseDB.getSupplies(currentUser.id);
+                invoices = allSupplies.filter(s => s.invoice_number); // فقط الفواتير الجديدة
+                renderInvoices();
+            } catch (error) {
+                console.error('خطأ في تحميل الفواتير:', error);
+            }
+        }
+
+        function renderInvoices() {
+            const tbody = document.getElementById('invoicesTable');
+            if (invoices.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">لا توجد فواتير شراء</td></tr>';
                 return;
             }
-            document.getElementById('supplyModal').classList.add('active');
-            document.getElementById('supplyForm').reset();
-            document.getElementById('totalCost').value = '0 د.ع';
+
+            tbody.innerHTML = invoices.map(inv => {
+                const paymentBadge = inv.payment_type === 'cash' ?
+                    '<span class="badge badge-success">نقد</span>' :
+                    '<span class="badge badge-warning">آجل</span>';
+
+                return `
+                    <tr>
+                        <td><strong>${inv.invoice_number}</strong></td>
+                        <td>${new Date(inv.date).toLocaleDateString('ar-IQ')}</td>
+                        <td>${inv.supplier_name || 'بدون مورد'}</td>
+                        <td><strong>${(inv.total || 0).toLocaleString()} د.ع</strong></td>
+                        <td>${paymentBadge}</td>
+                        <td class="actions">
+                            <button class="btn btn-sm btn-secondary" title="عرض">👁️</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
-        function closeSupplyModal() {
-            document.getElementById('supplyModal').classList.remove('active');
+        function openSupplierModal() {
+            document.getElementById('supplierModal').classList.add('active');
+            document.getElementById('supplierName').value = '';
+            document.getElementById('supplierPhone').value = '';
+            document.getElementById('supplierAddress').value = '';
         }
 
-        function updatePriceFromProduct() {
-            const select = document.getElementById('productId');
-            const selectedOption = select.options[select.selectedIndex];
-            if (selectedOption && selectedOption.value) {
-                const price = selectedOption.getAttribute('data-price') || 0;
-                document.getElementById('purchasePrice').value = price;
-                calculateTotal();
-            }
+        function closeSupplierModal() {
+            document.getElementById('supplierModal').classList.remove('active');
         }
 
-        function calculateTotal() {
-            const quantity = parseInt(document.getElementById('quantity').value) || 0;
-            const price = parseFloat(document.getElementById('purchasePrice').value) || 0;
-            const total = quantity * price;
-            document.getElementById('totalCost').value = total.toLocaleString() + ' د.ع';
-        }
-
-        async function saveSupply() {
-            const productId = document.getElementById('productId').value;
-            const quantity = parseInt(document.getElementById('quantity').value);
-            const purchasePrice = parseFloat(document.getElementById('purchasePrice').value);
-            const notes = document.getElementById('notes').value.trim();
-
-            if (!productId || !quantity || !purchasePrice) {
-                alert('يرجى تعبئة جميع الحقول المطلوبة');
+        async function saveSupplier() {
+            const name = document.getElementById('supplierName').value.trim();
+            if (!name) {
+                alert('أدخل اسم المورد');
                 return;
             }
 
             try {
-                const supplyData = {
-                    product_id: productId,
-                    quantity: quantity,
-                    purchase_price: purchasePrice,
-                    date: new Date().toISOString(),
-                    notes: notes
+                const supplierData = {
+                    name: name,
+                    phone: document.getElementById('supplierPhone').value.trim(),
+                    address: document.getElementById('supplierAddress').value.trim()
                 };
 
-                await SupabaseDB.addSupply(currentUser.id, supplyData);
-                alert('✅ تم إضافة التوريد بنجاح!');
-                closeSupplyModal();
-                await loadSupplies();
-
-                // تحديث قائمة المنتجات
-                products = await SupabaseDB.getProducts(currentUser.id);
+                await SupabaseDB.addSupplier(currentUser.id, supplierData);
+                alert('✅ تم إضافة المورد بنجاح!');
+                closeSupplierModal();
+                await loadSuppliers();
             } catch (error) {
-                console.error('خطأ في حفظ التوريد:', error);
+                console.error('خطأ في إضافة المورد:', error);
+                alert('حدث خطأ: ' + error.message);
+            }
+        }
+
+        async function paySupplier(supplier) {
+            const amount = prompt(`تسديد للمورد: ${supplier.name}\nالرصيد الحالي: ${(supplier.balance || 0).toLocaleString()} د.ع\n\nأدخل المبلغ المدفوع:`);
+
+            if (!amount || parseFloat(amount) <= 0) return;
+
+            try {
+                await SupabaseDB.addSupplierPayment(currentUser.id, {
+                    supplier_id: supplier.id,
+                    amount: parseFloat(amount),
+                    notes: 'تسديد',
+                    payment_date: new Date().toISOString()
+                });
+
+                alert('✅ تم التسديد بنجاح!');
+                await loadSuppliers();
+            } catch (error) {
+                console.error('خطأ في التسديد:', error);
                 alert('حدث خطأ: ' + error.message);
             }
         }

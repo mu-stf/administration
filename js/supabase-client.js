@@ -308,6 +308,87 @@ const SupabaseDB = {
         return data;
     },
 
+    async updateInvoice(invoiceId, newInvoiceData, newItems) {
+        // 1. الحصول على الفاتورة القديمة
+        const { data: oldInvoice } = await this.client
+            .from('invoices')
+            .select('*, invoice_items(*)')
+            .eq('id', invoiceId)
+            .single();
+
+        if (!oldInvoice) throw new Error('الفاتورة غير موجودة');
+        if (oldInvoice.status === 'cancelled') throw new Error('لا يمكن تعديل فاتورة ملغاة');
+
+        // 2. إرجاع المخزون القديم
+        for (const item of oldInvoice.invoice_items) {
+            if (item.product_id) {
+                const product = await this.getProductById(item.product_id);
+                await this.updateProduct(item.product_id, {
+                    stock: product.stock + item.quantity
+                });
+            }
+        }
+
+        // 3. إرجاع الرصيد القديم
+        if (oldInvoice.payment_type === 'credit' && oldInvoice.customer_id && oldInvoice.remaining_amount > 0) {
+            const { data: customer } = await this.client
+                .from('customers')
+                .select('balance')
+                .eq('id', oldInvoice.customer_id)
+                .single();
+
+            if (customer) {
+                await this.updateCustomer(oldInvoice.customer_id, {
+                    balance: (customer.balance || 0) - oldInvoice.remaining_amount
+                });
+            }
+        }
+
+        // 4. حذف البنود القديمة
+        await this.client.from('invoice_items').delete().eq('invoice_id', invoiceId);
+
+        // 5. تحديث الفاتورة
+        const { data: updatedInvoice } = await this.client
+            .from('invoices')
+            .update(newInvoiceData)
+            .eq('id', invoiceId)
+            .select()
+            .single();
+
+        // 6. إضافة البنود الجديدة
+        const itemsWithInvoiceId = newItems.map(item => ({ ...item, invoice_id: invoiceId }));
+        const { data: newItemsData } = await this.client
+            .from('invoice_items')
+            .insert(itemsWithInvoiceId)
+            .select();
+
+        // 7. خصم المخزون الجديد
+        for (const item of newItems) {
+            if (item.product_id) {
+                const product = await this.getProductById(item.product_id);
+                if (product.stock < item.quantity) throw new Error(`المخزون غير كافي: ${product.name}`);
+                await this.updateProduct(item.product_id, { stock: product.stock - item.quantity });
+            }
+        }
+
+        // 8. إضافة الرصيد الجديد
+        if (newInvoiceData.payment_type === 'credit' && newInvoiceData.customer_id && newInvoiceData.remaining_amount > 0) {
+            const { data: customer } = await this.client
+                .from('customers')
+                .select('balance')
+                .eq('id', newInvoiceData.customer_id)
+                .single();
+
+            if (customer) {
+                await this.updateCustomer(newInvoiceData.customer_id, {
+                    balance: (customer.balance || 0) + newInvoiceData.remaining_amount
+                });
+            }
+        }
+
+        return { ...updatedInvoice, invoice_items: newItemsData };
+    },
+
     // ===== التوريدات =====
 
     async getSupplies(userId) {
@@ -336,6 +417,143 @@ const SupabaseDB = {
             stock: product.stock + supply.quantity,
             purchase_price: supply.purchase_price
         });
+
+        return data;
+    },
+
+    // ===== الموردين (Suppliers) =====
+
+    async getSuppliers(userId) {
+        const { data, error } = await this.client
+            .from('suppliers')
+            .select('*')
+            .eq('user_id', userId)
+            .order('name');
+
+        if (error) throw error;
+        return data || [];
+    },
+
+    async addSupplier(userId, supplier) {
+        const { data, error } = await this.client
+            .from('suppliers')
+            .insert([{ ...supplier, user_id: userId }])
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    },
+
+    async updateSupplier(supplierId, updates) {
+        const { data, error } = await this.client
+            .from('suppliers')
+            .update(updates)
+            .eq('id', supplierId)
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    },
+
+    async deleteSupplier(supplierId) {
+        const { error } = await this.client
+            .from('suppliers')
+            .delete()
+            .eq('id', supplierId);
+
+        if (error) throw error;
+    },
+
+    // ===== فواتير الشراء (Purchase Invoices) =====
+
+    async createPurchaseInvoice(userId, invoiceData, items) {
+        // إنشاء فاتورة الشراء
+        const { data: supplyData, error: supplyError } = await this.client
+            .from('supplies')
+            .insert([{ ...invoiceData, user_id: userId }])
+            .select()
+            .single();
+
+        if (supplyError) throw supplyError;
+
+        // إضافة البنود
+        const itemsWithSupplyId = items.map(item => ({
+            ...item,
+            supply_id: supplyData.id
+        }));
+
+        const { data: itemsData, error: itemsError } = await this.client
+            .from('supply_items')
+            .insert(itemsWithSupplyId)
+            .select();
+
+        if (itemsError) throw itemsError;
+
+        // تحديث المخزون
+        for (const item of items) {
+            if (item.product_id) {
+                const product = await this.getProductById(item.product_id);
+                await this.updateProduct(item.product_id, {
+                    stock: product.stock + item.quantity,
+                    purchase_price: item.purchase_price
+                });
+            }
+        }
+
+        // إذا آجل، تحديث balance المورد
+        if (invoiceData.payment_type === 'credit' && invoiceData.supplier_id && invoiceData.remaining_amount > 0) {
+            const { data: supplier } = await this.client
+                .from('suppliers')
+                .select('balance')
+                .eq('id', invoiceData.supplier_id)
+                .single();
+
+            if (supplier) {
+                await this.updateSupplier(invoiceData.supplier_id, {
+                    balance: (supplier.balance || 0) + invoiceData.remaining_amount
+                });
+            }
+        }
+
+        return { ...supplyData, supply_items: itemsData };
+    },
+
+    async getSupplierPayments(supplierId) {
+        const { data, error } = await this.client
+            .from('supplier_payments')
+            .select('*, supplies(invoice_number)')
+            .eq('supplier_id', supplierId)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return data || [];
+    },
+
+    async addSupplierPayment(userId, payment) {
+        const { data, error } = await this.client
+            .from('supplier_payments')
+            .insert([{ ...payment, user_id: userId }])
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        // تحديث balance المورد
+        if (payment.supplier_id && payment.amount > 0) {
+            const { data: supplier } = await this.client
+                .from('suppliers')
+                .select('balance')
+                .eq('id', payment.supplier_id)
+                .single();
+
+            if (supplier) {
+                await this.updateSupplier(payment.supplier_id, {
+                    balance: (supplier.balance || 0) - payment.amount
+                });
+            }
+        }
 
         return data;
     },
