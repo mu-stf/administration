@@ -1,51 +1,71 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>تسجيل الدخول - نظام إدارة المحل</title>
-    <link rel="stylesheet" href="css/style.css">
-</head>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
 
-<body>
+  <body>
     <!-- Loading Overlay -->
-    <div id="loadingOverlay"
-        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
-        <div style="text-align: center;">
-            <div style="font-size: 48px; margin-bottom: 20px;">🏪</div>
-            <div style="font-size: 18px; color: #666;">جاري التحميل...</div>
-        </div>
+    <div
+      id="loadingOverlay"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #f5f5f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      "
+    >
+      <div style="text-align: center">
+        <div style="font-size: 48px; margin-bottom: 20px">🏪</div>
+        <div style="font-size: 18px; color: #666">جاري التحميل...</div>
+      </div>
     </div>
 
-    <div class="auth-container" style="opacity: 0; transition: opacity 0.3s;">
-        <div class="auth-box">
-            <div class="icon">🏪</div>
-            <h1>نظام إدارة المحل</h1>
-            <p>قم بتسجيل الدخول للوصول إلى لوحة التحكم</p>
+    <div class="auth-container" style="opacity: 0; transition: opacity 0.3s">
+      <div class="auth-box">
+        <div class="icon">🏪</div>
+        <h1>نظام إدارة المحل</h1>
+        <p>قم بتسجيل الدخول للوصول إلى لوحة التحكم</p>
 
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="email">البريد الإلكتروني</label>
-                    <input type="email" id="email" class="form-control" placeholder="example@email.com" required>
-                </div>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="email">البريد الإلكتروني</label>
+            <input
+              type="email"
+              id="email"
+              class="form-control"
+              placeholder="example@email.com"
+              required
+            />
+          </div>
 
-                <div class="form-group">
-                    <label for="password">كلمة المرور</label>
-                    <input type="password" id="password" class="form-control" placeholder="أدخل كلمة المرور" required>
-                </div>
+          <div class="form-group">
+            <label for="password">كلمة المرور</label>
+            <input
+              type="password"
+              id="password"
+              class="form-control"
+              placeholder="أدخل كلمة المرور"
+              required
+            />
+          </div>
 
-                <div id="errorMessage" class="alert alert-danger hidden"></div>
+          <div id="errorMessage" class="alert alert-danger hidden"></div>
 
-                <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
-                    تسجيل الدخول
-                </button>
-
-                <div style="text-align: center; margin-top: 20px;">
-                    <p>ليس لديك حساب؟ <a href="register.html">إنشاء حساب جديد</a></p>
-                </div>
-            </form>
-        </div>
+          <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
+            تسجيل الدخول
+          </button>
+        </form>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -54,93 +74,94 @@
     <script src="js/utils.js"></script>
 
     <script>
-        // حماية من infinite loops
-        const redirectFlag = sessionStorage.getItem('redirect_from_login');
+      // حماية من infinite loops
+      const redirectFlag = sessionStorage.getItem("redirect_from_login");
+      if (redirectFlag) {
+        sessionStorage.removeItem("redirect_from_login");
+      }
+
+      // التحقق من وجود Supabase config
+      if (typeof SUPABASE_CONFIG === "undefined") {
+        document.getElementById("errorMessage").textContent =
+          "خطأ: لم يتم العثور على ملف التكوين. الرجاء إنشاء js/config.js";
+        document.getElementById("errorMessage").classList.remove("hidden");
+        document.getElementById("loginBtn").disabled = true;
+      }
+
+      // التحقق من وجود جلسة نشطة (فقط مرة واحدة)
+      async function checkSession() {
         if (redirectFlag) {
-            sessionStorage.removeItem('redirect_from_login');
+          hideLoading();
+          return;
         }
 
-        // التحقق من وجود Supabase config
-        if (typeof SUPABASE_CONFIG === 'undefined') {
-            document.getElementById('errorMessage').textContent = 'خطأ: لم يتم العثور على ملف التكوين. الرجاء إنشاء js/config.js';
-            document.getElementById('errorMessage').classList.remove('hidden');
-            document.getElementById('loginBtn').disabled = true;
+        try {
+          const session = await SupabaseDB.getSession();
+          if (session) {
+            console.log("جلسة نشطة موجودة، التحويل إلى dashboard");
+            sessionStorage.setItem("redirect_from_login", "true");
+            window.location.href = "dashboard.html";
+          } else {
+            hideLoading();
+          }
+        } catch (error) {
+          console.log("لا توجد جلسة نشطة");
+          hideLoading();
         }
+      }
 
-        // التحقق من وجود جلسة نشطة (فقط مرة واحدة)
-        async function checkSession() {
-            if (redirectFlag) {
-                hideLoading();
-                return;
+      function hideLoading() {
+        const overlay = document.getElementById("loadingOverlay");
+        const container = document.querySelector(".auth-container");
+
+        if (overlay) overlay.style.display = "none";
+        if (container) container.style.opacity = "1";
+      }
+
+      checkSession();
+
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+          const errorDiv = document.getElementById("errorMessage");
+          const loginBtn = document.getElementById("loginBtn");
+
+          // إخفاء رسالة الخطأ
+          errorDiv.classList.add("hidden");
+
+          try {
+            loginBtn.disabled = true;
+            loginBtn.textContent = "جاري تسجيل الدخول...";
+
+            // تسجيل الدخول عبر Supabase
+            const { user, session } = await SupabaseDB.signIn(email, password);
+
+            // الانتقال إلى لوحة التحكم
+            window.location.href = "dashboard.html";
+          } catch (error) {
+            console.error("خطأ في تسجيل الدخول:", error);
+
+            let errorMessage = "خطأ في تسجيل الدخول";
+
+            if (error.message.includes("Invalid login credentials")) {
+              errorMessage = "البريد الإلكتروني أو كلمة المرور غير صحيحة";
+            } else if (error.message.includes("Email not confirmed")) {
+              errorMessage = "يرجى تأكيد بريدك الإلكتروني أولاً";
+            } else {
+              errorMessage = error.message;
             }
 
-            try {
-                const session = await SupabaseDB.getSession();
-                if (session) {
-                    console.log('جلسة نشطة موجودة، التحويل إلى dashboard');
-                    sessionStorage.setItem('redirect_from_login', 'true');
-                    window.location.href = 'dashboard.html';
-                } else {
-                    hideLoading();
-                }
-            } catch (error) {
-                console.log('لا توجد جلسة نشطة');
-                hideLoading();
-            }
-        }
+            errorDiv.textContent = errorMessage;
+            errorDiv.classList.remove("hidden");
 
-        function hideLoading() {
-            const overlay = document.getElementById('loadingOverlay');
-            const container = document.querySelector('.auth-container');
-
-            if (overlay) overlay.style.display = 'none';
-            if (container) container.style.opacity = '1';
-        }
-
-        checkSession();
-
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const errorDiv = document.getElementById('errorMessage');
-            const loginBtn = document.getElementById('loginBtn');
-
-            // إخفاء رسالة الخطأ
-            errorDiv.classList.add('hidden');
-
-            try {
-                loginBtn.disabled = true;
-                loginBtn.textContent = 'جاري تسجيل الدخول...';
-
-                // تسجيل الدخول عبر Supabase
-                const { user, session } = await SupabaseDB.signIn(email, password);
-
-                // الانتقال إلى لوحة التحكم
-                window.location.href = 'dashboard.html';
-
-            } catch (error) {
-                console.error('خطأ في تسجيل الدخول:', error);
-
-                let errorMessage = 'خطأ في تسجيل الدخول';
-
-                if (error.message.includes('Invalid login credentials')) {
-                    errorMessage = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
-                } else if (error.message.includes('Email not confirmed')) {
-                    errorMessage = 'يرجى تأكيد بريدك الإلكتروني أولاً';
-                } else {
-                    errorMessage = error.message;
-                }
-
-                errorDiv.textContent = errorMessage;
-                errorDiv.classList.remove('hidden');
-
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'تسجيل الدخول';
-            }
+            loginBtn.disabled = false;
+            loginBtn.textContent = "تسجيل الدخول";
+          }
         });
     </script>
-</body>
-
+  </body>
 </html>

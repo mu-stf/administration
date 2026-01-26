@@ -404,10 +404,10 @@
                     total: item.quantity * item.purchase_price
                 }));
 
-                await SupabaseDB.createPurchaseInvoice(currentUser.id, invoiceData, itemsWithTotal);
+                const invoice = await SupabaseDB.createPurchaseInvoice(currentUser.id, invoiceData, itemsWithTotal);
 
                 alert('✅ تم حفظ فاتورة الشراء بنجاح!');
-                window.location.href = 'supplies.html';
+                window.location.href = `print-purchase-invoice.html?id=${invoice.id}`;
             } catch (error) {
                 console.error('خطأ في حفظ الفاتورة:', error);
                 alert('حدث خطأ: ' + error.message);

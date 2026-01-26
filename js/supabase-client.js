@@ -103,6 +103,64 @@ const SupabaseDB = {
         return data;
     },
 
+    async createProfile(userId, profileData) {
+        const { data, error } = await this.client
+            .from('profiles')
+            .insert([{
+                id: userId,
+                ...profileData
+            }])
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    },
+
+    // ===== الصلاحيات (Permissions) =====
+
+    async checkIsAdmin(userId) {
+        try {
+            const { data, error } = await this.client
+                .from('profiles')
+                .select('role')
+                .eq('id', userId)
+                .single();
+
+            if (error) {
+                console.error('Error in checkIsAdmin:', error);
+                return false;
+            }
+            
+            return data?.role === 'admin';
+        } catch (err) {
+            console.error('Exception in checkIsAdmin:', err);
+            return false;
+        }
+    },
+
+    async getAllProfiles() {
+        const { data, error } = await this.client
+            .from('profiles')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return data || [];
+    },
+
+    async updateUserPermissions(userId, allowedPages) {
+        const { data, error } = await this.client
+            .from('profiles')
+            .update({ allowed_pages: allowedPages })
+            .eq('id', userId)
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    },
+
     // ===== المنتجات =====
 
     async getProducts(userId) {
@@ -667,6 +725,107 @@ const SupabaseDB = {
             topProducts
         };
     }
+};
+
+// ===== الإيصالات (Receipts) =====
+
+async function generateReceiptNumber(userId) {
+    const { data: profile, error } = await SupabaseDB.client
+        .from('profiles')
+        .select('current_receipt_number')
+        .eq('id', userId)
+        .single();
+
+    if (error) throw error;
+
+    const receiptNumber = profile.current_receipt_number || 1;
+    const paddedNumber = String(receiptNumber).padStart(4, '0');
+
+    // تحديث الرقم
+    await SupabaseDB.client
+        .from('profiles')
+        .update({ current_receipt_number: receiptNumber + 1 })
+        .eq('id', userId);
+
+    return `REC-${paddedNumber}`;
+}
+
+SupabaseDB.createReceipt = async function(userId, receiptData) {
+    const receiptNumber = await generateReceiptNumber(userId);
+    
+    const { data, error } = await this.client
+        .from('receipts')
+        .insert([{
+            ...receiptData,
+            user_id: userId,
+            receipt_number: receiptNumber
+        }])
+        .select()
+        .single();
+
+    if (error) throw error;
+
+    // تحديث رصيد الزبون أو المورد
+    if (receiptData.entity_type === 'customer' && receiptData.entity_id) {
+        const { data: customer } = await this.client
+            .from('customers')
+            .select('balance')
+            .eq('id', receiptData.entity_id)
+            .single();
+
+        if (customer) {
+            // قبض من زبون = تقليل الرصيد
+            await this.updateCustomer(receiptData.entity_id, {
+                balance: (customer.balance || 0) - receiptData.amount
+            });
+        }
+    } else if (receiptData.entity_type === 'supplier' && receiptData.entity_id) {
+        const { data: supplier } = await this.client
+            .from('suppliers')
+            .select('balance')
+            .eq('id', receiptData.entity_id)
+            .single();
+
+        if (supplier) {
+            // دفع لمورد = تقليل الرصيد
+            await this.updateSupplier(receiptData.entity_id, {
+                balance: (supplier.balance || 0) - receiptData.amount
+            });
+        }
+    }
+
+    return data;
+};
+
+SupabaseDB.getReceipts = async function(userId, filters = {}) {
+    let query = this.client
+        .from('receipts')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+    if (filters.type) {
+        query = query.eq('receipt_type', filters.type);
+    }
+
+    if (filters.entityType) {
+        query = query.eq('entity_type', filters.entityType);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
+};
+
+SupabaseDB.getReceiptById = async function(receiptId) {
+    const { data, error } = await this.client
+        .from('receipts')
+        .select('*')
+        .eq('id', receiptId)
+        .single();
+
+    if (error) throw error;
+    return data;
 };
 
 // تصدير للاستخدام العام

@@ -215,7 +215,7 @@
                         <td><strong>${(inv.total || 0).toLocaleString()} د.ع</strong></td>
                         <td>${paymentBadge}</td>
                         <td class="actions">
-                            <button class="btn btn-sm btn-secondary" title="عرض">👁️</button>
+                            <a href="print-purchase-invoice.html?id=${inv.id}" class="btn btn-sm btn-secondary" title="عرض">👁️</a>
                         </td>
                     </tr>
                 `;

@@ -1,5 +1,5 @@
 # ملفات التكوين الحساسة
-
+js/config.js
 .env
 .env.local
 

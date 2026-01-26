@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إيصال جديد - نظام إدارة المحل</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
+        <div style="text-align: center;"><div style="font-size: 48px; margin-bottom: 20px;">🏪</div><div style="font-size: 18px; color: #666;">جاري التحميل...</div></div>
+    </div>
+    
+    <header class="header">
+        <h1>🏪 <span id="storeName">نظام إدارة المحل</span></h1>
+        <div class="header-actions"><button class="btn" onclick="logout()">🚪 تسجيل الخروج</button></div>
+    </header>
+
+    <div class="main-layout">
+        <nav class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">📊</span>لوحة التحكم</a></li>
+                <li class="nav-item"><a href="customer-accounts.html" class="nav-link"><span class="icon">💰</span>حسابات الزبائن</a></li>
+                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">📥</span>فواتير الشراء</a></li>
+                <li class="nav-item"><a href="receipts.html" class="nav-link active"><span class="icon">📝</span>الإيصالات</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>📝 إيصال جديد</h2>
+                </div>
+                <div class="card-body">
+                    <form id="receiptForm">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                            <div class="form-group">
+                                <label>نوع الإيصال *</label>
+                                <select id="receiptType" class="form-control" onchange="updateEntityOptions()" required>
+                                    <option value="">اختر...</option>
+                                    <option value="قبض">إيصال قبض (من الزبون)</option>
+                                    <option value="دفع">إيصال دفع (للمورد)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label id="entityLabel">الجهة *</label>
+                                <select id="entityId" class="form-control" required>
+                                    <option value="">اختر نوع الإيصال أولاً...</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>المبلغ *</label>
+                                <input type="number" id="amount" class="form-control" min="0" step="0.01" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>طريقة الدفع</label>
+                                <select id="paymentMethod" class="form-control">
+                                    <option value="نقد">نقد</option>
+                                    <option value="شيك">شيك</option>
+                                    <option value="تحويل">تحويل بنكي</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>ملاحظات</label>
+                            <textarea id="notes" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="submit" class="btn btn-success" id="saveBtn">💾 حفظ وطباعة</button>
+                            <button type="button" class="btn btn-secondary" onclick="window.location.href='receipts.html'">إلغاء</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/page-protection.js"></script>
+    <script>
+        let currentUser = null;
+        let customers = [];
+        let suppliers = [];
+
+        protectPage().then(authorized => { if (authorized) loadPage(); });
+
+        async function loadPage() {
+            const { user, profile } = await getCurrentUserData();
+            currentUser = user;
+            document.getElementById('storeName').textContent = profile.store_name;
+            
+            // تحميل الزبائن والموردين
+            customers = await SupabaseDB.getCustomers(user.id);
+            suppliers = await SupabaseDB.getSuppliers(user.id);
+            
+            hideLoading();
+        }
+
+        function updateEntityOptions() {
+            const type = document.getElementById('receiptType').value;
+            const entitySelect = document.getElementById('entityId');
+            const entityLabel = document.getElementById('entityLabel');
+
+            if (type === 'قبض') {
+                entityLabel.textContent = 'الزبون *';
+                entitySelect.innerHTML = '<option value="">اختر زبون...</option>' + 
+                    customers.map(c => `<option value="${c.id}" data-name="${c.name}">${c.name} - رصيد: ${(c.balance || 0).toLocaleString()} د.ع</option>`).join('');
+            } else if (type === 'دفع') {
+                entityLabel.textContent = 'المورد *';
+                entitySelect.innerHTML = '<option value="">اختر مورد...</option>' + 
+                    suppliers.map(s => `<option value="${s.id}" data-name="${s.name}">${s.name} - رصيد: ${(s.balance || 0).toLocaleString()} د.ع</option>`).join('');
+            } else {
+                entitySelect.innerHTML = '<option value="">اختر نوع الإيصال أولاً...</option>';
+            }
+        }
+
+        document.getElementById('receiptForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'جاري الحفظ...';
+
+            try {
+                const type = document.getElementById('receiptType').value;
+                const entityId = document.getElementById('entityId').value;
+                const entitySelect = document.getElementById('entityId');
+                const entityName = entitySelect.options[entitySelect.selectedIndex].dataset.name;
+
+                const receiptData = {
+                    receipt_type: type,
+                    entity_type: type === 'قبض' ? 'customer' : 'supplier',
+                    entity_id: entityId,
+                    entity_name: entityName,
+                    amount: parseFloat(document.getElementById('amount').value),
+                    payment_method: document.getElementById('paymentMethod').value,
+                    notes: document.getElementById('notes').value.trim()
+                };
+
+                const receipt = await SupabaseDB.createReceipt(currentUser.id, receiptData);
+
+                alert('✅ تم حفظ الإيصال بنجاح!');
+                window.location.href = `print-receipt.html?id=${receipt.id}`;
+            } catch (error) {
+                console.error('خطأ في حفظ الإيصال:', error);
+                alert('حدث خطأ: ' + error.message);
+                saveBtn.disabled = false;
+                saveBtn.textContent = '💾 حفظ وطباعة';
+            }
+        });
+    </script>
+</body>
+</html>

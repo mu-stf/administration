@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>طباعة الفاتورة</title>
+    <title>طباعة فاتورة شراء</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
         @media print {
@@ -34,14 +34,14 @@
 
         .invoice-header {
             text-align: center;
-            border-bottom: 3px solid #2563eb;
+            border-bottom: 3px solid #10b981;
             padding-bottom: 20px;
             margin-bottom: 30px;
         }
 
         .invoice-header h1 {
             font-size: 32px;
-            color: #2563eb;
+            color: #10b981;
             margin-bottom: 10px;
         }
 
@@ -79,7 +79,7 @@
         }
 
         .items-table th {
-            background: #2563eb;
+            background: #10b981;
             color: white;
             padding: 12px;
             text-align: right;
@@ -111,7 +111,7 @@
         .totals .total-row {
             font-size: 20px;
             font-weight: 700;
-            color: #2563eb;
+            color: #10b981;
             padding-top: 10px;
             border-top: 2px solid #cbd5e1;
         }
@@ -157,7 +157,7 @@
     <div class="no-print"
         style="max-width: 800px; margin: 20px auto; display: flex; gap: 10px; justify-content: flex-end;">
         <button class="btn btn-primary" onclick="window.print()">🖨️ طباعة</button>
-        <button class="btn btn-secondary" onclick="window.location.href='invoices.html'">📋 الفواتير</button>
+        <button class="btn btn-secondary" onclick="window.location.href='supplies.html'">📋 الموردين</button>
         <button class="btn btn-secondary" onclick="window.location.href='dashboard.html'">🏠 الرئيسية</button>
     </div>
 
@@ -165,6 +165,7 @@
         <div class="invoice-header">
             <h1>🏪 <span id="storeName">نظام إدارة المحل</span></h1>
             <p id="storeInfo" style="color: #64748b; margin: 0;"></p>
+            <h2 style="margin-top: 10px; color: #666;">فاتورة شراء</h2>
         </div>
 
         <div class="invoice-info">
@@ -177,8 +178,8 @@
                 <span id="invoiceDate">-</span>
             </div>
             <div class="info-item">
-                <label>اسم الزبون</label>
-                <span id="customerName">-</span>
+                <label>اسم المورد</label>
+                <span id="supplierName">-</span>
             </div>
         </div>
 
@@ -191,7 +192,7 @@
                 <tr>
                     <th width="50">#</th>
                     <th>المنتج</th>
-                    <th width="100">السعر</th>
+                    <th width="100">سعر الشراء</th>
                     <th width="80">الكمية</th>
                     <th width="120">المجموع</th>
                 </tr>
@@ -204,14 +205,6 @@
         </table>
 
         <div class="totals">
-            <div class="row">
-                <span>المجموع:</span>
-                <strong id="subtotal">0 د.ع</strong>
-            </div>
-            <div class="row">
-                <span>الخصم:</span>
-                <strong id="discount">0 د.ع</strong>
-            </div>
             <div class="row total-row">
                 <span>الإجمالي:</span>
                 <strong id="finalTotal">0 د.ع</strong>
@@ -219,7 +212,7 @@
             <div id="creditInfo"
                 style="display: none; margin-top: 16px; padding-top: 16px; border-top: 2px solid #cbd5e1;">
                 <div class="row" style="color: #6b7280;">
-                    <span>الرصيد السابق:</span>
+                    <span>الرصيد السابق للمورد:</span>
                     <strong id="previousBalance">0 د.ع</strong>
                 </div>
                 <div class="row" style="color: #10b981;">
@@ -227,18 +220,18 @@
                     <strong id="paidAmount">0 د.ع</strong>
                 </div>
                 <div class="row" style="color: #dc2626; font-size: 18px; font-weight: 700;">
-                    <span>المتبقي:</span>
+                    <span>المتبقي من الفاتورة:</span>
                     <strong id="remainingAmount">0 د.ع</strong>
                 </div>
                 <div class="row" style="color: #dc2626; font-size: 20px; font-weight: 700; padding-top: 10px; border-top: 2px solid #cbd5e1;">
-                    <span>الرصيد الجديد:</span>
+                    <span>رصيد المورد الجديد:</span>
                     <strong id="newBalance">0 د.ع</strong>
                 </div>
             </div>
         </div>
 
         <div class="footer">
-            <p>شكراً لتعاملكم معنا</p>
+            <p>تم استلام البضاعة من قبلنا</p>
             <p id="footerDate"></p>
         </div>
     </div>
@@ -259,98 +252,107 @@
                 const { user, profile } = await getCurrentUserData();
                 currentUser = user;
 
-                // الحصول على ID من URL
                 const urlParams = new URLSearchParams(window.location.search);
                 const invoiceId = urlParams.get('id');
 
                 if (!invoiceId) {
                     alert('رقم الفاتورة غير موجود!');
-                    window.location.href = 'invoices.html';
+                    window.location.href = 'supplies.html';
                     return;
                 }
 
                 // تحميل الفاتورة
-                const invoices = await SupabaseDB.getInvoices(user.id);
-                const invoice = invoices.find(inv => inv.id === invoiceId);
+                // نحتاج دالة لجلب فاتورة شراء واحدة بالتفصيل
+                const supplyInvoices = await SupabaseDB.getSupplies(user.id);
+                const invoice = supplyInvoices.find(inv => inv.id === invoiceId);
 
                 if (!invoice) {
-                    alert('الفاتورة غير موجودة!');
-                    window.location.href = 'invoices.html';
-                    return;
-                }
-
-                // عرض البيانات
-                document.getElementById('storeName').textContent = profile.store_name;
-                document.getElementById('storeInfo').textContent =
-                    `${profile.phone || ''} • ${profile.address || ''}`.trim();
-
-                document.getElementById('invoiceNumber').textContent = invoice.invoice_number;
-                document.getElementById('invoiceDate').textContent = new Date(invoice.date).toLocaleDateString('ar-IQ');
-                document.getElementById('customerName').textContent = invoice.customer_name;
-
-                // نوع الدفع
-                const paymentBadge = document.getElementById('paymentTypeBadge');
-                if (invoice.payment_type === 'cash') {
-                    paymentBadge.className = 'payment-badge payment-cash';
-                    paymentBadge.textContent = '💵 نقد';
-                } else {
-                    paymentBadge.className = 'payment-badge payment-credit';
-                    paymentBadge.textContent = '📅 آجل';
+                    // ربما نحتاج لجلبها مباشرة من الجدول مع بنودها
+                    const { data: directInvoice, error } = await SupabaseDB.client
+                        .from('supplies')
+                        .select('*, supply_items(*)')
+                        .eq('id', invoiceId)
+                        .single();
                     
-                    // حساب الرصيد
-                    const customers = await SupabaseDB.getCustomers(user.id);
-                    const customer = customers.find(c => c.id === invoice.customer_id);
-                    
-                    if (customer) {
-                        const previousBalance = (customer.balance || 0) - (invoice.remaining_amount || 0);
-                        const newBalance = customer.balance || 0;
-                        
-                        document.getElementById('creditInfo').style.display = 'block';
-                        document.getElementById('previousBalance').textContent = previousBalance.toLocaleString() + ' د.ع';
-                        document.getElementById('paidAmount').textContent = (invoice.paid_amount || 0).toLocaleString() + ' د.ع';
-                        document.getElementById('remainingAmount').textContent = (invoice.remaining_amount || 0).toLocaleString() + ' د.ع';
-                        document.getElementById('newBalance').textContent = newBalance.toLocaleString() + ' د.ع';
-                    } else {
-                        // إذا لم يكن هناك زبون محدد
-                        document.getElementById('creditInfo').style.display = 'block';
-                        document.getElementById('previousBalance').textContent = '0 د.ع';
-                        document.getElementById('paidAmount').textContent = (invoice.paid_amount || 0).toLocaleString() + ' د.ع';
-                        document.getElementById('remainingAmount').textContent = (invoice.remaining_amount || 0).toLocaleString() + ' د.ع';
-                        document.getElementById('newBalance').textContent = (invoice.remaining_amount || 0).toLocaleString() + ' د.ع';
+                    if (error || !directInvoice) {
+                        alert('الفاتورة غير موجودة!');
+                        window.location.href = 'supplies.html';
+                        return;
                     }
-                }
-
-                // المنتجات
-                const itemsTable = document.getElementById('itemsTable');
-                if (!invoice.invoice_items || invoice.invoice_items.length === 0) {
-                    itemsTable.innerHTML = '<tr><td colspan="5" style="text-align: center;">لا توجد منتجات</td></tr>';
+                    displayInvoice(directInvoice, profile, user.id);
                 } else {
-                    itemsTable.innerHTML = invoice.invoice_items.map((item, index) => `
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td>${item.product_name}</td>
-                            <td>${(item.sale_price || 0).toLocaleString()} د.ع</td>
-                            <td>${item.quantity}</td>
-                            <td>${(item.total || 0).toLocaleString()} د.ع</td>
-                        </tr>
-                    `).join('');
+                     // جلب البنود إذا لم تكن موجودة
+                    if (!invoice.supply_items) {
+                        const { data: items } = await SupabaseDB.client
+                            .from('supply_items')
+                            .select('*')
+                            .eq('supply_id', invoiceId);
+                        invoice.supply_items = items || [];
+                    }
+                    displayInvoice(invoice, profile, user.id);
                 }
-
-                // الإجماليات
-                document.getElementById('subtotal').textContent = (invoice.total || 0).toLocaleString() + ' د.ع';
-                document.getElementById('discount').textContent = (invoice.discount || 0).toLocaleString() + ' د.ع';
-                document.getElementById('finalTotal').textContent = (invoice.final_total || 0).toLocaleString() + ' د.ع';
-
-                document.getElementById('footerDate').textContent =
-                    'تاريخ الطباعة: ' + new Date().toLocaleString('ar-IQ');
-
-                document.getElementById('loadingOverlay').style.display = 'none';
 
             } catch (error) {
                 console.error('خطأ في تحميل الفاتورة:', error);
                 alert('حدث خطأ في تحميل الفاتورة: ' + error.message);
-                window.location.href = 'invoices.html';
+                window.location.href = 'supplies.html';
             }
+        }
+
+        async function displayInvoice(invoice, profile, userId) {
+            document.getElementById('storeName').textContent = profile.store_name;
+            document.getElementById('storeInfo').textContent =
+                `${profile.phone || ''} • ${profile.address || ''}`.trim();
+
+            document.getElementById('invoiceNumber').textContent = invoice.invoice_number || '-';
+            document.getElementById('invoiceDate').textContent = new Date(invoice.date).toLocaleDateString('ar-IQ');
+            document.getElementById('supplierName').textContent = invoice.supplier_name || 'بدون مورد';
+
+            // نوع الدفع
+            const paymentBadge = document.getElementById('paymentTypeBadge');
+            if (invoice.payment_type === 'cash') {
+                paymentBadge.className = 'payment-badge payment-cash';
+                paymentBadge.textContent = '💵 نقد';
+            } else {
+                paymentBadge.className = 'payment-badge payment-credit';
+                paymentBadge.textContent = '📅 آجل';
+                
+                // حساب الرصيد
+                const suppliers = await SupabaseDB.getSuppliers(userId);
+                const supplier = suppliers.find(s => s.id === invoice.supplier_id);
+                
+                if (supplier) {
+                    const previousBalance = (supplier.balance || 0) - (invoice.remaining_amount || 0);
+                    const newBalance = supplier.balance || 0;
+                    
+                    document.getElementById('creditInfo').style.display = 'block';
+                    document.getElementById('previousBalance').textContent = previousBalance.toLocaleString() + ' د.ع';
+                    document.getElementById('paidAmount').textContent = (invoice.paid_amount || 0).toLocaleString() + ' د.ع';
+                    document.getElementById('remainingAmount').textContent = (invoice.remaining_amount || 0).toLocaleString() + ' د.ع';
+                    document.getElementById('newBalance').textContent = newBalance.toLocaleString() + ' د.ع';
+                }
+            }
+
+            // البنود
+            const itemsTable = document.getElementById('itemsTable');
+            const items = invoice.supply_items || [];
+            if (items.length === 0) {
+                itemsTable.innerHTML = '<tr><td colspan="5" style="text-align: center;">لا توجد منتجات</td></tr>';
+            } else {
+                itemsTable.innerHTML = items.map((item, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.product_name}</td>
+                        <td>${(item.purchase_price || 0).toLocaleString()} د.ع</td>
+                        <td>${item.quantity}</td>
+                        <td>${(item.total || 0).toLocaleString()} د.ع</td>
+                    </tr>
+                `).join('');
+            }
+
+            document.getElementById('finalTotal').textContent = (invoice.total || 0).toLocaleString() + ' د.ع';
+            document.getElementById('footerDate').textContent = 'تاريخ الطباعة: ' + new Date().toLocaleString('ar-IQ');
+            document.getElementById('loadingOverlay').style.display = 'none';
         }
     </script>
 </body>

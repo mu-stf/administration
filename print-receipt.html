@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طباعة إيصال</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; }
+            .print-receipt { box-shadow: none !important; margin: 0 !important; }
+        }
+        .print-receipt {
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .receipt-header {
+            text-align: center;
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .receipt-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+            margin: 10px 0;
+        }
+        .receipt-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .info-row {
+            display: flex;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .info-label {
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .receipt-amount {
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: #10b981;
+            background: #f0fdf4;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        .receipt-footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingOverlay" class="no-print" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
+        <div style="text-align: center;"><div style="font-size: 48px; margin-bottom: 20px;">🏪</div><div style="font-size: 18px; color: #666;">جاري التحميل...</div></div>
+    </div>
+
+    <div class="print-receipt">
+        <div class="receipt-header">
+            <h1 style="margin: 0; font-size: 32px;" id="storeName">نظام إدارة المحل</h1>
+            <div class="receipt-number" id="receiptNumber">REC-0001</div>
+            <div style="font-size: 18px; color: #666;" id="receiptType">إيصال قبض</div>
+        </div>
+
+        <div class="receipt-info">
+            <div class="info-row">
+                <span class="info-label">التاريخ:</span>
+                <span id="receiptDate">-</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">الوقت:</span>
+                <span id="receiptTime">-</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label" id="entityLabel">الزبون:</span>
+                <span id="entityName">-</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">طريقة الدفع:</span>
+                <span id="paymentMethod">-</span>
+            </div>
+        </div>
+
+        <div class="receipt-amount" id="amount">0 د.ع</div>
+
+        <div id="notesSection" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 4px; margin: 20px 0;">
+            <div class="info-label">ملاحظات:</div>
+            <div id="notes" style="margin-top: 8px;"></div>
+        </div>
+
+        <div class="receipt-footer">
+            <div>
+                <div style="border-top: 1px solid #000; width: 150px; text-align: center; padding-top: 5px;">التوقيع</div>
+            </div>
+            <div>
+                <div style="border-top: 1px solid #000; width: 150px; text-align: center; padding-top: 5px;">المستلم</div>
+            </div>
+        </div>
+
+        <div class="no-print" style="margin-top: 30px; text-align: center; display: flex; gap: 10px; justify-content: center;">
+            <button onclick="window.print()" class="btn btn-primary">🖨️ طباعة</button>
+            <button onclick="window.location.href='receipts.html'" class="btn btn-secondary">رجوع</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/page-protection.js"></script>
+    <script>
+        protectPage().then(authorized => { if (authorized) loadReceipt(); });
+
+        async function loadReceipt() {
+            try {
+                const {profile} = await getCurrentUserData();
+                document.getElementById('storeName').textContent = profile.store_name;
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const receiptId = urlParams.get('id');
+
+                if (!receiptId) {
+                    alert('خطأ: لا يوجد إيصال!');
+                    window.location.href = 'receipts.html';
+                    return;
+                }
+
+                const receipt = await SupabaseDB.getReceiptById(receiptId);
+
+                document.getElementById('receiptNumber').textContent = receipt.receipt_number;
+                document.getElementById('receiptType').textContent = 
+                    receipt.receipt_type === 'قبض' ? 'إيصال قبض' : 'إيصال دفع';
+
+                const date = new Date(receipt.created_at);
+                document.getElementById('receiptDate').textContent = date.toLocaleDateString('ar-IQ');
+                document.getElementById('receiptTime').textContent = date.toLocaleTimeString('ar-IQ');
+
+                document.getElementById('entityLabel').textContent = 
+                    receipt.entity_type === 'customer' ? 'الزبون:' : 'المورد:';
+                document.getElementById('entityName').textContent = receipt.entity_name;
+                document.getElementById('paymentMethod').textContent = receipt.payment_method || 'نقد';
+                document.getElementById('amount').textContent = receipt.amount.toLocaleString() + ' د.ع';
+
+                if (receipt.notes) {
+                    document.getElementById('notesSection').style.display = 'block';
+                    document.getElementById('notes').textContent = receipt.notes;
+                }
+
+                hideLoading();
+            } catch (error) {
+                console.error('خطأ في تحميل الإيصال:', error);
+                alert('حدث خطأ: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
