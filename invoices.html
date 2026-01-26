@@ -113,25 +113,25 @@
                         <td class="actions">
                             <a href="print-invoice.html?id=${inv.id}" class="btn btn-sm btn-secondary" title="طباعة">🖨️</a>
                             ${inv.status === 'active' ? `<a href="edit-invoice.html?id=${inv.id}" class="btn btn-sm btn-primary" title="تعديل">✏️</a>` : ''}
-                            ${inv.status === 'active' ? `<button class="btn btn-sm btn-danger" onclick="cancelInvoice('${inv.id}')" title="إلغاء">❌</button>` : ''}
+                            <button class="btn btn-sm btn-danger" onclick="deleteInvoice('${inv.id}')" title="حذف الفاتورة نهائياً">🗑️</button>
                         </td>
                     </tr>
                 `).join('');
             } catch (error) {
-                console.error('خطأ في تحميل الفواتير:', error);
-                alert('حدث خطأ في تحميل الفواتير');
+                console.error('خطأ في تحميل الفاتورة:', error);
+                alert('حدث خطأ في تحميل الفاتورة');
             }
         }
 
-        async function cancelInvoice(id) {
-            if (!confirm('هل أنت متأكد من إلغاء هذه الفاتورة؟ سيتم إرجاع الكمية للمخزون.')) return;
+        async function deleteInvoice(id) {
+            if (!confirm('⚠️ تحذير: هل أنت متأكد من حذف هذه الفاتورة نهائياً؟\n\n- سيتم إرجاع المنتجات للمخزون\n- سيتم إعادة حساب رصيد الزبون (للآجل)\n- لا يمكن التراجع عن هذا الإجراء!')) return;
 
             try {
-                await SupabaseDB.cancelInvoice(id);
-                alert('تم إلغاء الفاتورة');
+                await SupabaseDB.deleteInvoice(id);
+                alert('✅ تم حذف الفاتورة بنجاح!');
                 await loadInvoices();
             } catch (error) {
-                console.error('خطأ في الإلغاء:', error);
+                console.error('خطأ في الحذف:', error);
                 alert('حدث خطأ: ' + error.message);
             }
         }

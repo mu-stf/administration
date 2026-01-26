@@ -327,6 +327,55 @@ const SupabaseDB = {
     },
 
 
+    async deleteInvoice(invoiceId) {
+        // 1. الحصول على الفاتورة وعناصرها
+        const { data: invoice, error: invoiceError } = await this.client
+            .from('invoices')
+            .select('*, invoice_items(*)')
+            .eq('id', invoiceId)
+            .single();
+
+        if (invoiceError) throw invoiceError;
+
+        // 2. إرجاع المخزون (إذا كانت نشطة)
+        if (invoice.status === 'active') {
+            for (const item of invoice.invoice_items) {
+                if (item.product_id) {
+                    const product = await this.getProductById(item.product_id);
+                    await this.updateProduct(item.product_id, {
+                        stock: product.stock + item.quantity
+                    });
+                }
+            }
+
+            // 3. إرجاع رصيد الزبون (إذا كانت آجل)
+            if (invoice.payment_type === 'credit' && invoice.customer_id && invoice.remaining_amount > 0) {
+                const { data: customer } = await this.client
+                    .from('customers')
+                    .select('balance')
+                    .eq('id', invoice.customer_id)
+                    .single();
+
+                if (customer) {
+                    await this.updateCustomer(invoice.customer_id, {
+                        balance: (customer.balance || 0) - invoice.remaining_amount
+                    });
+                }
+            }
+        }
+
+        // 4. حذف البنود أولاً (بسبب المفتاح الخارجي)
+        await this.client.from('invoice_items').delete().eq('invoice_id', invoiceId);
+
+        // 5. حذف الفاتورة
+        const { error } = await this.client
+            .from('invoices')
+            .delete()
+            .eq('id', invoiceId);
+
+        if (error) throw error;
+    },
+
     async cancelInvoice(invoiceId) {
         // الحصول على الفاتورة وعناصرها
         const { data: invoice, error: invoiceError } = await this.client
@@ -347,6 +396,21 @@ const SupabaseDB = {
                 const product = await this.getProductById(item.product_id);
                 await this.updateProduct(item.product_id, {
                     stock: product.stock + item.quantity
+                });
+            }
+        }
+
+        // إرجاع رصيد الزبون (إذا كانت آجل)
+        if (invoice.payment_type === 'credit' && invoice.customer_id && invoice.remaining_amount > 0) {
+            const { data: customer } = await this.client
+                .from('customers')
+                .select('balance')
+                .eq('id', invoice.customer_id)
+                .single();
+
+            if (customer) {
+                await this.updateCustomer(invoice.customer_id, {
+                    balance: (customer.balance || 0) - invoice.remaining_amount
                 });
             }
         }
