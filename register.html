@@ -41,6 +41,13 @@
                     إنشاء الحساب
                 </button>
 
+                <div style="margin-top: 15px; border-top: 1px solid #ddd; padding-top: 15px;">
+                    <button type="button" class="btn btn-block" style="background: #f0f0f0; color: #333;"
+                        onclick="signInAsGuest()" id="guestBtn">
+                        🌐 تجربة النظام (حساب تجريبي)
+                    </button>
+                </div>
+
                 <div style="text-align: center; margin-top: 20px;">
                     <p>لديك حساب بالفعل؟ <a href="index.html">تسجيل الدخول</a></p>
                 </div>
@@ -54,6 +61,58 @@
     <script src="js/utils.js"></script>
 
     <script>
+        // إزالة وسم الضيف عند التواجد في صفحات المصادقة لضمان تسجيل دخول نظيف
+        localStorage.removeItem('is_guest');
+
+        async function signInAsGuest() {
+            const guestBtn = document.getElementById("guestBtn");
+            const errorDiv = document.getElementById("errorMessage");
+            const guestEmail = "guest@demo.com";
+            const guestPass = "guest123456";
+
+            try {
+                guestBtn.disabled = true;
+                guestBtn.textContent = "جاري تحضير الحساب التجريبي...";
+                errorDiv.classList.add("hidden");
+
+                localStorage.setItem("is_guest", "true");
+
+                // محاولة تسجيل الدخول
+                try {
+                    await SupabaseDB.signIn(guestEmail, guestPass);
+                } catch (loginError) {
+                    // إذا كان الحساب غير موجود، نقوم بإنشائه تلقائياً
+                    if (loginError.message.includes("Invalid login credentials") || loginError.status === 400) {
+                        guestBtn.textContent = "جاري إنشاء حساب تجريبي جديد...";
+                        await SupabaseDB.signUp(guestEmail, guestPass);
+                        
+                        // محاولة تسجيل الدخول مرة أخرى بعد التسجيل
+                        await SupabaseDB.signIn(guestEmail, guestPass);
+                        
+                        // تهيئة ملف التعريف للضيف إذا لزم الأمر
+                        const user = await SupabaseDB.getCurrentUser();
+                        await SupabaseDB.updateProfile(user.id, {
+                            store_name: "محل التجربة (نسخة العرض)",
+                            phone: "07700000000",
+                            address: "بغداد - نسخة تجريبية",
+                            agent_name: "مدير العرض",
+                            invoice_prefix: "DEMO"
+                        });
+                    } else {
+                        throw loginError;
+                    }
+                }
+
+                window.location.href = "dashboard.html";
+            } catch (error) {
+                console.error("خطأ في دخول الضيف:", error);
+                errorDiv.textContent = "عذراً، فشل الدخول التلقائي: " + error.message;
+                errorDiv.classList.remove("hidden");
+                guestBtn.disabled = false;
+                guestBtn.textContent = "🌐 تجربة النظام (حساب تجريبي)";
+                localStorage.removeItem("is_guest");
+            }
+        }
         // التحقق من وجود Supabase config
         if (typeof SUPABASE_CONFIG === 'undefined') {
             document.getElementById('errorMessage').textContent = 'خطأ: لم يتم العثور على ملف التكوين. الرجاء إنشاء js/config.js';

@@ -64,7 +64,20 @@
           <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
             تسجيل الدخول
           </button>
-        </form>
+ 
+           <div style="margin-top: 15px; border-top: 1px solid #ddd; padding-top: 15px;">
+             <button type="button" class="btn btn-block" style="background: #f0f0f0; color: #333;" onclick="signInAsGuest()" id="guestBtn">
+               🌐 تجربة النظام (حساب تجريبي)
+             </button>
+             <p style="text-align: center; font-size: 12px; color: #666; margin-top: 5px;">
+               للإطلاع فقط، لا يسمح بالإضافة أو التعديل.
+             </p>
+           </div>
+ 
+           <div style="text-align: center; margin-top: 20px;">
+             <p>ليس لديك حساب؟ <a href="register.html">إنشاء حساب جديد</a></p>
+           </div>
+         </form>
       </div>
     </div>
 
@@ -162,6 +175,56 @@
             loginBtn.textContent = "تسجيل الدخول";
           }
         });
+
+      async function signInAsGuest() {
+        const guestBtn = document.getElementById("guestBtn");
+        const errorDiv = document.getElementById("errorMessage");
+        const guestEmail = "guest@demo.com";
+        const guestPass = "guest123456";
+
+        try {
+          guestBtn.disabled = true;
+          guestBtn.textContent = "جاري تحضير الحساب التجريبي...";
+          errorDiv.classList.add("hidden");
+
+          localStorage.setItem("is_guest", "true");
+
+          // محاولة تسجيل الدخول
+          try {
+            await SupabaseDB.signIn(guestEmail, guestPass);
+          } catch (loginError) {
+            // إذا كان الحساب غير موجود، نقوم بإنشائه تلقائياً
+            if (loginError.message.includes("Invalid login credentials") || loginError.status === 400) {
+              guestBtn.textContent = "جاري إنشاء حساب تجريبي جديد...";
+              await SupabaseDB.signUp(guestEmail, guestPass);
+              
+              // محاولة تسجيل الدخول مرة أخرى بعد التسجيل
+              await SupabaseDB.signIn(guestEmail, guestPass);
+              
+              // تهيئة ملف التعريف للضيف إذا لزم الأمر
+              const user = await SupabaseDB.getCurrentUser();
+              await SupabaseDB.updateProfile(user.id, {
+                store_name: "محل التجربة (نسخة العرض)",
+                phone: "07700000000",
+                address: "بغداد - نسخة تجريبية",
+                agent_name: "مدير العرض",
+                invoice_prefix: "DEMO"
+              });
+            } else {
+              throw loginError;
+            }
+          }
+
+          window.location.href = "dashboard.html";
+        } catch (error) {
+          console.error("خطأ في دخول الضيف:", error);
+          errorDiv.textContent = "عذراً، فشل الدخول التلقائي: " + error.message;
+          errorDiv.classList.remove("hidden");
+          guestBtn.disabled = false;
+          guestBtn.textContent = "🌐 تجربة النظام (حساب تجريبي)";
+          localStorage.removeItem("is_guest");
+        }
+      }
     </script>
   </body>
 </html>
