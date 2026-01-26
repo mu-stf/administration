@@ -55,34 +55,44 @@
                     <div
                         style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
                         <div class="form-group">
+                            <label>تاريخ الفاتورة</label>
+                            <input type="date" id="invoiceDate" class="form-control">
+                        </div>
+                        <div class="form-group">
                             <label>نوع البيع *</label>
                             <select id="paymentType" class="form-control" onchange="handlePaymentTypeChange()">
                                 <option value="cash">نقد 💵</option>
                                 <option value="credit">آجل 📅</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" id="customerSelectGroup">
                             <label>الزبون <span id="customerRequired" style="display:none; color:red;">*</span></label>
-                            <select id="customerId" class="form-control">
-                                <option value="">بدون زبون (نقد)</option>
-                            </select>
+                            <div style="display: flex; gap: 5px;">
+                                <select id="customerId" class="form-control">
+                                    <option value="">بدون زبون (نقد)</option>
+                                </select>
+                                <button class="btn btn-secondary" onclick="quickAddCustomer()" title="إضافة زبون جديد" style="padding: 0 10px;">➕</button>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>اسم الزبون</label>
+                        <div class="form-group" id="customerNameGroup">
+                            <label>اسم الزبون (للنقد)</label>
                             <input type="text" id="customerName" class="form-control">
                         </div>
                     </div>
 
                     <div class="card" style="background: #f8f9fa; margin-bottom: 20px;">
                         <div class="card-body">
-                            <h3 style="margin-bottom: 16px; font-size: 16px;">إضافة منتج</h3>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <h3 style="margin: 0; font-size: 16px;">إضافة منتج</h3>
+                                <button class="btn btn-sm btn-success" onclick="openAddProductModal()">➕ منتج جديد</button>
+                            </div>
                             <div
                                 style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 12px; align-items: end;">
                                 <div class="form-group" style="margin:0">
-                                    <label>المنتج</label>
-                                    <select id="productSelect" class="form-control">
-                                        <option value="">اختر منتج...</option>
-                                    </select>
+                                    <label>بحث عن منتج</label>
+                                    <input type="text" id="productSearch" list="productsList" class="form-control" placeholder="اكتب اسم المنتج..." onchange="handleProductSelect()">
+                                    <datalist id="productsList"></datalist>
+                                    <input type="hidden" id="selectedProductId">
                                 </div>
                                 <div class="form-group" style="margin:0">
                                     <label>الكمية</label>
@@ -90,6 +100,7 @@
                                 </div>
                                 <button class="btn btn-primary" onclick="addProductToInvoice()">➕ إضافة</button>
                             </div>
+                            <div id="productStockDisplay" style="margin-top: 5px; font-size: 12px; color: #666;"></div>
                         </div>
                     </div>
 
@@ -156,6 +167,42 @@
         </main>
     </div>
 
+    <!-- Modal إضافة منتج جديد -->
+    <div class="modal-overlay" id="addProductModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>➕ إضافة منتج جديد</h3>
+                <button class="modal-close" onclick="closeAddProductModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>اسم المنتج *</label>
+                    <input type="text" id="newProductName" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>الباركود</label>
+                    <input type="text" id="newProductBarcode" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>سعر البيع *</label>
+                    <input type="number" id="newProductSalePrice" class="form-control" min="0">
+                </div>
+                <div class="form-group">
+                    <label>سعر الشراء</label>
+                    <input type="number" id="newProductPurchasePrice" class="form-control" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label>الكمية الأولية</label>
+                    <input type="number" id="newProductStock" class="form-control" min="0" value="0">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" onclick="addNewProduct()">💾 إضافة</button>
+                <button class="btn btn-secondary" onclick="closeAddProductModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
     <script src="js/supabase-client.js"></script>
@@ -187,9 +234,11 @@
 
             document.getElementById('invoiceId').value = invoiceId;
 
-            products = await SupabaseDB.getProducts(user.id);
-            customers = await SupabaseDB.getCustomers(user.id);
+            // تحميل الملحقات أولاً
+            await loadProducts();
+            await loadCustomers();
 
+            // تحميل الفاتورة
             const invoices = await SupabaseDB.getInvoices(user.id);
             oldInvoice = invoices.find(inv => inv.id === invoiceId);
 
@@ -205,21 +254,21 @@
                 return;
             }
 
+            // تعبئة البيانات
             document.getElementById('invoiceNumberHeader').textContent = oldInvoice.invoice_number;
             document.getElementById('paymentType').value = oldInvoice.payment_type || 'cash';
             document.getElementById('customerId').value = oldInvoice.customer_id || '';
             document.getElementById('customerName').value = oldInvoice.customer_name || '';
             document.getElementById('discount').value = oldInvoice.discount || 0;
             document.getElementById('paidAmount').value = oldInvoice.paid_amount || 0;
+            
+            // تعيين التاريخ
+            if (oldInvoice.date) {
+                const dateObj = new Date(oldInvoice.date);
+                document.getElementById('invoiceDate').value = dateObj.toISOString().split('T')[0];
+            }
 
-            const productSelect = document.getElementById('productSelect');
-            productSelect.innerHTML = '<option value="">اختر منتج...</option>' +
-                products.map(p => `<option value="${p.id}">${p.name} - ${p.sale_price} د.ع (مخزون: ${p.stock})</option>`).join('');
-
-            const customerSelect = document.getElementById('customerId');
-            customerSelect.innerHTML = '<option value="">بدون زبون (نقد)</option>' +
-                customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-
+            // تحميل البنود
             invoiceItems = oldInvoice.invoice_items.map(item => ({
                 product_id: item.product_id,
                 product_name: item.product_name,
@@ -231,6 +280,38 @@
             renderInvoiceItems();
             handlePaymentTypeChange();
             hideLoading();
+        }
+
+        async function loadProducts() {
+            products = await SupabaseDB.getProducts(currentUser.id);
+            const datalist = document.getElementById('productsList');
+            datalist.innerHTML = products.map(p => `<option value="${p.name}">${p.barcode ? 'Barcode: ' + p.barcode : ''} - سعر: ${p.sale_price} - مخزون: ${p.stock}</option>`).join('');
+        }
+
+        async function loadCustomers() {
+            customers = await SupabaseDB.getCustomers(currentUser.id);
+            const customerSelect = document.getElementById('customerId');
+            const currentVal = customerSelect.value;
+            
+            customerSelect.innerHTML = '<option value="">بدون زبون (نقد)</option>' +
+                customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            
+            if (currentVal) customerSelect.value = currentVal;
+        }
+
+        function handleProductSelect() {
+            const val = document.getElementById('productSearch').value;
+            const product = products.find(p => p.name === val);
+            
+            if (product) {
+                document.getElementById('selectedProductId').value = product.id;
+                document.getElementById('productStockDisplay').textContent = `المتوفر: ${product.stock} | السعر: ${product.sale_price} د.ع`;
+                document.getElementById('productQuantity').focus();
+                document.getElementById('productQuantity').select();
+            } else {
+                document.getElementById('selectedProductId').value = '';
+                document.getElementById('productStockDisplay').textContent = '';
+            }
         }
 
         function handlePaymentTypeChange() {
@@ -248,17 +329,91 @@
             calculateRemaining();
         }
 
+        async function quickAddCustomer() {
+            const name = prompt('أدخل اسم الزبون الجديد:');
+            if (!name) return;
+
+            try {
+                const newCustomer = await SupabaseDB.addCustomer(currentUser.id, {
+                    name: name,
+                    phone: '',
+                    address: 'زبون سريع',
+                    balance: 0
+                });
+                
+                await loadCustomers();
+                document.getElementById('customerId').value = newCustomer.id;
+                alert('✅ تم إضافة الزبون وتحديده!');
+            } catch (error) {
+                console.error(error);
+                alert('خطأ في إضافة الزبون: ' + error.message);
+            }
+        }
+
+        function openAddProductModal() {
+            document.getElementById('addProductModal').classList.add('active');
+            document.getElementById('newProductName').value = '';
+            document.getElementById('newProductBarcode').value = '';
+            document.getElementById('newProductSalePrice').value = '';
+            document.getElementById('newProductPurchasePrice').value = '';
+            document.getElementById('newProductStock').value = '0';
+        }
+
+        function closeAddProductModal() {
+            document.getElementById('addProductModal').classList.remove('active');
+        }
+
+        async function addNewProduct() {
+            const name = document.getElementById('newProductName').value.trim();
+            const salePrice = parseFloat(document.getElementById('newProductSalePrice').value);
+            
+            if (!name || isNaN(salePrice)) {
+                alert('يرجى إدخال اسم المنتج وسعر البيع');
+                return;
+            }
+
+            try {
+                const productData = {
+                    name: name,
+                    barcode: document.getElementById('newProductBarcode').value.trim(),
+                    sale_price: salePrice,
+                    purchase_price: parseFloat(document.getElementById('newProductPurchasePrice').value) || 0,
+                    stock: parseInt(document.getElementById('newProductStock').value) || 0,
+                    category: 'عام'
+                };
+
+                const newProduct = await SupabaseDB.addProduct(currentUser.id, productData);
+                await loadProducts();
+                
+                document.getElementById('productSearch').value = newProduct.name;
+                handleProductSelect();
+                
+                closeAddProductModal();
+                alert('✅ تم إضافة المنتج!');
+            } catch (error) {
+                console.error(error);
+                alert('خطأ: ' + error.message);
+            }
+        }
+
         function addProductToInvoice() {
-            const productId = document.getElementById('productSelect').value;
+            const productId = document.getElementById('selectedProductId').value;
             const quantity = parseInt(document.getElementById('productQuantity').value) || 1;
 
             if (!productId) {
-                alert('اختر منتج أولاً');
+                alert('اختر منتج من القائمة (تأكد من اختيار اسم صحيح)');
                 return;
             }
 
             const product = products.find(p => p.id === productId);
             if (!product) return;
+
+            // ملاحظة: في التعديل، قد نحتاج لمراعاة المخزون المحجوز فعلاً في الفاتورة القديمة
+            // لكن للتبسيط حالياً نتحقق من المخزون الحالي فقط
+            if (product.stock < quantity) {
+                alert(`المخزون الحالي غير كافي! المتوفر: ${product.stock}`);
+                return;
+            }
 
             const existing = invoiceItems.find(item => item.product_id === productId);
             if (existing) {
@@ -274,8 +429,11 @@
             }
 
             renderInvoiceItems();
-            document.getElementById('productSelect').value = '';
+            document.getElementById('productSearch').value = '';
+            document.getElementById('selectedProductId').value = '';
+            document.getElementById('productStockDisplay').textContent = '';
             document.getElementById('productQuantity').value = 1;
+            document.getElementById('productSearch').focus();
         }
 
         function renderInvoiceItems() {
@@ -324,8 +482,9 @@
         }
 
         function calculateRemaining() {
-            const final = invoiceItems.reduce((sum, item) => sum + (item.sale_price * item.quantity), 0) -
-                (parseFloat(document.getElementById('discount').value) || 0);
+            const subtotal = invoiceItems.reduce((sum, item) => sum + (item.sale_price * item.quantity), 0);
+            const discount = parseFloat(document.getElementById('discount').value) || 0;
+            const final = Math.max(0, subtotal - discount);
             const paid = parseFloat(document.getElementById('paidAmount').value) || 0;
             const remaining = Math.max(0, final - paid);
 
@@ -341,6 +500,12 @@
             const paymentType = document.getElementById('paymentType').value;
             const customerId = document.getElementById('customerId').value;
             let customerName = document.getElementById('customerName').value.trim();
+            const dateVal = document.getElementById('invoiceDate').value;
+
+            if (!dateVal) {
+                alert('الرجاء تحديد التاريخ');
+                return;
+            }
 
             if (paymentType === 'credit' && !customerId) {
                 alert('البيع الآجل يتطلب اختيار زبون!');
@@ -373,7 +538,8 @@
                     final_total: finalTotal,
                     payment_type: paymentType,
                     paid_amount: paidAmount,
-                    remaining_amount: remaining
+                    remaining_amount: remaining,
+                    date: new Date(dateVal).toISOString()
                 };
 
                 const itemsWithTotal = invoiceItems.map(item => ({
