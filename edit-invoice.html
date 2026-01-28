@@ -447,7 +447,10 @@
             tbody.innerHTML = invoiceItems.map((item, index) => `
                 <tr>
                     <td>${item.product_name}</td>
-                    <td>${item.sale_price.toLocaleString()} د.ع</td>
+                    <td>
+                        <input type="number" value="${item.sale_price}" min="0" step="100" style="width:100px;padding:4px;" 
+                               onchange="updatePrice(${index}, this.value)"> د.ع
+                    </td>
                     <td>
                         <input type="number" value="${item.quantity}" min="1" style="width:80px;padding:4px;" 
                                onchange="updateQuantity(${index}, this.value)">
@@ -458,6 +461,17 @@
             `).join('');
 
             calculateTotal();
+        }
+
+        function updatePrice(index, newPrice) {
+            const price = parseFloat(newPrice) || 0;
+            if (price < 0) {
+                alert('السعر يجب أن يكون موجباً');
+                renderInvoiceItems();
+                return;
+            }
+            invoiceItems[index].sale_price = price;
+            renderInvoiceItems();
         }
 
         function updateQuantity(index, newQty) {
