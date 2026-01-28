@@ -335,7 +335,7 @@
 
             // البنود
             const itemsTable = document.getElementById('itemsTable');
-            const items = invoice.supply_items || [];
+            const items = invoice.purchase_invoice_items || [];
             if (items.length === 0) {
                 itemsTable.innerHTML = '<tr><td colspan="5" style="text-align: center;">لا توجد منتجات</td></tr>';
             } else {

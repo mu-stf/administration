@@ -511,17 +511,22 @@ const SupabaseDB = {
         return { ...updatedInvoice, invoice_items: newItemsData };
     },
 
-    // ===== التوريدات =====
+    // ===== فواتير الشراء (Purchase Invoices) =====
 
-    async getSupplies(userId) {
+    async getPurchaseInvoices(userId) {
         const { data, error } = await this.client
-            .from('supplies')
-            .select('*, products(name)')
+            .from('purchase_invoices')
+            .select('*, purchase_invoice_items(*, products(name))')
             .eq('user_id', userId)
             .order('created_at', { ascending: false });
 
         if (error) throw error;
         return data || [];
+    },
+
+    // الدالة القديمة للتوافق مع الكود الموجود
+    async getSupplies(userId) {
+        return this.getPurchaseInvoices(userId);
     },
 
     async addSupply(userId, supply) {
@@ -591,24 +596,24 @@ const SupabaseDB = {
     // ===== فواتير الشراء (Purchase Invoices) =====
 
     async createPurchaseInvoice(userId, invoiceData, items) {
-        // إنشاء فاتورة الشراء
-        const { data: supplyData, error: supplyError } = await this.client
-            .from('supplies')
+        // إنشاء فاتورة الشراء في جدول purchase_invoices
+        const { data: purchaseInvoice, error: invoiceError } = await this.client
+            .from('purchase_invoices')
             .insert([{ ...invoiceData, user_id: userId }])
             .select()
             .single();
 
-        if (supplyError) throw supplyError;
+        if (invoiceError) throw invoiceError;
 
-        // إضافة البنود
-        const itemsWithSupplyId = items.map(item => ({
+        // إضافة البنود في جدول purchase_invoice_items
+        const itemsWithInvoiceId = items.map(item => ({
             ...item,
-            supply_id: supplyData.id
+            purchase_invoice_id: purchaseInvoice.id
         }));
 
         const { data: itemsData, error: itemsError } = await this.client
-            .from('supply_items')
-            .insert(itemsWithSupplyId)
+            .from('purchase_invoice_items')
+            .insert(itemsWithInvoiceId)
             .select();
 
         if (itemsError) throw itemsError;
@@ -639,7 +644,7 @@ const SupabaseDB = {
             }
         }
 
-        return { ...supplyData, supply_items: itemsData };
+        return { ...purchaseInvoice, purchase_invoice_items: itemsData };
     },
 
     async getSupplierPayments(supplierId) {
