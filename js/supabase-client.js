@@ -618,13 +618,22 @@ const SupabaseDB = {
 
         if (itemsError) throw itemsError;
 
-        // تحديث المخزون
+        // تحديث المخزون وسعر الشراء
         for (const item of items) {
             if (item.product_id) {
                 const product = await this.getProductById(item.product_id);
+                
+                // حساب المخزون الجديد بناءً على الإجراء
+                const newStock = item.stock_action === 'replace' 
+                    ? item.quantity 
+                    : product.stock + item.quantity;
+                
+                // تحديث المنتج مع حفظ سعر الشراء السابق
                 await this.updateProduct(item.product_id, {
-                    stock: product.stock + item.quantity,
-                    purchase_price: item.purchase_price
+                    stock: newStock,
+                    purchase_price: item.purchase_price,
+                    previous_purchase_price: product.purchase_price,
+                    last_purchase_price_update: new Date().toISOString()
                 });
             }
         }
@@ -645,6 +654,136 @@ const SupabaseDB = {
         }
 
         return { ...purchaseInvoice, purchase_invoice_items: itemsData };
+    },
+
+    async updatePurchaseInvoice(invoiceId, invoiceData, items) {
+        // الحصول على الفاتورة القديمة
+        const { data: oldInvoice, error: fetchError } = await this.client
+            .from('supplies')
+            .select('*, purchase_invoice_items(*)')
+            .eq('id', invoiceId)
+            .single();
+
+        if (fetchError) throw fetchError;
+        if (!oldInvoice) throw new Error('الفاتورة غير موجودة');
+
+        // 1. إرجاع المخزون السابق
+        if (oldInvoice.purchase_invoice_items) {
+            for (const oldItem of oldInvoice.purchase_invoice_items) {
+                const { data: product } = await this.client
+                    .from('products')
+                    .select('stock')
+                    .eq('id', oldItem.product_id)
+                    .single();
+
+                if (product) {
+                    const currentStock = product.stock || 0;
+                    const newStock = oldItem.stock_action === 'add' 
+                        ? currentStock - oldItem.quantity 
+                        : 0; // إذا كان استبدال، نحذف الكمية تماماً
+
+                    await this.client
+                        .from('products')
+                        .update({ stock: Math.max(0, newStock) })
+                        .eq('id', oldItem.product_id);
+                }
+            }
+        }
+
+        // 2. إرجاع رصيد المورد السابق
+        if (oldInvoice.supplier_id && oldInvoice.remaining_amount > 0) {
+            const { data: supplier } = await this.client
+                .from('suppliers')
+                .select('balance')
+                .eq('id', oldInvoice.supplier_id)
+                .single();
+
+            if (supplier) {
+                await this.updateSupplier(oldInvoice.supplier_id, {
+                    balance: (supplier.balance || 0) - oldInvoice.remaining_amount
+                });
+            }
+        }
+
+        // 3. حذف عناصر الفاتورة القديمة
+        await this.client
+            .from('purchase_invoice_items')
+            .delete()
+            .eq('purchase_invoice_id', invoiceId);
+
+        // 4. تحديث الفاتورة
+        const { data: updatedInvoice, error: updateError } = await this.client
+            .from('supplies')
+            .update(invoiceData)
+            .eq('id', invoiceId)
+            .select()
+            .single();
+
+        if (updateError) throw updateError;
+
+        // 5. إضافة عناصر الفاتورة الجديدة
+        const itemsData = items.map(item => ({
+            purchase_invoice_id: invoiceId,
+            product_id: item.product_id,
+            product_name: item.product_name,
+            quantity: item.quantity,
+            purchase_price: item.purchase_price,
+            stock_action: item.stock_action,
+            total: item.total
+        }));
+
+        const { error: itemsError } = await this.client
+            .from('purchase_invoice_items')
+            .insert(itemsData);
+
+        if (itemsError) throw itemsError;
+
+        // 6. تحديث المخزون والأسعار الجديدة
+        for (const item of items) {
+            const { data: product } = await this.client
+                .from('products')
+                .select('stock, purchase_price, previous_purchase_price')
+                .eq('id', item.product_id)
+                .single();
+
+            if (product) {
+                const currentStock = product.stock || 0;
+                const newStock = item.stock_action === 'add' 
+                    ? currentStock + item.quantity 
+                    : item.quantity;
+
+                const updates = { stock: newStock };
+
+                // تحديث أسعار الشراء إذا تغيرت
+                if (item.purchase_price !== product.purchase_price) {
+                    updates.purchase_price = item.purchase_price;
+                    updates.previous_purchase_price = product.purchase_price;
+                    updates.last_purchase_price_update = new Date().toISOString();
+                }
+
+                await this.client
+                    .from('products')
+                    .update(updates)
+                    .eq('id', item.product_id);
+            }
+        }
+
+        // 7. تحديث رصيد المورد الجديد
+        if (invoiceData.supplier_id && invoiceData.remaining_amount > 0) {
+            const { data: supplier } = await this.client
+                .from('suppliers')
+                .select('balance')
+                .eq('id', invoiceData.supplier_id)
+                .single();
+
+            if (supplier) {
+                await this.updateSupplier(invoiceData.supplier_id, {
+                    balance: (supplier.balance || 0) + invoiceData.remaining_amount
+                });
+            }
+        }
+
+        return { ...updatedInvoice, purchase_invoice_items: itemsData };
     },
 
     async getSupplierPayments(supplierId) {

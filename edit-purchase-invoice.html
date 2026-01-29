@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فاتورة شراء جديدة - نظام إدارة المحل</title>
+    <title>تعديل فاتورة الشراء - نظام إدارة المحل</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -49,7 +49,8 @@
         <main class="main-content">
             <div class="card">
                 <div class="card-header">
-                    <h2>📥 فاتورة شراء جديدة</h2>
+                    <h2>✏️ تعديل فاتورة الشراء</h2>
+                    <input type="hidden" id="invoiceId">
                 </div>
                 <div class="card-body">
                     <!-- معلومات الفاتورة -->
@@ -163,8 +164,7 @@
                         </div>
 
                         <div style="margin-top: 20px; display: flex; gap: 10px;">
-                            <button class="btn btn-success" onclick="saveInvoice()" id="saveBtn" style="flex:1">💾 حفظ
-                                الفاتورة</button>
+                            <button class="btn btn-success" onclick="saveInvoice()" id="saveBtn" style="flex:1">💾 حفظ التعديلات</button>
                             <button class="btn btn-secondary"
                                 onclick="window.location.href='supplies.html'">إلغاء</button>
                         </div>
@@ -224,13 +224,65 @@
             currentUser = user;
             document.getElementById('storeName').textContent = profile.store_name;
 
-            // تعيين تاريخ اليوم
-            document.getElementById('invoiceDate').valueAsDate = new Date();
+            // الحصول على ID من URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const invoiceId = urlParams.get('id');
+
+            if (!invoiceId) {
+                alert('⚠️ لم يتم تحديد فاتورة للتعديل!');
+                window.location.href = 'supplies.html';
+                return;
+            }
+
+            document.getElementById('invoiceId').value = invoiceId;
 
             await loadSuppliers();
             await loadProducts();
+            await loadInvoiceData(invoiceId);
 
             hideLoading();
+        }
+
+        async function loadInvoiceData(invoiceId) {
+            try {
+                const allSupplies = await SupabaseDB.getSupplies(currentUser.id);
+                const invoice = allSupplies.find(inv => inv.id === invoiceId);
+
+                if (!invoice) {
+                    alert('❌ الفاتورة غير موجودة!');
+                    window.location.href = 'supplies.html';
+                    return;
+                }
+
+                // ملء بيانات الفاتورة
+                document.getElementById('invoiceDate').value = invoice.date.split('T')[0];
+                document.getElementById('supplierId').value = invoice.supplier_id || '';
+                document.getElementById('invoiceNumber').value = invoice.invoice_number || '';
+                document.getElementById('paymentType').value = invoice.payment_type || 'cash';
+
+                // تحميل عناصر الفاتورة
+                if (invoice.purchase_invoice_items && invoice.purchase_invoice_items.length > 0) {
+                    items = invoice.purchase_invoice_items.map(item => ({
+                        product_id: item.product_id,
+                        product_name: item.product_name,
+                        current_stock: products.find(p => p.id === item.product_id)?.stock || 0,
+                        quantity: item.quantity,
+                        purchase_price: item.purchase_price,
+                        stock_action: item.stock_action || 'add'
+                    }));
+                }
+
+                if (invoice.payment_type === 'credit') {
+                    document.getElementById('paidAmount').value = invoice.paid_amount || 0;
+                }
+
+                handlePaymentTypeChange();
+                renderItems();
+            } catch (error) {
+                console.error('خطأ في تحميل بيانات الفاتورة:', error);
+                alert('حدث خطأ في تحميل البيانات: ' + error.message);
+                window.location.href = 'supplies.html';
+            }
         }
 
         async function loadSuppliers() {
@@ -476,9 +528,15 @@
                 return;
             }
 
+            const invoiceId = document.getElementById('invoiceId').value;
+            if (!invoiceId) {
+                alert('⚠️ خطأ: لم يتم تحديد الفاتورة!');
+                return;
+            }
+
             const saveBtn = document.getElementById('saveBtn');
             saveBtn.disabled = true;
-            saveBtn.textContent = 'جاري الحفظ...';
+            saveBtn.textContent = 'جاري التحديث...';
 
             try {
                 const supplierId = document.getElementById('supplierId').value || null;
@@ -505,20 +563,21 @@
                     total: item.quantity * item.purchase_price
                 }));
 
-                const invoice = await SupabaseDB.createPurchaseInvoice(currentUser.id, invoiceData, itemsWithTotal);
+                // استخدام updatePurchaseInvoice بدلاً من createPurchaseInvoice
+                await SupabaseDB.updatePurchaseInvoice(invoiceId, invoiceData, itemsWithTotal);
 
                 // مسح الكاش
                 CacheManager.remove(`products_${currentUser.id}`);
                 CacheManager.remove(`suppliers_${currentUser.id}`);
 
-                alert('✅ تم حفظ فاتورة الشراء بنجاح!');
-                // العودة لصفحة فواتير الشراء بدلاً من الطباعة
+                alert('✅ تم تحديث فاتورة الشراء بنجاح!');
+                // العودة لصفحة فواتير الشراء
                 window.location.href = 'supplies.html';
             } catch (error) {
-                console.error('خطأ في حفظ الفاتورة:', error);
+                console.error('خطأ في تحديث الفاتورة:', error);
                 alert('حدث خطأ: ' + error.message);
                 saveBtn.disabled = false;
-                saveBtn.textContent = '💾 حفظ الفاتورة';
+                saveBtn.textContent = '💾 حفظ التعديلات';
             }
         }
     </script>

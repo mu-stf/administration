@@ -179,6 +179,7 @@
                         <td style="color:${balanceColor}; font-weight:600;">${(s.balance || 0).toLocaleString()} د.ع</td>
                         <td class="actions">
                             ${(s.balance || 0) > 0 ? `<button class="btn btn-sm btn-success" onclick='paySupplier(${JSON.stringify(s).replace(/'/g, "&apos;")})'>💰 تسديد</button>` : ''}
+                            <button class="btn btn-sm btn-danger" onclick="deleteSupplier('${s.id}', '${s.name}')' title="حذف">🗑️ حذف</button>
                         </td>
                     </tr>
                 `;
@@ -215,6 +216,7 @@
                         <td><strong>${(inv.total || 0).toLocaleString()} د.ع</strong></td>
                         <td>${paymentBadge}</td>
                         <td class="actions">
+                            <a href="edit-purchase-invoice.html?id=${inv.id}" class="btn btn-sm btn-primary" title="تعديل">✏️</a>
                             <a href="print-purchase-invoice.html?id=${inv.id}" class="btn btn-sm btn-secondary" title="عرض">👁️</a>
                         </td>
                     </tr>
@@ -240,6 +242,13 @@
                 return;
             }
 
+            // فحص عدم التكرار
+            const exists = suppliers.find(s => s.name.toLowerCase() === name.toLowerCase());
+            if (exists) {
+                alert('⚠️ مورد بنفس الاسم موجود مسبقاً!');
+                return;
+            }
+
             try {
                 const supplierData = {
                     name: name,
@@ -253,6 +262,22 @@
                 await loadSuppliers();
             } catch (error) {
                 console.error('خطأ في إضافة المورد:', error);
+                alert('حدث خطأ: ' + error.message);
+            }
+        }
+
+        async function deleteSupplier(id, name) {
+            if (!confirm(`هل أنت متأكد من حذف المورد "${name}"؟\n\n⚠️ سيتم حذف جميع فواتير الشراء المرتبطة بهذا المورد!`)) {
+                return;
+            }
+
+            try {
+                await SupabaseDB.deleteSupplier(id);
+                alert('✅ تم حذف المورد بنجاح!');
+                await loadSuppliers();
+                await loadInvoices(); // تحديث قائمة الفواتير
+            } catch (error) {
+                console.error('خطأ في حذف المورد:', error);
                 alert('حدث خطأ: ' + error.message);
             }
         }

@@ -212,6 +212,15 @@
                 return;
             }
 
+            // فحص عدم التكرار (إلا إذا كان تعديل)
+            if (!id) {
+                const exists = allCustomers.find(c => c.name.toLowerCase() === customerData.name.toLowerCase());
+                if (exists) {
+                    alert('⚠️ زبون بنفس الاسم موجود مسبقاً!');
+                    return;
+                }
+            }
+
             try {
                 if (id) {
                     await SupabaseDB.updateCustomer(id, customerData);
@@ -233,7 +242,15 @@
         }
 
         async function deleteCustomer(id, name) {
-            if (!confirm(`هل أنت متأكد من حذف "${name}"؟`)) return;
+            if (!confirm(`هل أنت متأكد من حذف "${name}"؟\n\n⚠️ سيتم حذف جميع فواتيره وبياناته!`)) return;
+
+            // طلب رمز PIN للتأكيد
+            const pin = prompt('⚠️ تحذير!\n\nحذف الزبون سيحذف جميع فواتيره ومدفوعاته!\n\nأدخل رمز PIN للتأكيد (1234):');
+            
+            if (pin !== '1234') {
+                alert('❌ رمز PIN خاطئ! تم إلغاء الحذف.');
+                return;
+            }
 
             try {
                 await SupabaseDB.deleteCustomer(id);

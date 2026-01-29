@@ -156,7 +156,8 @@
 
     <div class="no-print"
         style="max-width: 800px; margin: 20px auto; display: flex; gap: 10px; justify-content: flex-end;">
-        <button class="btn btn-primary" onclick="window.print()">🖨️ طباعة</button>
+        <button class="btn btn-success" onclick="goToNewInvoice()">➕ فاتورة جديدة</button>
+        <button class="btn btn-primary" onclick="printAndReturn()">🖨️ طباعة</button>
         <button class="btn btn-secondary" onclick="window.location.href='invoices.html'">📋 الفواتير</button>
         <button class="btn btn-secondary" onclick="window.location.href='dashboard.html'">🏠 الرئيسية</button>
     </div>
@@ -351,6 +352,20 @@
                 alert('حدث خطأ في تحميل الفاتورة: ' + error.message);
                 window.location.href = 'invoices.html';
             }
+        }
+
+        function printAndReturn() {
+            // الطباعة
+            window.print();
+            
+            // العودة لصفحة فاتورة جديدة بعد ثانية واحدة (لإتمام الطباعة)
+            setTimeout(() => {
+                window.location.href = 'new-invoice.html';
+            }, 1000);
+        }
+
+        function goToNewInvoice() {
+            window.location.href = 'new-invoice.html';
         }
     </script>
 </body>

@@ -107,9 +107,9 @@
         try {
           const session = await SupabaseDB.getSession();
           if (session) {
-            console.log("جلسة نشطة موجودة، التحويل إلى dashboard");
+            console.log("جلسة نشطة موجودة، التحويل إلى new-invoice");
             sessionStorage.setItem("redirect_from_login", "true");
-            window.location.href = "dashboard.html";
+            window.location.href = "new-invoice.html";
           } else {
             hideLoading();
           }
@@ -147,10 +147,10 @@
             loginBtn.textContent = "جاري تسجيل الدخول...";
 
             // تسجيل الدخول عبر Supabase
-            const { user, session } = await SupabaseDB.signIn(email, password);
+           const { user, session } = await SupabaseDB.signIn(email, password);
 
-            // الانتقال إلى لوحة التحكم
-            window.location.href = "dashboard.html";
+            // الانتقال إلى صفحة فاتورة جديدة مباشرة
+            window.location.href = "new-invoice.html";
           } catch (error) {
             console.error("خطأ في تسجيل الدخول:", error);
 

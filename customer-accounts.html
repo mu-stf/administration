@@ -159,6 +159,7 @@
                             ${balance > 0 ? '+' : ''}${balance.toLocaleString()} د.ع
                         </td>
                         <td class="actions">
+                            <button class="btn btn-sm btn-primary" onclick='editBalance(${JSON.stringify(c).replace(/'/g, "&apos;")})' title="تعديل الرصيد">✏️ تعديل</button>
                             ${balance > 0 ? `<button class="btn btn-sm btn-success" onclick='openPaymentModal(${JSON.stringify(c).replace(/'/g, "&apos;")})'>💰 تسديد</button>` : ''}
                         </td>
                     </tr>
@@ -207,6 +208,31 @@
                 await loadAccounts();
             } catch (error) {
                 console.error('خطأ في التسديد:', error);
+                alert('حدث خطأ: ' + error.message);
+            }
+        }
+
+        async function editBalance(customer) {
+            const newBalance = prompt(`تعديل رصيد "${customer.name}"\n\nالرصيد الحالي: ${(customer.balance || 0).toLocaleString()} د.ع\n\nأدخل الرصيد الجديد:`);
+            
+            if (newBalance === null) return; // إلغاء
+
+            const balance = parseFloat(newBalance);
+            if (isNaN(balance)) {
+                alert('❌ رقم غير صحيح!');
+                return;
+            }
+
+            if (!confirm(`هل أنت متأكد من تعديل الرصيد إلى ${balance.toLocaleString()} د.ع؟`)) {
+                return;
+            }
+
+            try {
+                await SupabaseDB.updateCustomer(customer.id, { balance: balance });
+                alert('✅ تم تعديل الرصيد بنجاح!');
+                await loadAccounts();
+            } catch (error) {
+                console.error('خطأ في تعديل الرصيد:', error);
                 alert('حدث خطأ: ' + error.message);
             }
         }
