@@ -3,53 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة المستخدمين - نظام إدارة المحل</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>????? ?????????? - ???? ????? ?????</title>
+    <link rel="stylesheet" href="css/style-responsive.css">
 </head>
 <body>
     <div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
-        <div style="text-align: center;"><div style="font-size: 48px; margin-bottom: 20px;">🏪</div><div style="font-size: 18px; color: #666;">جاري التحميل...</div></div>
+        <div style="text-align: center;"><div style="font-size: 48px; margin-bottom: 20px;">??</div><div style="font-size: 18px; color: #666;">???? ???????...</div></div>
     </div>
     
     <header class="header">
-        <h1>🏪 <span id="storeName">نظام إدارة المحل</span></h1>
-        <div class="header-actions"><button class="btn" onclick="logout()">🚪 تسجيل الخروج</button></div>
+        <h1>?? <span id="storeName">???? ????? ?????</span></h1>
+        <div class="header-actions"><button class="btn" onclick="logout()">?? ????? ??????</button></div>
     </header>
 
     <div class="main-layout">
         <nav class="sidebar">
             <ul class="nav-menu">
-                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">📊</span>لوحة التحكم</a></li>
-                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">➕</span>فاتورة مبيعات</a></li>
-                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">📋</span>فواتير المبيعات</a></li>
-                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">📦</span>المنتجات</a></li>
-                <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">👥</span>الزبائن</a></li>
-                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">📥</span>فواتير الشراء</a></li>
-                <li class="nav-item"><a href="statistics.html" class="nav-link"><span class="icon">📈</span>الإحصائيات</a></li>
-                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">⚙️</span>الإعدادات</a></li>
-                <li class="nav-item"><a href="manage-users.html" class="nav-link active"><span class="icon">👤</span>المستخدمين</a></li>
+                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">??</span>???? ??????</a></li>
+                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">?</span>?????? ??????</a></li>
+                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">??</span>?????? ????????</a></li>
+                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">??</span>????????</a></li>
+                <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">??</span>???????</a></li>
+                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">??</span>?????? ??????</a></li>
+                <li class="nav-item"><a href="statistics.html" class="nav-link"><span class="icon">??</span>??????????</a></li>
+                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">??</span>?????????</a></li>
+                <li class="nav-item"><a href="manage-users.html" class="nav-link active"><span class="icon">??</span>??????????</a></li>
             </ul>
         </nav>
 
         <main class="main-content">
             <div class="card">
                 <div class="card-header">
-                    <h2>👥 إدارة المستخدمين</h2>
-                    <button class="btn btn-primary" onclick="openAddUserModal()">➕ إضافة مستخدم</button>
+                    <h2>?? ????? ??????????</h2>
+                    <button class="btn btn-primary" onclick="openAddUserModal()">? ????? ??????</button>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>البريد الإلكتروني</th>
-                                    <th>اسم المحل</th>
-                                    <th>تاريخ التسجيل</th>
-                                    <th>الحالة</th>
+                                    <th>?????? ??????????</th>
+                                    <th>??? ?????</th>
+                                    <th>????? ???????</th>
+                                    <th>??????</th>
                                 </tr>
                             </thead>
                             <tbody id="usersTable">
-                                <tr><td colspan="4" class="text-center text-muted">جاري التحميل...</td></tr>
+                                <tr><td colspan="4" class="text-center text-muted">???? ???????...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -58,30 +58,30 @@
         </main>
     </div>
 
-    <!-- Modal إضافة مستخدم -->
+    <!-- Modal ????? ?????? -->
     <div class="modal-overlay" id="addUserModal">
         <div class="modal">
             <div class="modal-header">
-                <h3>➕ إضافة مستخدم جديد</h3>
-                <button class="modal-close" onclick="closeAddUserModal()">×</button>
+                <h3>? ????? ?????? ????</h3>
+                <button class="modal-close" onclick="closeAddUserModal()">�</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>البريد الإلكتروني *</label>
+                    <label>?????? ?????????? *</label>
                     <input type="email" id="newUserEmail" class="form-control" placeholder="user@example.com">
                 </div>
                 <div class="form-group">
-                    <label>كلمة المرور *</label>
-                    <input type="password" id="newUserPassword" class="form-control" placeholder="مينيموم 6 أحرف">
+                    <label>???? ?????? *</label>
+                    <input type="password" id="newUserPassword" class="form-control" placeholder="??????? 6 ????">
                 </div>
                 <div class="form-group">
-                    <label>اسم المحل *</label>
-                    <input type="text" id="newUserStoreName" class="form-control" placeholder="اسم المحل">
+                    <label>??? ????? *</label>
+                    <input type="text" id="newUserStoreName" class="form-control" placeholder="??? ?????">
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" onclick="addNewUser()">💾 إضافة</button>
-                <button class="btn btn-secondary" onclick="closeAddUserModal()">إلغاء</button>
+                <button class="btn btn-primary" onclick="addNewUser()">?? ?????</button>
+                <button class="btn btn-secondary" onclick="closeAddUserModal()">?????</button>
             </div>
         </div>
     </div>
@@ -100,11 +100,11 @@
             currentUser = user;
             document.getElementById('storeName').textContent = profile.store_name;
             
-            // فحص: هل المستخدم admin؟
+            // ???: ?? ???????? admin?
             const isAdmin = profile.role === 'admin';
             
             if (!isAdmin) {
-                alert('⛔ لا تملك صلاحية الوصول لهذه الصفحة!');
+                alert('? ?? ???? ?????? ?????? ???? ??????!');
                 window.location.href = 'dashboard.html';
                 return;
             }
@@ -115,7 +115,7 @@
 
         async function loadUsers() {
             try {
-                // الحصول على جميع المستخدمين من profiles
+                // ?????? ??? ???? ?????????? ?? profiles
                 const { data: profiles, error } = await SupabaseDB.client
                     .from('profiles')
                     .select('*')
@@ -125,7 +125,7 @@
 
                 const tbody = document.getElementById('usersTable');
                 if (!profiles || profiles.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">لا يوجد مستخدمين</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">?? ???? ????????</td></tr>';
                     return;
                 }
 
@@ -133,18 +133,18 @@
                     const roleBadge = p.role === 'admin' ? '<span class="badge badge-warning">Admin</span>' : '<span class="badge badge-info">User</span>';
                     return `
                     <tr>
-                        <td><strong>${p.email || 'غير متوفر'}</strong> ${roleBadge}</td>
+                        <td><strong>${p.email || '??? ?????'}</strong> ${roleBadge}</td>
                         <td>${p.store_name || '-'}</td>
                         <td>${new Date(p.created_at).toLocaleDateString('ar-IQ')}</td>
                         <td>
-                            ${p.role !== 'admin' ? `<a href="customize-user.html?id=${p.id}" class="btn btn-sm btn-primary">⚙️ تخصيص</a>` : '<span class="text-muted">-</span>'}
+                            ${p.role !== 'admin' ? `<a href="customize-user.html?id=${p.id}" class="btn btn-sm btn-primary">?? ?????</a>` : '<span class="text-muted">-</span>'}
                         </td>
                     </tr>
                 `}).join('');
             } catch (error) {
-                console.error('خطأ في تحميل المستخدمين:', error);
+                console.error('??? ?? ????? ??????????:', error);
                 document.getElementById('usersTable').innerHTML = 
-                    '<tr><td colspan="4" class="text-center text-danger">خطأ في تحميل البيانات</td></tr>';
+                    '<tr><td colspan="4" class="text-center text-danger">??? ?? ????? ????????</td></tr>';
             }
         }
 
@@ -165,22 +165,22 @@
             const storeName = document.getElementById('newUserStoreName').value.trim();
 
             if (!email || !password || !storeName) {
-                alert('املأ جميع الحقول المطلوبة');
+                alert('???? ???? ?????? ????????');
                 return;
             }
 
             if (password.length < 6) {
-                alert('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+                alert('???? ?????? ??? ?? ???? 6 ???? ??? ?????');
                 return;
             }
 
             try {
-                // التسجيل
+                // ???????
                 const { user, error: signUpError } = await SupabaseDB.signUp(email, password);
                 
                 if (signUpError) throw signUpError;
 
-                // إنشاء profile
+                // ????? profile
                 await SupabaseDB.createProfile(user.id, {
                     email: email,
                     store_name: storeName,
@@ -188,12 +188,12 @@
                     current_invoice_number: 1
                 });
 
-                alert('✅ تم إضافة المستخدم بنجاح!');
+                alert('? ?? ????? ???????? ?????!');
                 closeAddUserModal();
                 await loadUsers();
             } catch (error) {
-                console.error('خطأ في إضافة المستخدم:', error);
-                alert('حدث خطأ: ' + error.message);
+                console.error('??? ?? ????? ????????:', error);
+                alert('??? ???: ' + error.message);
             }
         }
     </script>

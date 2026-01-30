@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>طباعة إيصال</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>????? ?????</title>
+    <link rel="stylesheet" href="css/style-responsive.css">
     <style>
         @media print {
             .no-print { display: none !important; }
@@ -67,54 +67,54 @@
 </head>
 <body>
     <div id="loadingOverlay" class="no-print" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
-        <div style="text-align: center;"><div style="font-size: 48px; margin-bottom: 20px;">🏪</div><div style="font-size: 18px; color: #666;">جاري التحميل...</div></div>
+        <div style="text-align: center;"><div style="font-size: 48px; margin-bottom: 20px;">??</div><div style="font-size: 18px; color: #666;">???? ???????...</div></div>
     </div>
 
     <div class="print-receipt">
         <div class="receipt-header">
-            <h1 style="margin: 0; font-size: 32px;" id="storeName">نظام إدارة المحل</h1>
+            <h1 style="margin: 0; font-size: 32px;" id="storeName">???? ????? ?????</h1>
             <div class="receipt-number" id="receiptNumber">REC-0001</div>
-            <div style="font-size: 18px; color: #666;" id="receiptType">إيصال قبض</div>
+            <div style="font-size: 18px; color: #666;" id="receiptType">????? ???</div>
         </div>
 
         <div class="receipt-info">
             <div class="info-row">
-                <span class="info-label">التاريخ:</span>
+                <span class="info-label">???????:</span>
                 <span id="receiptDate">-</span>
             </div>
             <div class="info-row">
-                <span class="info-label">الوقت:</span>
+                <span class="info-label">?????:</span>
                 <span id="receiptTime">-</span>
             </div>
             <div class="info-row">
-                <span class="info-label" id="entityLabel">الزبون:</span>
+                <span class="info-label" id="entityLabel">??????:</span>
                 <span id="entityName">-</span>
             </div>
             <div class="info-row">
-                <span class="info-label">طريقة الدفع:</span>
+                <span class="info-label">????? ?????:</span>
                 <span id="paymentMethod">-</span>
             </div>
         </div>
 
-        <div class="receipt-amount" id="amount">0 د.ع</div>
+        <div class="receipt-amount" id="amount">0 ?.?</div>
 
         <div id="notesSection" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 4px; margin: 20px 0;">
-            <div class="info-label">ملاحظات:</div>
+            <div class="info-label">???????:</div>
             <div id="notes" style="margin-top: 8px;"></div>
         </div>
 
         <div class="receipt-footer">
             <div>
-                <div style="border-top: 1px solid #000; width: 150px; text-align: center; padding-top: 5px;">التوقيع</div>
+                <div style="border-top: 1px solid #000; width: 150px; text-align: center; padding-top: 5px;">???????</div>
             </div>
             <div>
-                <div style="border-top: 1px solid #000; width: 150px; text-align: center; padding-top: 5px;">المستلم</div>
+                <div style="border-top: 1px solid #000; width: 150px; text-align: center; padding-top: 5px;">???????</div>
             </div>
         </div>
 
         <div class="no-print" style="margin-top: 30px; text-align: center; display: flex; gap: 10px; justify-content: center;">
-            <button onclick="window.print()" class="btn btn-primary">🖨️ طباعة</button>
-            <button onclick="window.location.href='receipts.html'" class="btn btn-secondary">رجوع</button>
+            <button onclick="window.print()" class="btn btn-primary">??? ?????</button>
+            <button onclick="window.location.href='receipts.html'" class="btn btn-secondary">????</button>
         </div>
     </div>
 
@@ -134,7 +134,7 @@
                 const receiptId = urlParams.get('id');
 
                 if (!receiptId) {
-                    alert('خطأ: لا يوجد إيصال!');
+                    alert('???: ?? ???? ?????!');
                     window.location.href = 'receipts.html';
                     return;
                 }
@@ -143,17 +143,17 @@
 
                 document.getElementById('receiptNumber').textContent = receipt.receipt_number;
                 document.getElementById('receiptType').textContent = 
-                    receipt.receipt_type === 'قبض' ? 'إيصال قبض' : 'إيصال دفع';
+                    receipt.receipt_type === '???' ? '????? ???' : '????? ???';
 
                 const date = new Date(receipt.created_at);
                 document.getElementById('receiptDate').textContent = date.toLocaleDateString('ar-IQ');
                 document.getElementById('receiptTime').textContent = date.toLocaleTimeString('ar-IQ');
 
                 document.getElementById('entityLabel').textContent = 
-                    receipt.entity_type === 'customer' ? 'الزبون:' : 'المورد:';
+                    receipt.entity_type === 'customer' ? '??????:' : '??????:';
                 document.getElementById('entityName').textContent = receipt.entity_name;
-                document.getElementById('paymentMethod').textContent = receipt.payment_method || 'نقد';
-                document.getElementById('amount').textContent = receipt.amount.toLocaleString() + ' د.ع';
+                document.getElementById('paymentMethod').textContent = receipt.payment_method || '???';
+                document.getElementById('amount').textContent = receipt.amount.toLocaleString() + ' ?.?';
 
                 if (receipt.notes) {
                     document.getElementById('notesSection').style.display = 'block';
@@ -162,8 +162,8 @@
 
                 hideLoading();
             } catch (error) {
-                console.error('خطأ في تحميل الإيصال:', error);
-                alert('حدث خطأ: ' + error.message);
+                console.error('??? ?? ????? ???????:', error);
+                alert('??? ???: ' + error.message);
             }
         }
     </script>

@@ -4,42 +4,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الفواتير - نظام إدارة المحل</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>???????? - ???? ????? ?????</title>
+    <link rel="stylesheet" href="css/style-responsive.css">ponsive.css">
 </head>
 
 <body>
     <div id="loadingOverlay"
         style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
         <div style="text-align: center;">
-            <div style="font-size: 48px; margin-bottom: 20px;">🏪</div>
-            <div style="font-size: 18px; color: #666;">جاري التحميل...</div>
+            <div style="font-size: 48px; margin-bottom: 20px;">??</div>
+            <div style="font-size: 18px; color: #666;">???? ???????...</div>
         </div>
     </div>
 
     <header class="header">
-        <h1>🏪 <span id="storeName">نظام إدارة المحل</span></h1>
-        <div class="header-actions"><button class="btn" onclick="logout()">🚪 تسجيل الخروج</button></div>
+        <h1>?? <span id="storeName">???? ????? ?????</span></h1>
+        <div class="header-actions"><button class="btn" onclick="logout()">?? ????? ??????</button></div>
     </header>
 
     <div class="main-layout">
         <nav class="sidebar">
             <ul class="nav-menu">
-                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">📊</span>لوحة
-                        التحكم</a></li>
-                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">➕</span>فاتورة
-                        جديدة</a></li>
+                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">??</span>????
+                        ??????</a></li>
+                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">?</span>??????
+                        ?????</a></li>
                 <li class="nav-item"><a href="invoices.html" class="nav-link active"><span
-                            class="icon">📋</span>الفواتير</a></li>
-                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">📦</span>المنتجات</a>
+                            class="icon">??</span>????????</a></li>
+                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">??</span>????????</a>
                 </li>
-                <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">👥</span>الزبائن</a>
+                <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">??</span>???????</a>
                 </li>
-                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">📥</span>التوريدات</a>
+                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">??</span>?????????</a>
                 </li>
                 <li class="nav-item"><a href="statistics.html" class="nav-link"><span
-                            class="icon">📈</span>الإحصائيات</a></li>
-                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">⚙️</span>الإعدادات</a>
+                            class="icon">??</span>??????????</a></li>
+                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">??</span>?????????</a>
                 </li>
             </ul>
         </nav>
@@ -47,25 +47,25 @@
         <main class="main-content">
             <div class="card">
                 <div class="card-header">
-                    <h2>📋 الفواتير</h2>
-                    <a href="new-invoice.html" class="btn btn-primary">➕ فاتورة جديدة</a>
+                    <h2>?? ????????</h2>
+                    <a href="new-invoice.html" class="btn btn-primary">? ?????? ?????</a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>رقم الفاتورة</th>
-                                    <th>التاريخ</th>
-                                    <th>الزبون</th>
-                                    <th>المجموع</th>
-                                    <th>الحالة</th>
-                                    <th>الإجراءات</th>
+                                    <th>??? ????????</th>
+                                    <th>???????</th>
+                                    <th>??????</th>
+                                    <th>???????</th>
+                                    <th>??????</th>
+                                    <th>?????????</th>
                                 </tr>
                             </thead>
                             <tbody id="invoicesTable">
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted">لا توجد فواتير بعد</td>
+                                    <td colspan="6" class="text-center text-muted">?? ???? ?????? ???</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -99,7 +99,7 @@
                 const tbody = document.getElementById('invoicesTable');
 
                 if (invoices.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">لا توجد فواتير بعد</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">?? ???? ?????? ???</td></tr>';
                     return;
                 }
 
@@ -108,31 +108,31 @@
                         <td><a href="print-invoice.html?id=${inv.id}">${inv.invoice_number}</a></td>
                         <td>${new Date(inv.date).toLocaleDateString('ar')}</td>
                         <td>${inv.customer_name}</td>
-                        <td>${Utils.formatCurrency && Utils.formatCurrency(inv.final_total) || inv.final_total + ' د.ع'}</td>
-                        <td><span class="badge ${inv.status === 'active' ? 'badge-success' : 'badge-danger'}">${inv.status === 'active' ? 'نشطة' : 'ملغاة'}</span></td>
+                        <td>${Utils.formatCurrency && Utils.formatCurrency(inv.final_total) || inv.final_total + ' ?.?'}</td>
+                        <td><span class="badge ${inv.status === 'active' ? 'badge-success' : 'badge-danger'}">${inv.status === 'active' ? '????' : '?????'}</span></td>
                         <td class="actions">
-                            <a href="print-invoice.html?id=${inv.id}" class="btn btn-sm btn-secondary" title="طباعة">🖨️</a>
-                            ${inv.status === 'active' ? `<a href="edit-invoice.html?id=${inv.id}" class="btn btn-sm btn-primary" title="تعديل">✏️</a>` : ''}
-                            <button class="btn btn-sm btn-danger" onclick="deleteInvoice('${inv.id}')" title="حذف الفاتورة نهائياً">🗑️</button>
+                            <a href="print-invoice.html?id=${inv.id}" class="btn btn-sm btn-secondary" title="?????">???</a>
+                            ${inv.status === 'active' ? `<a href="edit-invoice.html?id=${inv.id}" class="btn btn-sm btn-primary" title="?????">??</a>` : ''}
+                            <button class="btn btn-sm btn-danger" onclick="deleteInvoice('${inv.id}')" title="??? ???????? ???????">???</button>
                         </td>
                     </tr>
                 `).join('');
             } catch (error) {
-                console.error('خطأ في تحميل الفاتورة:', error);
-                alert('حدث خطأ في تحميل الفاتورة');
+                console.error('??? ?? ????? ????????:', error);
+                alert('??? ??? ?? ????? ????????');
             }
         }
 
         async function deleteInvoice(id) {
-            if (!confirm('⚠️ تحذير: هل أنت متأكد من حذف هذه الفاتورة نهائياً؟\n\n- سيتم إرجاع المنتجات للمخزون\n- سيتم إعادة حساب رصيد الزبون (للآجل)\n- لا يمكن التراجع عن هذا الإجراء!')) return;
+            if (!confirm('?? ?????: ?? ??? ????? ?? ??? ??? ???????? ????????\n\n- ???? ????? ???????? ???????\n- ???? ????? ???? ???? ?????? (?????)\n- ?? ???? ??????? ?? ??? ???????!')) return;
 
             try {
                 await SupabaseDB.deleteInvoice(id);
-                alert('✅ تم حذف الفاتورة بنجاح!');
+                alert('? ?? ??? ???????? ?????!');
                 await loadInvoices();
             } catch (error) {
-                console.error('خطأ في الحذف:', error);
-                alert('حدث خطأ: ' + error.message);
+                console.error('??? ?? ?????:', error);
+                alert('??? ???: ' + error.message);
             }
         }
     </script>

@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>طباعة الفاتورة</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>????? ????????</title>
+    <link rel="stylesheet" href="css/style-responsive.css">
     <style>
         @media print {
             body {
@@ -149,36 +149,36 @@
     <div id="loadingOverlay"
         style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
         <div style="text-align: center;">
-            <div style="font-size: 48px; margin-bottom: 20px;">🏪</div>
-            <div style="font-size: 18px; color: #666;">جاري التحميل...</div>
+            <div style="font-size: 48px; margin-bottom: 20px;">??</div>
+            <div style="font-size: 18px; color: #666;">???? ???????...</div>
         </div>
     </div>
 
     <div class="no-print"
         style="max-width: 800px; margin: 20px auto; display: flex; gap: 10px; justify-content: flex-end;">
-        <button class="btn btn-success" onclick="goToNewInvoice()">➕ فاتورة جديدة</button>
-        <button class="btn btn-primary" onclick="printAndReturn()">🖨️ طباعة</button>
-        <button class="btn btn-secondary" onclick="window.location.href='invoices.html'">📋 الفواتير</button>
-        <button class="btn btn-secondary" onclick="window.location.href='dashboard.html'">🏠 الرئيسية</button>
+        <button class="btn btn-success" onclick="goToNewInvoice()">? ?????? ?????</button>
+        <button class="btn btn-primary" onclick="printAndReturn()">??? ?????</button>
+        <button class="btn btn-secondary" onclick="window.location.href='invoices.html'">?? ????????</button>
+        <button class="btn btn-secondary" onclick="window.location.href='dashboard.html'">?? ????????</button>
     </div>
 
     <div class="print-invoice" id="invoiceContent">
         <div class="invoice-header">
-            <h1>🏪 <span id="storeName">نظام إدارة المحل</span></h1>
+            <h1>?? <span id="storeName">???? ????? ?????</span></h1>
             <p id="storeInfo" style="color: #64748b; margin: 0;"></p>
         </div>
 
         <div class="invoice-info">
             <div class="info-item">
-                <label>رقم الفاتورة</label>
+                <label>??? ????????</label>
                 <span id="invoiceNumber">-</span>
             </div>
             <div class="info-item">
-                <label>التاريخ</label>
+                <label>???????</label>
                 <span id="invoiceDate">-</span>
             </div>
             <div class="info-item">
-                <label>اسم الزبون</label>
+                <label>??? ??????</label>
                 <span id="customerName">-</span>
             </div>
         </div>
@@ -191,55 +191,55 @@
             <thead>
                 <tr>
                     <th width="50">#</th>
-                    <th>المنتج</th>
-                    <th width="100">السعر</th>
-                    <th width="80">الكمية</th>
-                    <th width="120">المجموع</th>
+                    <th>??????</th>
+                    <th width="100">?????</th>
+                    <th width="80">??????</th>
+                    <th width="120">???????</th>
                 </tr>
             </thead>
             <tbody id="itemsTable">
                 <tr>
-                    <td colspan="5" style="text-align: center;">جاري التحميل...</td>
+                    <td colspan="5" style="text-align: center;">???? ???????...</td>
                 </tr>
             </tbody>
         </table>
 
         <div class="totals">
             <div class="row">
-                <span>المجموع:</span>
-                <strong id="subtotal">0 د.ع</strong>
+                <span>???????:</span>
+                <strong id="subtotal">0 ?.?</strong>
             </div>
             <div class="row">
-                <span>الخصم:</span>
-                <strong id="discount">0 د.ع</strong>
+                <span>?????:</span>
+                <strong id="discount">0 ?.?</strong>
             </div>
             <div class="row total-row">
-                <span>الإجمالي:</span>
-                <strong id="finalTotal">0 د.ع</strong>
+                <span>????????:</span>
+                <strong id="finalTotal">0 ?.?</strong>
             </div>
             <div id="creditInfo"
                 style="display: none; margin-top: 16px; padding-top: 16px; border-top: 2px solid #cbd5e1;">
                 <div class="row" style="color: #6b7280;">
-                    <span>الرصيد السابق:</span>
-                    <strong id="previousBalance">0 د.ع</strong>
+                    <span>?????? ??????:</span>
+                    <strong id="previousBalance">0 ?.?</strong>
                 </div>
                 <div class="row" style="color: #10b981;">
-                    <span>المدفوع:</span>
-                    <strong id="paidAmount">0 د.ع</strong>
+                    <span>???????:</span>
+                    <strong id="paidAmount">0 ?.?</strong>
                 </div>
                 <div class="row" style="color: #dc2626; font-size: 18px; font-weight: 700;">
-                    <span>المتبقي:</span>
-                    <strong id="remainingAmount">0 د.ع</strong>
+                    <span>???????:</span>
+                    <strong id="remainingAmount">0 ?.?</strong>
                 </div>
                 <div class="row" style="color: #dc2626; font-size: 20px; font-weight: 700; padding-top: 10px; border-top: 2px solid #cbd5e1;">
-                    <span>الرصيد الجديد:</span>
-                    <strong id="newBalance">0 د.ع</strong>
+                    <span>?????? ??????:</span>
+                    <strong id="newBalance">0 ?.?</strong>
                 </div>
             </div>
         </div>
 
         <div class="footer">
-            <p>شكراً لتعاملكم معنا</p>
+            <p>????? ???????? ????</p>
             <p id="footerDate"></p>
         </div>
     </div>
@@ -260,45 +260,45 @@
                 const { user, profile } = await getCurrentUserData();
                 currentUser = user;
 
-                // الحصول على ID من URL
+                // ?????? ??? ID ?? URL
                 const urlParams = new URLSearchParams(window.location.search);
                 const invoiceId = urlParams.get('id');
 
                 if (!invoiceId) {
-                    alert('رقم الفاتورة غير موجود!');
+                    alert('??? ???????? ??? ?????!');
                     window.location.href = 'invoices.html';
                     return;
                 }
 
-                // تحميل الفاتورة
+                // ????? ????????
                 const invoices = await SupabaseDB.getInvoices(user.id);
                 const invoice = invoices.find(inv => inv.id === invoiceId);
 
                 if (!invoice) {
-                    alert('الفاتورة غير موجودة!');
+                    alert('???????? ??? ??????!');
                     window.location.href = 'invoices.html';
                     return;
                 }
 
-                // عرض البيانات
+                // ??? ????????
                 document.getElementById('storeName').textContent = profile.store_name;
                 document.getElementById('storeInfo').textContent =
-                    `${profile.phone || ''} • ${profile.address || ''}`.trim();
+                    `${profile.phone || ''} � ${profile.address || ''}`.trim();
 
                 document.getElementById('invoiceNumber').textContent = invoice.invoice_number;
                 document.getElementById('invoiceDate').textContent = new Date(invoice.date).toLocaleDateString('ar-IQ');
                 document.getElementById('customerName').textContent = invoice.customer_name;
 
-                // نوع الدفع
+                // ??? ?????
                 const paymentBadge = document.getElementById('paymentTypeBadge');
                 if (invoice.payment_type === 'cash') {
                     paymentBadge.className = 'payment-badge payment-cash';
-                    paymentBadge.textContent = '💵 نقد';
+                    paymentBadge.textContent = '?? ???';
                 } else {
                     paymentBadge.className = 'payment-badge payment-credit';
-                    paymentBadge.textContent = '📅 آجل';
+                    paymentBadge.textContent = '?? ???';
                     
-                    // حساب الرصيد
+                    // ???? ??????
                     const customers = await SupabaseDB.getCustomers(user.id);
                     const customer = customers.find(c => c.id === invoice.customer_id);
                     
@@ -307,58 +307,58 @@
                         const newBalance = customer.balance || 0;
                         
                         document.getElementById('creditInfo').style.display = 'block';
-                        document.getElementById('previousBalance').textContent = previousBalance.toLocaleString() + ' د.ع';
-                        document.getElementById('paidAmount').textContent = (invoice.paid_amount || 0).toLocaleString() + ' د.ع';
-                        document.getElementById('remainingAmount').textContent = (invoice.remaining_amount || 0).toLocaleString() + ' د.ع';
-                        document.getElementById('newBalance').textContent = newBalance.toLocaleString() + ' د.ع';
+                        document.getElementById('previousBalance').textContent = previousBalance.toLocaleString() + ' ?.?';
+                        document.getElementById('paidAmount').textContent = (invoice.paid_amount || 0).toLocaleString() + ' ?.?';
+                        document.getElementById('remainingAmount').textContent = (invoice.remaining_amount || 0).toLocaleString() + ' ?.?';
+                        document.getElementById('newBalance').textContent = newBalance.toLocaleString() + ' ?.?';
                     } else {
-                        // إذا لم يكن هناك زبون محدد
+                        // ??? ?? ??? ???? ???? ????
                         document.getElementById('creditInfo').style.display = 'block';
-                        document.getElementById('previousBalance').textContent = '0 د.ع';
-                        document.getElementById('paidAmount').textContent = (invoice.paid_amount || 0).toLocaleString() + ' د.ع';
-                        document.getElementById('remainingAmount').textContent = (invoice.remaining_amount || 0).toLocaleString() + ' د.ع';
-                        document.getElementById('newBalance').textContent = (invoice.remaining_amount || 0).toLocaleString() + ' د.ع';
+                        document.getElementById('previousBalance').textContent = '0 ?.?';
+                        document.getElementById('paidAmount').textContent = (invoice.paid_amount || 0).toLocaleString() + ' ?.?';
+                        document.getElementById('remainingAmount').textContent = (invoice.remaining_amount || 0).toLocaleString() + ' ?.?';
+                        document.getElementById('newBalance').textContent = (invoice.remaining_amount || 0).toLocaleString() + ' ?.?';
                     }
                 }
 
-                // المنتجات
+                // ????????
                 const itemsTable = document.getElementById('itemsTable');
                 if (!invoice.invoice_items || invoice.invoice_items.length === 0) {
-                    itemsTable.innerHTML = '<tr><td colspan="5" style="text-align: center;">لا توجد منتجات</td></tr>';
+                    itemsTable.innerHTML = '<tr><td colspan="5" style="text-align: center;">?? ???? ??????</td></tr>';
                 } else {
                     itemsTable.innerHTML = invoice.invoice_items.map((item, index) => `
                         <tr>
                             <td>${index + 1}</td>
                             <td>${item.product_name}</td>
-                            <td>${(item.sale_price || 0).toLocaleString()} د.ع</td>
+                            <td>${(item.sale_price || 0).toLocaleString()} ?.?</td>
                             <td>${item.quantity}</td>
-                            <td>${(item.total || 0).toLocaleString()} د.ع</td>
+                            <td>${(item.total || 0).toLocaleString()} ?.?</td>
                         </tr>
                     `).join('');
                 }
 
-                // الإجماليات
-                document.getElementById('subtotal').textContent = (invoice.total || 0).toLocaleString() + ' د.ع';
-                document.getElementById('discount').textContent = (invoice.discount || 0).toLocaleString() + ' د.ع';
-                document.getElementById('finalTotal').textContent = (invoice.final_total || 0).toLocaleString() + ' د.ع';
+                // ??????????
+                document.getElementById('subtotal').textContent = (invoice.total || 0).toLocaleString() + ' ?.?';
+                document.getElementById('discount').textContent = (invoice.discount || 0).toLocaleString() + ' ?.?';
+                document.getElementById('finalTotal').textContent = (invoice.final_total || 0).toLocaleString() + ' ?.?';
 
                 document.getElementById('footerDate').textContent =
-                    'تاريخ الطباعة: ' + new Date().toLocaleString('ar-IQ');
+                    '????? ???????: ' + new Date().toLocaleString('ar-IQ');
 
                 document.getElementById('loadingOverlay').style.display = 'none';
 
             } catch (error) {
-                console.error('خطأ في تحميل الفاتورة:', error);
-                alert('حدث خطأ في تحميل الفاتورة: ' + error.message);
+                console.error('??? ?? ????? ????????:', error);
+                alert('??? ??? ?? ????? ????????: ' + error.message);
                 window.location.href = 'invoices.html';
             }
         }
 
         function printAndReturn() {
-            // الطباعة
+            // ???????
             window.print();
             
-            // العودة لصفحة فاتورة جديدة بعد ثانية واحدة (لإتمام الطباعة)
+            // ?????? ????? ?????? ????? ??? ????? ????? (?????? ???????)
             setTimeout(() => {
                 window.location.href = 'new-invoice.html';
             }, 1000);
