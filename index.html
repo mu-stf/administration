@@ -79,6 +79,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
+    <script src="js/security.js"></script>
+    <script src="js/rate-limiter.js"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/utils.js"></script>
 
@@ -134,7 +136,7 @@
         .addEventListener("submit", async (e) => {
           e.preventDefault();
 
-          const email = document.getElementById("email").value;
+          const email = document.getElementById("email").value.trim();
           const password = document.getElementById("password").value;
           const errorDiv = document.getElementById("errorMessage");
           const loginBtn = document.getElementById("loginBtn");
@@ -142,22 +144,47 @@
           // إخفاء رسالة الخطأ
           errorDiv.classList.add("hidden");
 
+          // التحقق من صحة البريد الإلكتروني
+          if (!SecurityUtils.validateEmail(email)) {
+            errorDiv.textContent = "❌ البريد الإلكتروني غير صحيح";
+            errorDiv.classList.remove("hidden");
+            return;
+          }
+
+          // فحص Rate Limiting
+          if (!RateLimiterManager.canLogin(email)) {
+            const blockMsg = RateLimiterManager.getLoginBlockMessage(email);
+            errorDiv.textContent = blockMsg;
+            errorDiv.classList.remove("hidden");
+            return;
+          }
+
           try {
             loginBtn.disabled = true;
             loginBtn.textContent = "جاري تسجيل الدخول...";
 
+            // تنظيف المدخلات
+            const cleanEmail = SecurityUtils.sanitizeInput(email);
+
             // تسجيل الدخول عبر Supabase
-           const { user, session } = await SupabaseDB.signIn(email, password);
+            const { user, session } = await SupabaseDB.signIn(cleanEmail, password);
+
+            // تسجيل نجاح تسجيل الدخول
+            RateLimiterManager.recordLoginAttempt(email, true);
 
             // الانتقال إلى صفحة فاتورة جديدة مباشرة
             window.location.href = "new-invoice.html";
           } catch (error) {
             console.error("خطأ في تسجيل الدخول:", error);
 
+            // تسجيل فشل تسجيل الدخول
+            RateLimiterManager.recordLoginAttempt(email, false);
+
             let errorMessage = "خطأ في تسجيل الدخول";
 
             if (error.message.includes("Invalid login credentials")) {
-              errorMessage = "البريد الإلكتروني أو كلمة المرور غير صحيحة";
+              const remaining = RateLimiterManager.login.getRemainingAttempts(email);
+              errorMessage = `❌ البريد الإلكتروني أو كلمة المرور غير صحيحة\n\n⚠️ المحاولات المتبقية: ${remaining}`;
             } else if (error.message.includes("Email not confirmed")) {
               errorMessage = "يرجى تأكيد بريدك الإلكتروني أولاً";
             } else {
