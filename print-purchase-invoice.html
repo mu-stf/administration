@@ -4,356 +4,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>????? ?????? ????</title>
-    <link rel="stylesheet" href="css/style-responsive.css">
+    <title>طباعة فاتورة الشراء - نظام الإدارة المتكامل</title>
     <style>
-        @media print {
-            body {
-                background: white;
-                margin: 0;
-            }
-
-            .no-print {
-                display: none !important;
-            }
-
-            .print-invoice {
-                box-shadow: none;
-                margin: 0;
-                max-width: 100%;
-            }
-        }
-
-        .print-invoice {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 40px;
-            background: white;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .invoice-header {
-            text-align: center;
-            border-bottom: 3px solid #10b981;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-        }
-
-        .invoice-header h1 {
-            font-size: 32px;
-            color: #10b981;
-            margin-bottom: 10px;
-        }
-
-        .invoice-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-
-        .info-item {
-            text-align: center;
-        }
-
-        .info-item label {
-            display: block;
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        .info-item span {
-            font-weight: 600;
-            font-size: 16px;
-            color: #1e293b;
-        }
-
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 30px;
-        }
-
-        .items-table th {
-            background: #10b981;
-            color: white;
-            padding: 12px;
-            text-align: right;
-        }
-
-        .items-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .items-table tbody tr:hover {
-            background: #f8f9fa;
-        }
-
-        .totals {
-            max-width: 400px;
-            margin-right: auto;
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-        }
-
-        .totals .row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        .totals .total-row {
-            font-size: 20px;
-            font-weight: 700;
-            color: #10b981;
-            padding-top: 10px;
-            border-top: 2px solid #cbd5e1;
-        }
-
-        .footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 2px solid #e2e8f0;
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-        }
-
-        .payment-badge {
-            display: inline-block;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .payment-cash {
-            background: #10b981;
-            color: white;
-        }
-
-        .payment-credit {
-            background: #f59e0b;
-            color: white;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; direction: rtl; background: #f5f5f5; }
+        .invoice-container { max-width: 80mm; margin: 20px auto; background: white; padding: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .invoice-header { text-align: center; border-bottom: 2px dashed #333; padding-bottom: 15px; margin-bottom: 15px; }
+        .store-name { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
+        .invoice-details { font-size: 12px; margin-bottom: 15px; }
+        .invoice-details p { margin-bottom: 5px; }
+        .items-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 15px; }
+        .items-table th, .items-table td { padding: 8px 4px; text-align: right; border-bottom: 1px solid #ddd; }
+        .items-table th { background: #f0f0f0; font-weight: bold; }
+        .totals { border-top: 2px dashed #333; padding-top: 10px; font-size: 14px; font-weight: bold; text-align: center; }
+        .print-actions { text-align: center; margin: 20px; }
+        .print-actions button { padding: 10px 30px; margin: 5px; font-size: 14px; cursor: pointer; border: none; border-radius: 5px; }
+        .btn-print { background: #2563eb; color: white; }
+        .btn-back { background: #6b7280; color: white; }
+        @media print { body { background: white; } .print-actions { display: none; } .invoice-container { box-shadow: none; margin: 0; } }
     </style>
 </head>
 
 <body>
-    <div id="loadingOverlay"
-        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
-        <div style="text-align: center;">
-            <div style="font-size: 48px; margin-bottom: 20px;">??</div>
-            <div style="font-size: 18px; color: #666;">???? ???????...</div>
-        </div>
+    <div class="print-actions">
+        <button class="btn-print" onclick="window.print()">🖨️ طباعة</button>
+        <button class="btn-back" onclick="window.location.href='supplies.html'">↩️ العودة للتوريدات</button>
     </div>
 
-    <div class="no-print"
-        style="max-width: 800px; margin: 20px auto; display: flex; gap: 10px; justify-content: flex-end;">
-        <button class="btn btn-primary" onclick="window.print()">??? ?????</button>
-        <button class="btn btn-secondary" onclick="window.location.href='supplies.html'">?? ????????</button>
-        <button class="btn btn-secondary" onclick="window.location.href='dashboard.html'">?? ????????</button>
-    </div>
-
-    <div class="print-invoice" id="invoiceContent">
+    <div class="invoice-container">
         <div class="invoice-header">
-            <h1>?? <span id="storeName">???? ????? ?????</span></h1>
-            <p id="storeInfo" style="color: #64748b; margin: 0;"></p>
-            <h2 style="margin-top: 10px; color: #666;">?????? ????</h2>
+            <div class="store-name" id="storeName">فاتورة شراء</div>
         </div>
 
-        <div class="invoice-info">
-            <div class="info-item">
-                <label>??? ????????</label>
-                <span id="invoiceNumber">-</span>
-            </div>
-            <div class="info-item">
-                <label>???????</label>
-                <span id="invoiceDate">-</span>
-            </div>
-            <div class="info-item">
-                <label>??? ??????</label>
-                <span id="supplierName">-</span>
-            </div>
-        </div>
-
-        <div style="margin-bottom: 20px; text-align: center;">
-            <span id="paymentTypeBadge"></span>
+        <div class="invoice-details">
+            <p><strong>رقم الفاتورة:</strong> <span id="invoiceNumber">-</span></p>
+            <p><strong>التاريخ:</strong> <span id="invoiceDate">-</span></p>
+            <p><strong>المورد:</strong> <span id="supplierName">-</span></p>
         </div>
 
         <table class="items-table">
             <thead>
                 <tr>
-                    <th width="50">#</th>
-                    <th>??????</th>
-                    <th width="100">??? ??????</th>
-                    <th width="80">??????</th>
-                    <th width="120">???????</th>
+                    <th>المنتج</th>
+                    <th>الكمية</th>
+                    <th>سعر الشراء</th>
+                    <th>المجموع</th>
                 </tr>
             </thead>
-            <tbody id="itemsTable">
-                <tr>
-                    <td colspan="5" style="text-align: center;">???? ???????...</td>
-                </tr>
-            </tbody>
+            <tbody id="invoiceItems"></tbody>
         </table>
 
         <div class="totals">
-            <div class="row total-row">
-                <span>????????:</span>
-                <strong id="finalTotal">0 ?.?</strong>
-            </div>
-            <div id="creditInfo"
-                style="display: none; margin-top: 16px; padding-top: 16px; border-top: 2px solid #cbd5e1;">
-                <div class="row" style="color: #6b7280;">
-                    <span>?????? ?????? ??????:</span>
-                    <strong id="previousBalance">0 ?.?</strong>
-                </div>
-                <div class="row" style="color: #10b981;">
-                    <span>???????:</span>
-                    <strong id="paidAmount">0 ?.?</strong>
-                </div>
-                <div class="row" style="color: #dc2626; font-size: 18px; font-weight: 700;">
-                    <span>??????? ?? ????????:</span>
-                    <strong id="remainingAmount">0 ?.?</strong>
-                </div>
-                <div class="row" style="color: #dc2626; font-size: 20px; font-weight: 700; padding-top: 10px; border-top: 2px solid #cbd5e1;">
-                    <span>???? ?????? ??????:</span>
-                    <strong id="newBalance">0 ?.?</strong>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">
-            <p>?? ?????? ??????? ?? ?????</p>
-            <p id="footerDate"></p>
+            <p>الإجمالي: <span id="finalTotal">0 د.ع</span></p>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
     <script src="js/supabase-client.js"></script>
-    <script src="js/page-protection.js"></script>
+    <script src="js/utils.js"></script>
     <script>
-        let currentUser = null;
-
-        protectPage().then(authorized => {
-            if (authorized) loadInvoice();
-        });
-
         async function loadInvoice() {
-            try {
-                const { user, profile } = await getCurrentUserData();
-                currentUser = user;
-
-                const urlParams = new URLSearchParams(window.location.search);
-                const invoiceId = urlParams.get('id');
-
-                if (!invoiceId) {
-                    alert('??? ???????? ??? ?????!');
-                    window.location.href = 'supplies.html';
-                    return;
-                }
-
-                // ????? ????????
-                // ????? ???? ???? ?????? ???? ????? ????????
-                const supplyInvoices = await SupabaseDB.getSupplies(user.id);
-                const invoice = supplyInvoices.find(inv => inv.id === invoiceId);
-
-                if (!invoice) {
-                    // ???? ????? ?????? ?????? ?? ?????? ?? ??????
-                    const { data: directInvoice, error } = await SupabaseDB.client
-                        .from('supplies')
-                        .select('*, supply_items(*)')
-                        .eq('id', invoiceId)
-                        .single();
-                    
-                    if (error || !directInvoice) {
-                        alert('???????? ??? ??????!');
-                        window.location.href = 'supplies.html';
-                        return;
-                    }
-                    displayInvoice(directInvoice, profile, user.id);
-                } else {
-                     // ??? ?????? ??? ?? ??? ??????
-                    if (!invoice.supply_items) {
-                        const { data: items } = await SupabaseDB.client
-                            .from('supply_items')
-                            .select('*')
-                            .eq('supply_id', invoiceId);
-                        invoice.supply_items = items || [];
-                    }
-                    displayInvoice(invoice, profile, user.id);
-                }
-
-            } catch (error) {
-                console.error('??? ?? ????? ????????:', error);
-                alert('??? ??? ?? ????? ????????: ' + error.message);
+            const urlParams = new URLSearchParams(window.location.search);
+            const invoiceId = urlParams.get('id');
+            if (!invoiceId) {
+                alert('لا يوجد معرف للفاتورة');
                 window.location.href = 'supplies.html';
+                return;
             }
-        }
-
-        async function displayInvoice(invoice, profile, userId) {
-            document.getElementById('storeName').textContent = profile.store_name;
-            document.getElementById('storeInfo').textContent =
-                `${profile.phone || ''} � ${profile.address || ''}`.trim();
-
-            document.getElementById('invoiceNumber').textContent = invoice.invoice_number || '-';
-            document.getElementById('invoiceDate').textContent = new Date(invoice.date).toLocaleDateString('ar-IQ');
-            document.getElementById('supplierName').textContent = invoice.supplier_name || '???? ????';
-
-            // ??? ?????
-            const paymentBadge = document.getElementById('paymentTypeBadge');
-            if (invoice.payment_type === 'cash') {
-                paymentBadge.className = 'payment-badge payment-cash';
-                paymentBadge.textContent = '?? ???';
-            } else {
-                paymentBadge.className = 'payment-badge payment-credit';
-                paymentBadge.textContent = '?? ???';
+            try {
+                const invoice = await SupabaseDB.getPurchaseInvoice(invoiceId);
+                document.getElementById('invoiceNumber').textContent = invoice.invoice_number;
+                document.getElementById('invoiceDate').textContent = Utils.formatDateTime(invoice.date);
+                document.getElementById('supplierName').textContent = invoice.supplier_name || '-';
                 
-                // ???? ??????
-                const suppliers = await SupabaseDB.getSuppliers(userId);
-                const supplier = suppliers.find(s => s.id === invoice.supplier_id);
-                
-                if (supplier) {
-                    const previousBalance = (supplier.balance || 0) - (invoice.remaining_amount || 0);
-                    const newBalance = supplier.balance || 0;
-                    
-                    document.getElementById('creditInfo').style.display = 'block';
-                    document.getElementById('previousBalance').textContent = previousBalance.toLocaleString() + ' ?.?';
-                    document.getElementById('paidAmount').textContent = (invoice.paid_amount || 0).toLocaleString() + ' ?.?';
-                    document.getElementById('remainingAmount').textContent = (invoice.remaining_amount || 0).toLocaleString() + ' ?.?';
-                    document.getElementById('newBalance').textContent = newBalance.toLocaleString() + ' ?.?';
-                }
-            }
-
-            // ??????
-            const itemsTable = document.getElementById('itemsTable');
-            const items = invoice.purchase_invoice_items || [];
-            if (items.length === 0) {
-                itemsTable.innerHTML = '<tr><td colspan="5" style="text-align: center;">?? ???? ??????</td></tr>';
-            } else {
-                itemsTable.innerHTML = items.map((item, index) => `
+                const items = await SupabaseDB.getPurchaseInvoiceItems(invoiceId);
+                const tbody = document.getElementById('invoiceItems');
+                tbody.innerHTML = items.map(item => `
                     <tr>
-                        <td>${index + 1}</td>
                         <td>${item.product_name}</td>
-                        <td>${(item.purchase_price || 0).toLocaleString()} ?.?</td>
                         <td>${item.quantity}</td>
-                        <td>${(item.total || 0).toLocaleString()} ?.?</td>
+                        <td>${item.purchase_price.toLocaleString()}</td>
+                        <td>${item.total.toLocaleString()}</td>
                     </tr>
                 `).join('');
+                
+                document.getElementById('finalTotal').textContent = Utils.formatCurrency(invoice.total);
+            } catch (error) {
+                console.error('خطأ:', error);
             }
-
-            document.getElementById('finalTotal').textContent = (invoice.total || 0).toLocaleString() + ' ?.?';
-            document.getElementById('footerDate').textContent = '????? ???????: ' + new Date().toLocaleString('ar-IQ');
-            document.getElementById('loadingOverlay').style.display = 'none';
         }
+        loadInvoice();
     </script>
 </body>
 

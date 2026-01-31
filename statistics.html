@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>?????????? - ???? ????? ?????</title>
+    <title>الإحصائيات - نظام الإدارة المتكامل</title>
     <link rel="stylesheet" href="css/style-responsive.css">
 </head>
 
@@ -12,65 +12,151 @@
     <div id="loadingOverlay"
         style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
         <div style="text-align: center;">
-            <div style="font-size: 48px; margin-bottom: 20px;">??</div>
-            <div style="font-size: 18px; color: #666;">???? ???????...</div>
+            <div style="font-size: 48px; margin-bottom: 20px;">📈</div>
+            <div style="font-size: 18px; color: #666;">جاري التحميل...</div>
         </div>
     </div>
 
     <header class="header">
-        <h1>?? <span id="storeName">???? ????? ?????</span></h1>
-        <div class="header-actions"><button class="btn" onclick="logout()">?? ????? ??????</button></div>
+        <h1>أهلاً <span id="storeName">نظام الإدارة المتكامل</span></h1>
+        <div class="header-actions">
+            <button class="btn" onclick="logout()">تسجيل الخروج</button>
+        </div>
     </header>
 
     <div class="main-layout">
         <nav class="sidebar">
             <ul class="nav-menu">
-                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">??</span>????
-                        ??????</a></li>
-                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">?</span>??????
-                        ?????</a></li>
-                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">??</span>????????</a>
-                </li>
-                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">??</span>????????</a>
-                </li>
-                <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">??</span>???????</a>
-                </li>
-                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">??</span>?????????</a>
-                </li>
-                <li class="nav-item"><a href="statistics.html" class="nav-link active"><span
-                            class="icon">??</span>??????????</a></li>
-                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">??</span>?????????</a>
-                </li>
+                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">📊</span>لوحة التحكم</a></li>
+                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">➕</span>فاتورة جديدة</a></li>
+                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">📋</span>الفواتير</a></li>
+                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">📦</span>المنتجات</a></li>
+                <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">👥</span>الزبائن</a></li>
+                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">🚚</span>التوريدات</a></li>
+                <li class="nav-item"><a href="statistics.html" class="nav-link active"><span class="icon">📈</span>الإحصائيات</a></li>
+                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">⚙️</span>الإعدادات</a></li>
             </ul>
         </nav>
 
         <main class="main-content">
-            <div class="card">
+            <!-- فلتر التاريخ -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                        <label><strong>الفترة الزمنية:</strong></label>
+                        <select id="periodFilter" class="form-control" style="max-width: 200px;" onchange="loadStats()">
+                            <option value="today">اليوم</option>
+                            <option value="week">هذا الأسبوع</option>
+                            <option value="month" selected>هذا الشهر</option>
+                            <option value="year">هذه السنة</option>
+                            <option value="custom">فترة مخصصة</option>
+                        </select>
+                        <div id="customDates" style="display: none; gap: 10px;">
+                            <input type="date" id="dateFrom" class="form-control">
+                            <input type="date" id="dateTo" class="form-control">
+                            <button class="btn btn-primary" onclick="loadStats()">🔍 بحث</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- إحصائيات عامة -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">📋</div>
+                    <div class="stat-info">
+                        <h3 id="totalInvoices">0</h3>
+                        <p>إجمالي الفواتير</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">💰</div>
+                    <div class="stat-info">
+                        <h3 id="totalSales">0 د.ع</h3>
+                        <p>إجمالي المبيعات</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">📈</div>
+                    <div class="stat-info">
+                        <h3 id="totalProfit">0 د.ع</h3>
+                        <p>إجمالي الأرباح</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">🛒</div>
+                    <div class="stat-info">
+                        <h3 id="avgInvoice">0 د.ع</h3>
+                        <p>متوسط الفاتورة</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- المنتجات الأكثر مبيعاً -->
+            <div class="card mb-3">
                 <div class="card-header">
-                    <h2>?? ??????????</h2>
+                    <h2>🏆 المنتجات الأكثر مبيعاً</h2>
                 </div>
                 <div class="card-body">
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon blue">??</div>
-                            <div class="stat-info">
-                                <h3 id="totalInvoices">0</h3>
-                                <p>?????? ????????</p>
-                            </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>المنتج</th>
+                                    <th>الكمية المباعة</th>
+                                    <th>إجمالي المبيعات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topProducts">
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">لا توجد بيانات</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ملخص المبيعات والمشتريات -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>💵 ملخص النقد والآجل</h2>
+                    </div>
+                    <div class="card-body">
+                        <div style="margin-bottom: 15px;">
+                            <strong>مبيعات نقدية:</strong>
+                            <span id="cashSales" style="float: left;">0 د.ع</span>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-icon green">??</div>
-                            <div class="stat-info">
-                                <h3 id="totalSales">0 ?.?</h3>
-                                <p>?????? ????????</p>
-                            </div>
+                        <div style="margin-bottom: 15px;">
+                            <strong>مبيعات آجلة:</strong>
+                            <span id="creditSales" style="float: left;">0 د.ع</span>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-icon orange">??</div>
-                            <div class="stat-info">
-                                <h3 id="totalProfit">0 ?.?</h3>
-                                <p>?????? ???????</p>
-                            </div>
+                        <hr>
+                        <div>
+                            <strong>الديون المستحقة:</strong>
+                            <span id="totalDebt" style="float: left; color: #dc2626;">0 د.ع</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>📦 ملخص المخزون</h2>
+                    </div>
+                    <div class="card-body">
+                        <div style="margin-bottom: 15px;">
+                            <strong>عدد المنتجات:</strong>
+                            <span id="totalProducts" style="float: left;">0</span>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <strong>قيمة المخزون:</strong>
+                            <span id="stockValue" style="float: left;">0 د.ع</span>
+                        </div>
+                        <div>
+                            <strong>منتجات قليلة المخزون:</strong>
+                            <span id="lowStockCount" style="float: left; color: #dc2626;">0</span>
                         </div>
                     </div>
                 </div>
@@ -92,22 +178,139 @@
             const { user, profile } = await getCurrentUserData();
             currentUser = user;
             document.getElementById('storeName').textContent = profile.store_name;
+
+            // إعداد فلتر التاريخ المخصص
+            document.getElementById('periodFilter').addEventListener('change', function() {
+                const customDates = document.getElementById('customDates');
+                customDates.style.display = this.value === 'custom' ? 'flex' : 'none';
+                if (this.value !== 'custom') loadStats();
+            });
+
             await loadStats();
             hideLoading();
         }
 
+        function getDateRange() {
+            const period = document.getElementById('periodFilter').value;
+            const now = new Date();
+            let from, to;
+
+            switch (period) {
+                case 'today':
+                    from = Utils.getStartOfDay(now);
+                    to = Utils.getEndOfDay(now);
+                    break;
+                case 'week':
+                    from = new Date(now);
+                    from.setDate(now.getDate() - 7);
+                    to = Utils.getEndOfDay(now);
+                    break;
+                case 'month':
+                    from = new Date(now.getFullYear(), now.getMonth(), 1);
+                    to = Utils.getEndOfDay(now);
+                    break;
+                case 'year':
+                    from = new Date(now.getFullYear(), 0, 1);
+                    to = Utils.getEndOfDay(now);
+                    break;
+                case 'custom':
+                    from = new Date(document.getElementById('dateFrom').value);
+                    to = new Date(document.getElementById('dateTo').value + 'T23:59:59');
+                    break;
+            }
+
+            return { from, to };
+        }
+
         async function loadStats() {
             try {
-                const startDate = new Date(0); // ??? ???????
-                const endDate = new Date();
+                const { from, to } = getDateRange();
 
-                const stats = await SupabaseDB.getStatistics(currentUser.id, startDate, endDate);
-
+                // إحصائيات الفواتير
+                const stats = await SupabaseDB.getStatistics(currentUser.id, from, to);
+                
                 document.getElementById('totalInvoices').textContent = stats.invoiceCount;
-                document.getElementById('totalSales').textContent = Utils.formatCurrency && Utils.formatCurrency(stats.totalSales) || stats.totalSales + ' ?.?';
-                document.getElementById('totalProfit').textContent = Utils.formatCurrency && Utils.formatCurrency(stats.profit) || stats.profit + ' ?.?';
+                document.getElementById('totalSales').textContent = Utils.formatCurrency(stats.totalSales);
+                document.getElementById('totalProfit').textContent = Utils.formatCurrency(stats.profit);
+                document.getElementById('avgInvoice').textContent = stats.invoiceCount > 0 
+                    ? Utils.formatCurrency(stats.totalSales / stats.invoiceCount) 
+                    : '0 د.ع';
+
+                // النقد والآجل
+                const invoices = await SupabaseDB.getInvoices(currentUser.id);
+                const filteredInvoices = invoices.filter(inv => {
+                    const invDate = new Date(inv.date);
+                    return invDate >= from && invDate <= to && inv.status === 'active';
+                });
+
+                const cashSales = filteredInvoices
+                    .filter(inv => inv.payment_type === 'cash')
+                    .reduce((sum, inv) => sum + inv.final_total, 0);
+                const creditSales = filteredInvoices
+                    .filter(inv => inv.payment_type === 'credit')
+                    .reduce((sum, inv) => sum + inv.final_total, 0);
+                const totalDebt = filteredInvoices
+                    .filter(inv => inv.payment_type === 'credit')
+                    .reduce((sum, inv) => sum + (inv.remaining_amount || 0), 0);
+
+                document.getElementById('cashSales').textContent = Utils.formatCurrency(cashSales);
+                document.getElementById('creditSales').textContent = Utils.formatCurrency(creditSales);
+                document.getElementById('totalDebt').textContent = Utils.formatCurrency(totalDebt);
+
+                // إحصائيات المخزون
+                const products = await SupabaseDB.getProducts(currentUser.id);
+                const stockValue = products.reduce((sum, p) => sum + (p.purchase_price * p.stock), 0);
+                const lowStockCount = products.filter(p => p.stock <= p.min_stock).length;
+
+                document.getElementById('totalProducts').textContent = products.length;
+                document.getElementById('stockValue').textContent = Utils.formatCurrency(stockValue);
+                document.getElementById('lowStockCount').textContent = lowStockCount;
+
+                // المنتجات الأكثر مبيعاً
+                await loadTopProducts(filteredInvoices);
+
             } catch (error) {
-                console.error('??? ?? ????? ??????????:', error);
+                console.error('خطأ في تحميل الإحصائيات:', error);
+            }
+        }
+
+        async function loadTopProducts(invoices) {
+            try {
+                // جمع كل عناصر الفواتير
+                const productSales = {};
+                
+                for (const inv of invoices) {
+                    const items = await SupabaseDB.getInvoiceItems(inv.id);
+                    for (const item of items) {
+                        if (!productSales[item.product_name]) {
+                            productSales[item.product_name] = { quantity: 0, total: 0 };
+                        }
+                        productSales[item.product_name].quantity += item.quantity;
+                        productSales[item.product_name].total += item.total;
+                    }
+                }
+
+                // ترتيب حسب الكمية
+                const sorted = Object.entries(productSales)
+                    .sort((a, b) => b[1].quantity - a[1].quantity)
+                    .slice(0, 10);
+
+                const tbody = document.getElementById('topProducts');
+                if (sorted.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">لا توجد بيانات</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = sorted.map((item, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item[0]}</td>
+                        <td>${item[1].quantity}</td>
+                        <td>${Utils.formatCurrency(item[1].total)}</td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading top products:', error);
             }
         }
     </script>

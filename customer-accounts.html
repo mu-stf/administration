@@ -4,71 +4,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>?????? ??????? - ???? ????? ?????</title>
-    <link rel="stylesheet" href="css/style-responsive.css">ponsive.css">
+    <title>حساب الزبون - نظام الإدارة المتكامل</title>
+    <link rel="stylesheet" href="css/style-responsive.css">
 </head>
 
 <body>
     <div id="loadingOverlay"
         style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
         <div style="text-align: center;">
-            <div style="font-size: 48px; margin-bottom: 20px;">??</div>
-            <div style="font-size: 18px; color: #666;">???? ???????...</div>
+            <div style="font-size: 48px; margin-bottom: 20px;">📋</div>
+            <div style="font-size: 18px; color: #666;">جاري التحميل...</div>
         </div>
     </div>
 
     <header class="header">
-        <h1>?? <span id="storeName">???? ????? ?????</span></h1>
-        <div class="header-actions"><button class="btn" onclick="logout()">?? ????? ??????</button></div>
+        <h1>أهلاً <span id="storeName">نظام الإدارة المتكامل</span></h1>
+        <div class="header-actions">
+            <button class="btn" onclick="logout()">تسجيل الخروج</button>
+        </div>
     </header>
 
     <div class="main-layout">
         <nav class="sidebar">
             <ul class="nav-menu">
-                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">??</span>????
-                        ??????</a></li>
-                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">?</span>??????
-                        ?????</a></li>
-                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">??</span>????????</a>
-                </li>
-                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">??</span>????????</a>
-                </li>
-                <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">??</span>???????</a>
-                </li>
-                <li class="nav-item"><a href="customer-accounts.html" class="nav-link active"><span
-                            class="icon">??</span>??????</a></li>
-                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">??</span>?????????</a>
-                </li>
-                <li class="nav-item"><a href="statistics.html" class="nav-link"><span
-                            class="icon">??</span>??????????</a></li>
-                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">??</span>?????????</a>
-                </li>
+                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">📊</span>لوحة التحكم</a></li>
+                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">➕</span>فاتورة جديدة</a></li>
+                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">📋</span>الفواتير</a></li>
+                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">📦</span>المنتجات</a></li>
+                <li class="nav-item"><a href="customers.html" class="nav-link active"><span class="icon">👥</span>الزبائن</a></li>
+                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">🚚</span>التوريدات</a></li>
+                <li class="nav-item"><a href="statistics.html" class="nav-link"><span class="icon">📈</span>الإحصائيات</a></li>
+                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">⚙️</span>الإعدادات</a></li>
             </ul>
         </nav>
 
         <main class="main-content">
+            <!-- بطاقة معلومات الزبون -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h2>👤 <span id="customerName">الزبون</span></h2>
+                    <a href="customers.html" class="btn btn-secondary">↩️ العودة للزبائن</a>
+                </div>
+                <div class="card-body">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                        <div>
+                            <strong>الهاتف:</strong> <span id="customerPhone">-</span>
+                        </div>
+                        <div>
+                            <strong>العنوان:</strong> <span id="customerAddress">-</span>
+                        </div>
+                        <div>
+                            <strong>الرصيد المستحق:</strong> 
+                            <span id="customerBalance" style="color: #dc2626; font-weight: bold;">0 د.ع</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تسديد دفعة -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h2>💳 تسديد دفعة</h2>
+                </div>
+                <div class="card-body">
+                    <div style="display: flex; gap: 10px; align-items: end; flex-wrap: wrap;">
+                        <div class="form-group" style="margin: 0;">
+                            <label>المبلغ</label>
+                            <input type="number" id="paymentAmount" class="form-control" min="0" placeholder="أدخل المبلغ">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label>ملاحظة</label>
+                            <input type="text" id="paymentNote" class="form-control" placeholder="اختياري">
+                        </div>
+                        <button class="btn btn-success" onclick="addPayment()">💾 تسجيل الدفعة</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- سجل العمليات -->
             <div class="card">
                 <div class="card-header">
-                    <h2>?? ?????? ??????? (??????)</h2>
-                    <div>
-                        <label><input type="checkbox" id="debtorsOnly" onchange="filterCustomers()"
-                                style="margin-left:8px"> ??????? ???</label>
-                    </div>
+                    <h2>📋 سجل العمليات</h2>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>??????</th>
-                                    <th>??????</th>
-                                    <th>??????</th>
-                                    <th>?????????</th>
+                                    <th>التاريخ</th>
+                                    <th>الوصف</th>
+                                    <th>مدين</th>
+                                    <th>دائن</th>
+                                    <th>الرصيد</th>
                                 </tr>
                             </thead>
-                            <tbody id="accountsTable">
+                            <tbody id="transactionsTable">
                                 <tr>
-                                    <td colspan="4" class="text-center text-muted">???? ???????...</td>
+                                    <td colspan="5" class="text-center text-muted">لا توجد عمليات</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -78,33 +110,6 @@
         </main>
     </div>
 
-    <!-- ????? ??????? -->
-    <div class="modal-overlay" id="paymentModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>????? ????</h3>
-                <button class="modal-close" onclick="closePaymentModal()">�</button>
-            </div>
-            <div class="modal-body">
-                <p><strong id="customerNameModal"></strong></p>
-                <p>?????? ??????: <strong id="currentBalanceModal" style="color:#dc2626"></strong></p>
-                <input type="hidden" id="paymentCustomerId">
-                <div class="form-group">
-                    <label>?????? ??????? *</label>
-                    <input type="number" id="paymentAmount" class="form-control" min="0" step="100">
-                </div>
-                <div class="form-group">
-                    <label>???????</label>
-                    <textarea id="paymentNotes" class="form-control" rows="2"></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-success" onclick="savePayment()">?? ?????</button>
-                <button class="btn btn-secondary" onclick="closePaymentModal()">?????</button>
-            </div>
-        </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
     <script src="js/supabase-client.js"></script>
@@ -112,128 +117,94 @@
     <script src="js/utils.js"></script>
     <script>
         let currentUser = null;
-        let allCustomers = [];
+        let customerId = null;
+        let customer = null;
 
         protectPage().then(authorized => { if (authorized) loadPage(); });
 
         async function loadPage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            customerId = urlParams.get('id');
+
+            if (!customerId) {
+                alert('لا يوجد معرف للزبون');
+                window.location.href = 'customers.html';
+                return;
+            }
+
             const { user, profile } = await getCurrentUserData();
             currentUser = user;
             document.getElementById('storeName').textContent = profile.store_name;
-            await loadAccounts();
+
+            await loadCustomer();
+            await loadTransactions();
             hideLoading();
         }
 
-        async function loadAccounts() {
+        async function loadCustomer() {
             try {
-                allCustomers = await SupabaseDB.getCustomers(currentUser.id);
-                renderAccounts(allCustomers);
+                customer = await SupabaseDB.getCustomer(customerId);
+                document.getElementById('customerName').textContent = customer.name;
+                document.getElementById('customerPhone').textContent = customer.phone || '-';
+                document.getElementById('customerAddress').textContent = customer.address || '-';
+                document.getElementById('customerBalance').textContent = Utils.formatCurrency(customer.balance);
             } catch (error) {
-                console.error('??? ?? ????? ????????:', error);
-                alert('??? ??? ?? ????? ????????');
+                console.error('خطأ في تحميل الزبون:', error);
             }
         }
 
-        function renderAccounts(customers) {
-            const tbody = document.getElementById('accountsTable');
-            const debtorsOnly = document.getElementById('debtorsOnly').checked;
+        async function loadTransactions() {
+            try {
+                const transactions = await SupabaseDB.getCustomerTransactions(customerId);
+                const tbody = document.getElementById('transactionsTable');
+                
+                if (!transactions || transactions.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">لا توجد عمليات</td></tr>';
+                    return;
+                }
 
-            let filtered = customers;
-            if (debtorsOnly) {
-                filtered = customers.filter(c => (c.balance || 0) > 0);
+                let balance = 0;
+                tbody.innerHTML = transactions
+                    .sort((a, b) => new Date(a.date) - new Date(b.date))
+                    .map(t => {
+                        balance += (t.debit || 0) - (t.credit || 0);
+                        return `
+                            <tr>
+                                <td>${Utils.formatDateTime(t.date)}</td>
+                                <td>${t.description}</td>
+                                <td class="text-danger">${t.debit ? Utils.formatCurrency(t.debit) : '-'}</td>
+                                <td class="text-success">${t.credit ? Utils.formatCurrency(t.credit) : '-'}</td>
+                                <td>${Utils.formatCurrency(balance)}</td>
+                            </tr>
+                        `;
+                    }).join('');
+
+            } catch (error) {
+                console.error('خطأ في تحميل العمليات:', error);
             }
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">?? ???? ?????</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = filtered.map(c => {
-                const balance = c.balance || 0;
-                const balanceColor = balance > 0 ? '#dc2626' : '#10b981';
-                return `
-                    <tr>
-                        <td><strong>${c.name}</strong></td>
-                        <td>${c.phone || '-'}</td>
-                        <td style="color:${balanceColor}; font-weight:600;">
-                            ${balance > 0 ? '+' : ''}${balance.toLocaleString()} ?.?
-                        </td>
-                        <td class="actions">
-                            <button class="btn btn-sm btn-primary" onclick='editBalance(${JSON.stringify(c).replace(/'/g, "&apos;")})' title="????? ??????">?? ?????</button>
-                            ${balance > 0 ? `<button class="btn btn-sm btn-success" onclick='openPaymentModal(${JSON.stringify(c).replace(/'/g, "&apos;")})'>?? ?????</button>` : ''}
-                        </td>
-                    </tr>
-                `;
-            }).join('');
         }
 
-        function filterCustomers() {
-            renderAccounts(allCustomers);
-        }
-
-        function openPaymentModal(customer) {
-            document.getElementById('paymentModal').classList.add('active');
-            document.getElementById('paymentCustomerId').value = customer.id;
-            document.getElementById('customerNameModal').textContent = customer.name;
-            document.getElementById('currentBalanceModal').textContent = (customer.balance || 0).toLocaleString() + ' ?.?';
-            document.getElementById('paymentAmount').value = '';
-            document.getElementById('paymentNotes').value = '';
-        }
-
-        function closePaymentModal() {
-            document.getElementById('paymentModal').classList.remove('active');
-        }
-
-        async function savePayment() {
-            const customerId = document.getElementById('paymentCustomerId').value;
+        async function addPayment() {
             const amount = parseFloat(document.getElementById('paymentAmount').value);
-            const notes = document.getElementById('paymentNotes').value.trim();
+            const note = document.getElementById('paymentNote').value.trim();
 
             if (!amount || amount <= 0) {
-                alert('???? ???? ????');
+                alert('يرجى إدخال مبلغ صحيح');
                 return;
             }
 
             try {
-                await SupabaseDB.addPayment(currentUser.id, {
-                    customer_id: customerId,
-                    invoice_id: null,
-                    amount: amount,
-                    notes: notes,
-                    payment_date: new Date().toISOString()
-                });
-
-                alert('? ?? ??????? ?????!');
-                closePaymentModal();
-                await loadAccounts();
+                await SupabaseDB.addCustomerPayment(customerId, amount, note || 'تسديد دفعة');
+                alert('✅ تم تسجيل الدفعة بنجاح');
+                
+                document.getElementById('paymentAmount').value = '';
+                document.getElementById('paymentNote').value = '';
+                
+                await loadCustomer();
+                await loadTransactions();
             } catch (error) {
-                console.error('??? ?? ???????:', error);
-                alert('??? ???: ' + error.message);
-            }
-        }
-
-        async function editBalance(customer) {
-            const newBalance = prompt(`????? ???? "${customer.name}"\n\n?????? ??????: ${(customer.balance || 0).toLocaleString()} ?.?\n\n???? ?????? ??????:`);
-            
-            if (newBalance === null) return; // ?????
-
-            const balance = parseFloat(newBalance);
-            if (isNaN(balance)) {
-                alert('? ??? ??? ????!');
-                return;
-            }
-
-            if (!confirm(`?? ??? ????? ?? ????? ?????? ??? ${balance.toLocaleString()} ?.??`)) {
-                return;
-            }
-
-            try {
-                await SupabaseDB.updateCustomer(customer.id, { balance: balance });
-                alert('? ?? ????? ?????? ?????!');
-                await loadAccounts();
-            } catch (error) {
-                console.error('??? ?? ????? ??????:', error);
-                alert('??? ???: ' + error.message);
+                console.error(error);
+                alert('❌ خطأ في تسجيل الدفعة: ' + error.message);
             }
         }
     </script>

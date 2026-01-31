@@ -4,188 +4,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>????? ???? - ???? ????? ?????</title>
+    <title>إنشاء حساب - نظام الإدارة المتكامل</title>
     <link rel="stylesheet" href="css/style-responsive.css">
+    <style>
+        .register-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .register-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .register-header h1 {
+            color: #1f2937;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .register-logo {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .register-form .form-group {
+            margin-bottom: 20px;
+        }
+
+        .register-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .register-form .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .register-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-danger {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="auth-container">
-        <div class="auth-box">
-            <div class="icon">??</div>
-            <h1>????? ???? ????</h1>
-            <p>???? ????? ????? ?? ????? ????</p>
+    <div class="register-container">
+        <div class="register-card">
+            <div class="register-header">
+                <div class="register-logo">🏪</div>
+                <h1>إنشاء حساب جديد</h1>
+            </div>
 
-            <form id="registerForm">
+            <div id="alertBox" style="display: none;"></div>
+
+            <form id="registerForm" class="register-form">
                 <div class="form-group">
-                    <label for="email">?????? ??????????</label>
+                    <label for="email">البريد الإلكتروني *</label>
                     <input type="email" id="email" class="form-control" placeholder="example@email.com" required>
                 </div>
-
                 <div class="form-group">
-                    <label for="password">???? ??????</label>
-                    <input type="password" id="password" class="form-control" placeholder="8 ???? ??? ?????" required
-                        minlength="8">
-                    <small class="text-muted">??? ?? ???? 8 ???? ??? ?????</small>
+                    <label for="password">كلمة المرور *</label>
+                    <input type="password" id="password" class="form-control" placeholder="6 أحرف على الأقل" required minlength="6">
                 </div>
-
                 <div class="form-group">
-                    <label for="confirmPassword">????? ???? ??????</label>
-                    <input type="password" id="confirmPassword" class="form-control" placeholder="??? ????? ???? ??????"
-                        required>
+                    <label for="confirmPassword">تأكيد كلمة المرور *</label>
+                    <input type="password" id="confirmPassword" class="form-control" placeholder="أعد إدخال كلمة المرور" required>
                 </div>
-
-                <div id="errorMessage" class="alert alert-danger hidden"></div>
-                <div id="successMessage" class="alert alert-success hidden"></div>
-
-                <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
-                    ????? ??????
+                <button type="submit" class="register-btn" id="registerBtn">
+                    📝 إنشاء حساب
                 </button>
-
-                <div style="margin-top: 15px; border-top: 1px solid #ddd; padding-top: 15px;">
-                    <button type="button" class="btn btn-block" style="background: #f0f0f0; color: #333;"
-                        onclick="signInAsGuest()" id="guestBtn">
-                        ?? ????? ?????? (???? ??????)
-                    </button>
-                </div>
-
-                <div style="text-align: center; margin-top: 20px;">
-                    <p>???? ???? ??????? <a href="index.html">????? ??????</a></p>
-                </div>
             </form>
+
+            <div class="login-link">
+                <p>لديك حساب بالفعل؟ <a href="index.html">تسجيل الدخول</a></p>
+            </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
     <script src="js/supabase-client.js"></script>
-    <script src="js/utils.js"></script>
-
     <script>
-        // ????? ??? ????? ??? ??????? ?? ????? ???????? ????? ????? ???? ????
-        localStorage.removeItem('is_guest');
-
-        async function signInAsGuest() {
-            const guestBtn = document.getElementById("guestBtn");
-            const errorDiv = document.getElementById("errorMessage");
-            const guestEmail = "guest@demo.com";
-            const guestPass = "guest123456";
-
-            try {
-                guestBtn.disabled = true;
-                guestBtn.textContent = "???? ????? ?????? ????????...";
-                errorDiv.classList.add("hidden");
-
-                localStorage.setItem("is_guest", "true");
-
-                // ?????? ????? ??????
-                try {
-                    await SupabaseDB.signIn(guestEmail, guestPass);
-                } catch (loginError) {
-                    // ??? ??? ?????? ??? ?????? ???? ??????? ????????
-                    if (loginError.message.includes("Invalid login credentials") || loginError.status === 400) {
-                        guestBtn.textContent = "???? ????? ???? ?????? ????...";
-                        await SupabaseDB.signUp(guestEmail, guestPass);
-                        
-                        // ?????? ????? ?????? ??? ???? ??? ???????
-                        await SupabaseDB.signIn(guestEmail, guestPass);
-                        
-                        // ????? ??? ??????? ????? ??? ??? ?????
-                        const user = await SupabaseDB.getCurrentUser();
-                        await SupabaseDB.updateProfile(user.id, {
-                            store_name: "??? ??????? (???? ?????)",
-                            phone: "07700000000",
-                            address: "????? - ???? ???????",
-                            agent_name: "???? ?????",
-                            invoice_prefix: "DEMO"
-                        });
-                    } else {
-                        throw loginError;
-                    }
-                }
-
-                window.location.href = "dashboard.html";
-            } catch (error) {
-                console.error("??? ?? ???? ?????:", error);
-                errorDiv.textContent = "?????? ??? ?????? ????????: " + error.message;
-                errorDiv.classList.remove("hidden");
-                guestBtn.disabled = false;
-                guestBtn.textContent = "?? ????? ?????? (???? ??????)";
-                localStorage.removeItem("is_guest");
-            }
-        }
-        // ?????? ?? ???? Supabase config
-        if (typeof SUPABASE_CONFIG === 'undefined') {
-            document.getElementById('errorMessage').textContent = '???: ?? ??? ?????? ??? ??? ???????. ?????? ????? js/config.js';
-            document.getElementById('errorMessage').classList.remove('hidden');
-            document.getElementById('submitBtn').disabled = true;
+        function showAlert(message, type = 'danger') {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.className = `alert alert-${type}`;
+            alertBox.textContent = message;
+            alertBox.style.display = 'block';
         }
 
-        // ??????: ?? ????? ?????? ???????? ?? ?????? ????? redirect loops
-        // ???? ???????? ??????? ??? ?? ??? ???? ???? ????
+        function hideAlert() {
+            document.getElementById('alertBox').style.display = 'none';
+        }
 
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            hideAlert();
 
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
-            const errorDiv = document.getElementById('errorMessage');
-            const successDiv = document.getElementById('successMessage');
-            const submitBtn = document.getElementById('submitBtn');
+            const registerBtn = document.getElementById('registerBtn');
 
-            // ????? ???????
-            errorDiv.classList.add('hidden');
-            successDiv.classList.add('hidden');
-
-            // ?????? ?? ????? ???? ??????
+            // التحقق من تطابق كلمة المرور
             if (password !== confirmPassword) {
-                errorDiv.textContent = '????? ?????? ??? ?????????';
-                errorDiv.classList.remove('hidden');
+                showAlert('كلمتا المرور غير متطابقتين');
                 return;
             }
 
-            // ?????? ?? ??? ???? ??????
-            if (password.length < 8) {
-                errorDiv.textContent = '???? ?????? ??? ?? ???? 8 ???? ??? ?????';
-                errorDiv.classList.remove('hidden');
+            if (password.length < 6) {
+                showAlert('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
                 return;
             }
+
+            registerBtn.disabled = true;
+            registerBtn.textContent = 'جاري إنشاء الحساب...';
 
             try {
-                submitBtn.disabled = true;
-                submitBtn.textContent = '???? ????? ??????...';
+                const { data, error } = await SupabaseDB.signUp(email, password);
 
-                // ??????? ??? Supabase
-                const { user, session } = await SupabaseDB.signUp(email, password);
-
-                successDiv.textContent = '?? ????? ?????? ?????! ???? ?????? ?????? ??????...';
-                successDiv.classList.remove('hidden');
-
-                // ???????? ????? ????? ??????
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 2000);
-
-            } catch (error) {
-                console.error('??? ?? ???????:', error);
-
-                let errorMessage = '??? ??? ????? ????? ??????';
-
-                if (error.message.includes('already registered')) {
-                    errorMessage = '??? ?????? ?????????? ???? ??????';
-                } else if (error.message.includes('Invalid email')) {
-                    errorMessage = '?????? ?????????? ??? ????';
-                } else if (error.message.includes('Password')) {
-                    errorMessage = '???? ?????? ????? ????';
-                } else {
-                    errorMessage = error.message;
+                if (error) {
+                    throw error;
                 }
 
-                errorDiv.textContent = errorMessage;
-                errorDiv.classList.remove('hidden');
-
-                submitBtn.disabled = false;
-                submitBtn.textContent = '????? ??????';
+                showAlert('✅ تم إنشاء الحساب بنجاح! يرجى تأكيد بريدك الإلكتروني ثم تسجيل الدخول.', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 3000);
+            } catch (error) {
+                console.error('خطأ في إنشاء الحساب:', error);
+                
+                if (error.message.includes('already registered')) {
+                    showAlert('هذا البريد الإلكتروني مسجل مسبقاً');
+                } else {
+                    showAlert('حدث خطأ: ' + error.message);
+                }
+                
+                registerBtn.disabled = false;
+                registerBtn.textContent = '📝 إنشاء حساب';
             }
         });
     </script>

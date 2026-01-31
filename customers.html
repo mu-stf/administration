@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الزبائن - نظام إدارة المحل</title>
+    <title>الزبائن - نظام الإدارة المتكامل</title>
     <link rel="stylesheet" href="css/style-responsive.css">
 </head>
 
@@ -12,39 +12,29 @@
     <div id="loadingOverlay"
         style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
         <div style="text-align: center;">
-            <div style="font-size: 48px; margin-bottom: 20px;">🏪</div>
+            <div style="font-size: 48px; margin-bottom: 20px;">👥</div>
             <div style="font-size: 18px; color: #666;">جاري التحميل...</div>
         </div>
     </div>
 
     <header class="header">
-        <h1>🏪 <span id="storeName">نظام إدارة المحل</span></h1>
+        <h1>أهلاً <span id="storeName">نظام الإدارة المتكامل</span></h1>
         <div class="header-actions">
-            <button class="btn" onclick="logout()">🚪 تسجيل الخروج</button>
+            <button class="btn" onclick="logout()">تسجيل الخروج</button>
         </div>
     </header>
 
     <div class="main-layout">
         <nav class="sidebar">
             <ul class="nav-menu">
-                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">📊</span>لوحة
-                        التحكم</a></li>
-                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">➕</span>فاتورة
-                        جديدة</a></li>
-                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">📋</span>الفواتير</a>
-                </li>
-                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">📦</span>المنتجات</a>
-                </li>
-                <li class="nav-item"><a href="customers.html" class="nav-link active"><span
-                            class="icon">👥</span>الزبائن</a></li>
-                <li class="nav-item"><a href="customer-accounts.html" class="nav-link"><span
-                            class="icon">💰</span>حسابات</a></li>
-                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">📥</span>التوريدات</a>
-                </li>
-                <li class="nav-item"><a href="statistics.html" class="nav-link"><span
-                            class="icon">📈</span>الإحصائيات</a></li>
-                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">⚙️</span>الإعدادات</a>
-                </li>
+                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">📊</span>لوحة التحكم</a></li>
+                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">➕</span>فاتورة جديدة</a></li>
+                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">📋</span>الفواتير</a></li>
+                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">📦</span>المنتجات</a></li>
+                <li class="nav-item"><a href="customers.html" class="nav-link active"><span class="icon">👥</span>الزبائن</a></li>
+                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">🚚</span>التوريدات</a></li>
+                <li class="nav-item"><a href="statistics.html" class="nav-link"><span class="icon">📈</span>الإحصائيات</a></li>
+                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">⚙️</span>الإعدادات</a></li>
             </ul>
         </nav>
 
@@ -52,16 +42,13 @@
             <div class="card">
                 <div class="card-header">
                     <h2>👥 إدارة الزبائن</h2>
-                    <button class="btn btn-primary" onclick="openCustomerModal()">➕ إضافة زبون</button>
+                    <button class="btn btn-primary" onclick="openAddModal()">➕ زبون جديد</button>
                 </div>
                 <div class="card-body">
-                    <div class="filters-bar">
-                        <div class="search-box">
-                            <span class="search-icon">🔍</span>
-                            <input type="text" id="searchInput" placeholder="البحث عن زبون..."
-                                onkeyup="filterCustomers()">
-                        </div>
+                    <div style="margin-bottom: 20px;">
+                        <input type="text" id="searchCustomer" class="form-control" placeholder="بحث بالاسم أو الهاتف..." style="max-width: 300px;">
                     </div>
+
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
@@ -69,12 +56,13 @@
                                     <th>الاسم</th>
                                     <th>الهاتف</th>
                                     <th>العنوان</th>
+                                    <th>الرصيد المستحق</th>
                                     <th>الإجراءات</th>
                                 </tr>
                             </thead>
                             <tbody id="customersTable">
                                 <tr>
-                                    <td colspan="4" class="text-center text-muted">لا يوجد زبائن بعد</td>
+                                    <td colspan="5" class="text-center text-muted">لا يوجد زبائن</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -84,36 +72,31 @@
         </main>
     </div>
 
+    <!-- Modal -->
     <div class="modal-overlay" id="customerModal">
         <div class="modal">
             <div class="modal-header">
-                <h3 id="modalTitle">إضافة زبون جديد</h3>
-                <button class="modal-close" onclick="closeCustomerModal()">×</button>
+                <h3 id="modalTitle">➕ إضافة زبون جديد</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
             </div>
             <div class="modal-body">
-                <form id="customerForm">
-                    <input type="hidden" id="customerId">
-                    <div class="form-group">
-                        <label>اسم الزبون *</label>
-                        <input type="text" id="customerName" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label>رقم الهاتف</label>
-                        <input type="tel" id="customerPhone" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label>العنوان</label>
-                        <input type="text" id="customerAddress" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label>ملاحظات</label>
-                        <textarea id="customerNotes" class="form-control" rows="3"></textarea>
-                    </div>
-                </form>
+                <input type="hidden" id="customerId">
+                <div class="form-group">
+                    <label>اسم الزبون *</label>
+                    <input type="text" id="customerName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>رقم الهاتف</label>
+                    <input type="tel" id="customerPhone" class="form-control" placeholder="07XXXXXXXXX">
+                </div>
+                <div class="form-group">
+                    <label>العنوان</label>
+                    <input type="text" id="customerAddress" class="form-control">
+                </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" onclick="saveCustomer()">💾 حفظ</button>
-                <button class="btn btn-secondary" onclick="closeCustomerModal()">إلغاء</button>
+                <button class="btn btn-success" onclick="saveCustomer()">💾 حفظ</button>
+                <button class="btn btn-secondary" onclick="closeModal()">إلغاء</button>
             </div>
         </div>
     </div>
@@ -125,138 +108,135 @@
     <script src="js/utils.js"></script>
     <script>
         let currentUser = null;
-        let allCustomers = [];
+        let customers = [];
 
-        protectPage().then(authorized => {
-            if (authorized) loadPage();
-        });
+        protectPage().then(authorized => { if (authorized) loadPage(); });
 
         async function loadPage() {
             const { user, profile } = await getCurrentUserData();
             currentUser = user;
             document.getElementById('storeName').textContent = profile.store_name;
+
             await loadCustomers();
             hideLoading();
+
+            document.getElementById('searchCustomer').addEventListener('input', filterCustomers);
         }
 
         async function loadCustomers() {
             try {
-                allCustomers = await SupabaseDB.getCustomers(currentUser.id);
-                renderCustomers(allCustomers);
+                customers = await SupabaseDB.getCustomers(currentUser.id);
+                renderCustomers(customers);
             } catch (error) {
                 console.error('خطأ في تحميل الزبائن:', error);
-                alert('حدث خطأ في تحميل الزبائن');
             }
         }
 
-        function renderCustomers(customers) {
+        function filterCustomers() {
+            const search = document.getElementById('searchCustomer').value.toLowerCase();
+            const filtered = customers.filter(c => 
+                c.name.toLowerCase().includes(search) ||
+                (c.phone && c.phone.includes(search))
+            );
+            renderCustomers(filtered);
+        }
+
+        function renderCustomers(data) {
             const tbody = document.getElementById('customersTable');
-            if (customers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">لا يوجد زبائن بعد</td></tr>';
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">لا يوجد زبائن</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = customers.map(c => `
-                <tr data-name="${(c.name || '').toLowerCase()}">
+            tbody.innerHTML = data.map(c => `
+                <tr>
                     <td><strong>${c.name}</strong></td>
                     <td>${c.phone || '-'}</td>
                     <td>${c.address || '-'}</td>
-                    <td class="actions">
-                        <button class="btn btn-sm btn-primary" onclick='editCustomer(${JSON.stringify(c).replace(/'/g, "&apos;")})' title="تعديل">✏️</button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteCustomer('${c.id}', '${c.name}')" title="حذف">🗑️</button>
+                    <td class="${c.balance > 0 ? 'text-danger' : ''}">${Utils.formatCurrency(c.balance)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="editCustomer('${c.id}')">✏️ تعديل</button>
+                        <a href="customer-accounts.html?id=${c.id}" class="btn btn-sm btn-secondary">📋 الحساب</a>
+                        <button class="btn btn-sm btn-danger" onclick="deleteCustomer('${c.id}')">🗑️ حذف</button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        function filterCustomers() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = query ? allCustomers.filter(c => c.name.toLowerCase().includes(query)) : allCustomers;
-            renderCustomers(filtered);
-        }
-
-        function openCustomerModal(customer = null) {
+        function openAddModal() {
+            document.getElementById('modalTitle').textContent = '➕ إضافة زبون جديد';
+            document.getElementById('customerId').value = '';
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerPhone').value = '';
+            document.getElementById('customerAddress').value = '';
             document.getElementById('customerModal').classList.add('active');
-            document.getElementById('customerForm').reset();
-
-            if (customer) {
-                document.getElementById('modalTitle').textContent = 'تعديل الزبون';
-                document.getElementById('customerId').value = customer.id;
-                document.getElementById('customerName').value = customer.name;
-                document.getElementById('customerPhone').value = customer.phone || '';
-                document.getElementById('customerAddress').value = customer.address || '';
-                document.getElementById('customerNotes').value = customer.notes || '';
-            } else {
-                document.getElementById('modalTitle').textContent = 'إضافة زبون جديد';
-                document.getElementById('customerId').value = '';
-            }
         }
 
-        function closeCustomerModal() {
+        function editCustomer(id) {
+            const customer = customers.find(c => c.id === id);
+            if (!customer) return;
+
+            document.getElementById('modalTitle').textContent = '✏️ تعديل زبون';
+            document.getElementById('customerId').value = customer.id;
+            document.getElementById('customerName').value = customer.name;
+            document.getElementById('customerPhone').value = customer.phone || '';
+            document.getElementById('customerAddress').value = customer.address || '';
+            document.getElementById('customerModal').classList.add('active');
+        }
+
+        function closeModal() {
             document.getElementById('customerModal').classList.remove('active');
         }
 
         async function saveCustomer() {
-            const id = document.getElementById('customerId').value;
-            const customerData = {
-                name: document.getElementById('customerName').value.trim(),
-                phone: document.getElementById('customerPhone').value.trim() || null,
-                address: document.getElementById('customerAddress').value.trim() || null,
-                notes: document.getElementById('customerNotes').value.trim() || null
-            };
+            const name = document.getElementById('customerName').value.trim();
 
-            if (!customerData.name) {
+            if (!name) {
                 alert('يرجى إدخال اسم الزبون');
                 return;
             }
 
-            // فحص عدم التكرار (إلا إذا كان تعديل)
-            if (!id) {
-                const exists = allCustomers.find(c => c.name.toLowerCase() === customerData.name.toLowerCase());
-                if (exists) {
-                    alert('⚠️ زبون بنفس الاسم موجود مسبقاً!');
-                    return;
-                }
-            }
+            const customerData = {
+                name: name,
+                phone: document.getElementById('customerPhone').value.trim(),
+                address: document.getElementById('customerAddress').value.trim()
+            };
+
+            const customerId = document.getElementById('customerId').value;
 
             try {
-                if (id) {
-                    await SupabaseDB.updateCustomer(id, customerData);
-                    Utils.showAlert && Utils.showAlert('تم تحديث الزبون بنجاح', 'success') || alert('تم التحديث');
+                if (customerId) {
+                    await SupabaseDB.updateCustomer(customerId, customerData);
+                    alert('✅ تم تحديث الزبون بنجاح');
                 } else {
-                    await SupabaseDB.addCustomer(currentUser.id, customerData);
-                    Utils.showAlert && Utils.showAlert('تم إضافة الزبون بنجاح', 'success') || alert('تم الإضافة');
+                    await SupabaseDB.addCustomer(currentUser.id, { ...customerData, balance: 0 });
+                    alert('✅ تم إضافة الزبون بنجاح');
                 }
-                closeCustomerModal();
+                closeModal();
                 await loadCustomers();
             } catch (error) {
-                console.error('خطأ في حفظ الزبون:', error);
-                alert('حدث خطأ أثناء الحفظ');
+                console.error(error);
+                alert('❌ حدث خطأ: ' + error.message);
             }
         }
 
-        function editCustomer(customer) {
-            openCustomerModal(customer);
-        }
-
-        async function deleteCustomer(id, name) {
-            if (!confirm(`هل أنت متأكد من حذف "${name}"؟\n\n⚠️ سيتم حذف جميع فواتيره وبياناته!`)) return;
-
-            // طلب رمز PIN للتأكيد
-            const pin = prompt('⚠️ تحذير!\n\nحذف الزبون سيحذف جميع فواتيره ومدفوعاته!\n\nأدخل رمز PIN للتأكيد (1234):');
-            
-            if (pin !== '1234') {
-                alert('❌ رمز PIN خاطئ! تم إلغاء الحذف.');
+        async function deleteCustomer(id) {
+            const customer = customers.find(c => c.id === id);
+            if (customer && customer.balance > 0) {
+                alert('❌ لا يمكن حذف زبون عليه رصيد مستحق');
                 return;
             }
 
+            if (!confirm('هل أنت متأكد من حذف هذا الزبون؟')) return;
+
             try {
                 await SupabaseDB.deleteCustomer(id);
-                Utils.showAlert && Utils.showAlert('تم حذف الزبون', 'success') || alert('تم الحذف');
+                alert('✅ تم حذف الزبون');
                 await loadCustomers();
             } catch (error) {
-                console.error('خطأ في الحذف:', error);
-                alert('حدث خطأ أثناء الحذف');
+                console.error(error);
+                alert('❌ خطأ في الحذف: ' + error.message);
             }
         }
     </script>

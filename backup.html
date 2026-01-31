@@ -1,177 +1,52 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>????? ????????? ??????? - ???? ????? ?????</title>
+    <title>النسخ الاحتياطي - نظام الإدارة المتكامل</title>
     <link rel="stylesheet" href="css/style-responsive.css">
 </head>
 
 <body>
-    <div id="loadingOverlay"
-        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
+    <div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
         <div style="text-align: center;">
-            <div style="font-size: 48px; margin-bottom: 20px;">??</div>
-            <div style="font-size: 18px; color: #666;">???? ???????...</div>
+            <div style="font-size: 48px; margin-bottom: 20px;">💾</div>
+            <div style="font-size: 18px; color: #666;">جاري التحميل...</div>
         </div>
     </div>
 
     <header class="header">
-        <h1>?? <span id="storeName">???? ????? ?????</span></h1>
-        <div class="header-actions"><button class="btn" onclick="logout()">?? ????? ??????</button></div>
+        <h1>أهلاً <span id="storeName">نظام الإدارة المتكامل</span></h1>
+        <div class="header-actions">
+            <button class="btn" onclick="logout()">تسجيل الخروج</button>
+        </div>
     </header>
 
     <div class="main-layout">
         <nav class="sidebar">
             <ul class="nav-menu">
-                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">??</span>???? ??????</a></li>
-                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">?</span>?????? ?????</a></li>
-                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">??</span>????????</a></li>
-                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">??</span>????????</a></li>
-                <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">??</span>???????</a></li>
-                <li class="nav-item"><a href="customer-accounts.html" class="nav-link"><span class="icon">??</span>????????</a></li>
-                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">??</span>?????? ??????</a></li>
-                <li class="nav-item"><a href="statistics.html" class="nav-link"><span class="icon">??</span>??????????</a></li>
-                <li class="nav-item"><a href="backup.html" class="nav-link active"><span class="icon">??</span>????? ???????</a></li>
-                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">??</span>?????????</a></li>
+                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">📊</span>لوحة التحكم</a></li>
+                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">➕</span>فاتورة جديدة</a></li>
+                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">📋</span>الفواتير</a></li>
+                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">📦</span>المنتجات</a></li>
+                <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">👥</span>الزبائن</a></li>
+                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">🚚</span>التوريدات</a></li>
+                <li class="nav-item"><a href="statistics.html" class="nav-link"><span class="icon">📈</span>الإحصائيات</a></li>
+                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">⚙️</span>الإعدادات</a></li>
             </ul>
         </nav>
 
         <main class="main-content">
-            <!-- ????? ????????? -->
-            <div class="card" style="margin-bottom: 20px;">
-                <div class="card-header">
-                    <h2>?? ????? ?????????</h2>
-                </div>
-                <div class="card-body">
-                    <div style="display: grid; gap: 15px;">
-                        <!-- ????? ???? ???????? -->
-                        <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; border: 2px solid #3b82f6;">
-                            <h3 style="margin: 0 0 10px 0; color: #1e40af;">?? ????? ???? ????????</h3>
-                            <p style="margin: 0 0 15px 0; color: #666;">????? ????? ?? ???? ??????? (????????? ???????? ????????? ???.)</p>
-                            <button class="btn btn-primary" onclick="createBackupNow()" id="backupBtn">
-                                <span id="backupBtnText">?? ??? ??????? ????</span>
-                            </button>
-                        </div>
-
-                        <!-- ??????? ???? -->
-                        <div style="background: #fef3c7; padding: 20px; border-radius: 8px; border: 2px solid #f59e0b;">
-                            <h3 style="margin: 0 0 10px 0; color: #92400e;">?? ??????? ???? ????????</h3>
-                            <p style="margin: 0 0 15px 0; color: #666;">?????? ??????? ?? ??? ???? ???????? ????</p>
-                            <input type="file" id="restoreFile" accept=".json" style="margin-bottom: 10px;" onchange="handleRestoreFile(this)">
-                            <button class="btn btn-warning" onclick="restoreBackupNow()" id="restoreBtn" disabled>
-                                ?? ??????? ??????
-                            </button>
-                        </div>
-
-                        <!-- ??? ????? -->
-                        <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; border: 2px solid #10b981;">
-                            <h3 style="margin: 0 0 10px 0; color: #065f46;">?? ??? ????? ??????????</h3>
-                            <div id="backupHistory" style="max-height: 200px; overflow-y: auto;">
-                                <p class="text-muted">?? ???? ??? ???????? ???</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ??? ???????? -->
             <div class="card">
-                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                    <h2>?? ??? ????????</h2>
-                    <button class="btn btn-secondary btn-sm" onclick="exportAuditLogs()">?? ?????</button>
+                <div class="card-header">
+                    <h2>💾 النسخ الاحتياطي</h2>
                 </div>
                 <div class="card-body">
-                    <!-- ??????? -->
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
-                        <div class="form-group" style="margin: 0;">
-                            <label style="font-size: 12px;">??? ???????</label>
-                            <select id="actionFilter" class="form-control" onchange="loadAuditLogs()">
-                                <option value="">????</option>
-                                <option value="create">?????</option>
-                                <option value="update">?????</option>
-                                <option value="delete">???</option>
-                                <option value="login">????? ????</option>
-                            </select>
-                        </div>
-                        <div class="form-group" style="margin: 0;">
-                            <label style="font-size: 12px;">??????</label>
-                            <select id="tableFilter" class="form-control" onchange="loadAuditLogs()">
-                                <option value="">????</option>
-                                <option value="products">????????</option>
-                                <option value="customers">???????</option>
-                                <option value="suppliers">????????</option>
-                                <option value="invoices">?????? ????????</option>
-                                <option value="supplies">?????? ??????</option>
-                            </select>
-                        </div>
-                        <div class="form-group" style="margin: 0;">
-                            <label style="font-size: 12px;">??? ???????</label>
-                            <select id="limitFilter" class="form-control" onchange="loadAuditLogs()">
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                                <option value="200">200</option>
-                                <option value="500">500</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- ???? ??????? -->
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>???????</th>
-                                    <th>???????</th>
-                                    <th>??????</th>
-                                    <th>?????</th>
-                                </tr>
-                            </thead>
-                            <tbody id="auditLogsTable">
-                                <tr>
-                                    <td colspan="4" class="text-center text-muted">???? ???????...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ??????? ?????? -->
-            <div class="card" style="margin-top: 20px; background: #fef2f2; border: 2px solid #dc2626;">
-                <div class="card-header" style="background: #dc2626; color: white;">
-                    <h2 style="margin: 0;">?? ??????? ??????</h2>
-                </div>
-                <div class="card-body">
-                    <div style="display: grid; gap: 10px;">
-                        <div style="display: flex; justify-content: space-between; padding: 10px; background: white; border-radius: 5px;">
-                            <span><strong>??? ????? XSS:</strong></span>
-                            <span style="color: #10b981; font-weight: 600;">? ??????</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; padding: 10px; background: white; border-radius: 5px;">
-                            <span><strong>?? Rate Limiting:</strong></span>
-                            <span style="color: #10b981; font-weight: 600;">? ????? (5 ???????/15 ?????)</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; padding: 10px; background: white; border-radius: 5px;">
-                            <span><strong>?? ??? ????????:</strong></span>
-                            <span style="color: #10b981; font-weight: 600;">? ?????</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; padding: 10px; background: white; border-radius: 5px;">
-                            <span><strong>?? ????? ?????????:</strong></span>
-                            <span style="color: #10b981; font-weight: 600;">? ????</span>
-                        </div>
-                    </div>
+                    <p>البيانات محفوظة تلقائياً في Supabase السحابي.</p>
                     
-                    <div style="margin-top: 15px; padding: 15px; background: white; border-radius: 5px; border-right: 4px solid #dc2626;">
-                        <p style="margin: 0; color: #666; font-size: 14px;">
-                            <strong>?? ?????? ????:</strong> ?????? ??? ???? ???????:
-                        </p>
-                        <ul style="margin: 10px 0 0 20px; color: #666; font-size: 14px;">
-                            <li>?? ?????? ???? ???????? ???? ????</li>
-                            <li>?? ????? ?????? ????? ?????? ?? ???</li>
-                            <li>???? ??? ???????? ???????</li>
-                            <li>?????? ???? ???? ????</li>
-                        </ul>
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-primary" onclick="exportData()">📥 تصدير البيانات</button>
                     </div>
                 </div>
             </div>
@@ -180,191 +55,22 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
-    <script src="js/security.js"></script>
-    <script src="js/rate-limiter.js"></script>
-    <script src="js/backup-manager.js"></script>
-    <script src="js/audit-logger.js"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/page-protection.js"></script>
     <script src="js/utils.js"></script>
-
     <script>
-        let currentUser = null;
-        let selectedBackup = null;
-
         protectPage().then(authorized => { if (authorized) loadPage(); });
 
         async function loadPage() {
             const { user, profile } = await getCurrentUserData();
-            currentUser = user;
             document.getElementById('storeName').textContent = profile.store_name;
-
-            await loadBackupHistory();
-            await loadAuditLogs();
-
             hideLoading();
         }
 
-        // ========== ????? ????????? ==========
-
-        async function createBackupNow() {
-            const btn = document.getElementById('backupBtn');
-            const btnText = document.getElementById('backupBtnText');
-
-            try {
-                btn.disabled = true;
-                btnText.textContent = '? ???? ????? ??????...';
-
-                const backup = await backupManager.createBackup(currentUser.id);
-                backupManager.downloadBackup(backup);
-
-                // ????? ?? ??? ????????
-                await auditLogger.log('backup', 'system', null, null, { 
-                    items: backup.data.products?.length + backup.data.customers?.length + backup.data.suppliers?.length 
-                }, '??? ??????? ????');
-
-                alert('? ?? ????? ?????? ?????????? ?????!\n\n?? ????? ????? ??? ?????.');
-                await loadBackupHistory();
-                await loadAuditLogs();
-
-            } catch (error) {
-                console.error('??? ?? ????? ?????????:', error);
-                alert('? ??? ???: ' + error.message);
-            } finally {
-                btn.disabled = false;
-                btnText.textContent = '?? ??? ??????? ????';
-            }
-        }
-
-        function handleRestoreFile(input) {
-            const file = input.files[0];
-            const btn = document.getElementById('restoreBtn');
-
-            if (file) {
-                backupManager.readBackupFile(file)
-                    .then(backup => {
-                        selectedBackup = backup;
-                        btn.disabled = false;
-                        btn.textContent = `?? ??????? (${backup.timestamp})`;
-                    })
-                    .catch(error => {
-                        alert('? ??? ?? ????? ?????: ' + error.message);
-                        selectedBackup = null;
-                        btn.disabled = true;
-                    });
-            } else {
-                selectedBackup = null;
-                btn.disabled = true;
-            }
-        }
-
-        async function restoreBackupNow() {
-            if (!selectedBackup) {
-                alert('?? ???? ?????? ??? ???? ???????? ?????');
-                return;
-            }
-
-            try {
-                const stats = await backupManager.restoreBackup(selectedBackup, currentUser.id, false);
-
-                // ????? ?? ??? ????????
-                await auditLogger.log('restore', 'system', null, null, stats, '??????? ???? ????????');
-
-                alert(`? ?? ????????? ?????!\n\n????????: ${stats.products}\n???????: ${stats.customers}\n????????: ${stats.suppliers}`);
-                
-                // ????? ????? ??????
-                window.location.reload();
-
-            } catch (error) {
-                if (error.message !== '??? PIN ??? ????') {
-                    console.error('??? ?? ?????????:', error);
-                    alert('? ??? ???: ' + error.message);
-                }
-            }
-        }
-
-        async function loadBackupHistory() {
-            const container = document.getElementById('backupHistory');
-            const history = backupManager.getHistory();
-
-            if (history.length === 0) {
-                container.innerHTML = '<p class="text-muted">?? ???? ??? ???????? ???</p>';
-                return;
-            }
-
-            container.innerHTML = history.map(item => {
-                const date = new Date(item.timestamp);
-                const total = Object.values(item.counts).reduce((sum, count) => sum + count, 0);
-
-                return `
-                    <div style="padding: 10px; background: white; border-radius: 5px; margin-bottom: 8px; border-right: 3px solid #10b981;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <strong>${date.toLocaleString('ar-IQ')}</strong>
-                                <div style="font-size: 12px; color: #666; margin-top: 3px;">
-                                    ${total} ????
-                                    (${item.counts.products} ????? ${item.counts.customers} ????? ${item.counts.suppliers} ????)
-                                </div>
-                            </div>
-                            <span style="color: #10b981;">?</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // ========== ??? ???????? ==========
-
-        async function loadAuditLogs() {
-            const tbody = document.getElementById('auditLogsTable');
-
-            try {
-                const filters = {
-                    action: document.getElementById('actionFilter').value,
-                    tableName: document.getElementById('tableFilter').value,
-                    limit: parseInt(document.getElementById('limitFilter').value)
-                };
-
-                const logs = await auditLogger.getLogs(filters);
-
-                if (logs.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">?? ???? ?????</td></tr>';
-                    return;
-                }
-
-                tbody.innerHTML = logs.map(log => {
-                    const date = new Date(log.created_at || log.timestamp);
-                    const actionLabel = auditLogger.getActionLabel(log.action);
-                    const tableLabel = auditLogger.getTableLabel(log.table_name);
-
-                    let actionColor = '#666';
-                    if (log.action === 'create') actionColor = '#10b981';
-                    else if (log.action === 'update') actionColor = '#3b82f6';
-                    else if (log.action === 'delete') actionColor = '#dc2626';
-
-                    return `
-                        <tr>
-                            <td style="font-size: 13px;">${date.toLocaleString('ar-IQ')}</td>
-                            <td><span style="color: ${actionColor}; font-weight: 600;">${actionLabel}</span></td>
-                            <td>${tableLabel}</td>
-                            <td style="font-size: 13px;">${log.description || '-'}</td>
-                        </tr>
-                    `;
-                }).join('');
-
-            } catch (error) {
-                console.error('??? ?? ????? ???????:', error);
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">??? ?? ???????</td></tr>';
-            }
-        }
-
-        async function exportAuditLogs() {
-            try {
-                await auditLogger.exportLogs();
-            } catch (error) {
-                alert('? ??? ??? ?? ???????');
-            }
+        async function exportData() {
+            alert('قريباً - ميزة تصدير البيانات');
         }
     </script>
 </body>
+
 </html>

@@ -1,253 +1,288 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>تسجيل الدخول - نظام إدارة المحل</title>
-    <link rel="stylesheet" href="css/style-responsive.css" />
-  </head>
 
-  <body>
-    <!-- Loading Overlay -->
-    <div
-      id="loadingOverlay"
-      style="
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #f5f5f5;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-      "
-    >
-      <div style="text-align: center">
-        <div style="font-size: 48px; margin-bottom: 20px">🏪</div>
-        <div style="font-size: 18px; color: #666">جاري التحميل...</div>
-      </div>
-    </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - نظام الإدارة المتكامل</title>
+    <link rel="stylesheet" href="css/style-responsive.css">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
 
-    <div class="auth-container" style="opacity: 0; transition: opacity 0.3s">
-      <div class="auth-box">
-        <div class="icon">🏪</div>
-        <h1>نظام إدارة المحل</h1>
-        <p>قم بتسجيل الدخول للوصول إلى لوحة التحكم</p>
+        .login-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
 
-        <form id="loginForm">
-          <div class="form-group">
-            <label for="email">البريد الإلكتروني</label>
-            <input
-              type="email"
-              id="email"
-              class="form-control"
-              placeholder="example@email.com"
-              required
-            />
-          </div>
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-          <div class="form-group">
-            <label for="password">كلمة المرور</label>
-            <input
-              type="password"
-              id="password"
-              class="form-control"
-              placeholder="أدخل كلمة المرور"
-              required
-            />
-          </div>
+        .login-header h1 {
+            color: #1f2937;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
 
-          <div id="errorMessage" class="alert alert-danger hidden"></div>
+        .login-header p {
+            color: #6b7280;
+            font-size: 14px;
+        }
 
-          <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
-            تسجيل الدخول
-          </button>
- 
-           <div style="margin-top: 15px; border-top: 1px solid #ddd; padding-top: 15px;">
-             <button type="button" class="btn btn-block" style="background: #f0f0f0; color: #333;" onclick="signInAsGuest()" id="guestBtn">
-               🌐 تجربة النظام (حساب تجريبي)
-             </button>
-             <p style="text-align: center; font-size: 12px; color: #666; margin-top: 5px;">
-               للإطلاع فقط، لا يسمح بالإضافة أو التعديل.
-             </p>
-           </div>
-         </form>
-      </div>
+        .login-logo {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .login-form .form-group {
+            margin-bottom: 20px;
+        }
+
+        .login-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .login-form .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .login-form .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .guest-btn {
+            width: 100%;
+            padding: 12px;
+            background: #f3f4f6;
+            color: #374151;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+
+        .guest-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .register-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-danger {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">🏪</div>
+                <h1>نظام الإدارة المتكامل</h1>
+                <p>قم بتسجيل الدخول للدخول إلى لوحة التحكم</p>
+            </div>
+
+            <div id="alertBox" style="display: none;"></div>
+
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="email">البريد الإلكتروني</label>
+                    <input type="email" id="email" class="form-control" placeholder="example@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">كلمة المرور</label>
+                    <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="login-btn" id="loginBtn">
+                    🔐 تسجيل الدخول
+                </button>
+            </form>
+
+            <button class="guest-btn" onclick="guestLogin()">
+                👤 الدخول كزائر (للتجربة)
+            </button>
+
+            <div class="register-link">
+                <p>ليس لديك حساب؟ <a href="register.html">إنشاء حساب جديد</a></p>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
-    <script src="js/security.js"></script>
-    <script src="js/rate-limiter.js"></script>
     <script src="js/supabase-client.js"></script>
-    <script src="js/utils.js"></script>
-
     <script>
-      // حماية من infinite loops
-      const redirectFlag = sessionStorage.getItem("redirect_from_login");
-      if (redirectFlag) {
-        sessionStorage.removeItem("redirect_from_login");
-      }
+        // التحقق من الجلسة الحالية
+        async function checkExistingSession() {
+            try {
+                const session = await SupabaseDB.getSession();
+                if (session) {
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (error) {
+                console.log('لا توجد جلسة حالية');
+            }
+        }
+        checkExistingSession();
 
-      // التحقق من وجود Supabase config
-      if (typeof SUPABASE_CONFIG === "undefined") {
-        document.getElementById("errorMessage").textContent =
-          "خطأ: لم يتم العثور على ملف التكوين. الرجاء إنشاء js/config.js";
-        document.getElementById("errorMessage").classList.remove("hidden");
-        document.getElementById("loginBtn").disabled = true;
-      }
-
-      // التحقق من وجود جلسة نشطة (فقط مرة واحدة)
-      async function checkSession() {
-        if (redirectFlag) {
-          hideLoading();
-          return;
+        function showAlert(message, type = 'danger') {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.className = `alert alert-${type}`;
+            alertBox.textContent = message;
+            alertBox.style.display = 'block';
         }
 
-        try {
-          const session = await SupabaseDB.getSession();
-          if (session) {
-            console.log("جلسة نشطة موجودة، التحويل إلى new-invoice");
-            sessionStorage.setItem("redirect_from_login", "true");
-            window.location.href = "new-invoice.html";
-          } else {
-            hideLoading();
-          }
-        } catch (error) {
-          console.log("لا توجد جلسة نشطة");
-          hideLoading();
+        function hideAlert() {
+            document.getElementById('alertBox').style.display = 'none';
         }
-      }
 
-      function hideLoading() {
-        const overlay = document.getElementById("loadingOverlay");
-        const container = document.querySelector(".auth-container");
+        // تسجيل الدخول
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideAlert();
 
-        if (overlay) overlay.style.display = "none";
-        if (container) container.style.opacity = "1";
-      }
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
 
-      checkSession();
-
-      document
-        .getElementById("loginForm")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
-
-          const email = document.getElementById("email").value.trim();
-          const password = document.getElementById("password").value;
-          const errorDiv = document.getElementById("errorMessage");
-          const loginBtn = document.getElementById("loginBtn");
-
-          // إخفاء رسالة الخطأ
-          errorDiv.classList.add("hidden");
-
-          // التحقق من صحة البريد الإلكتروني
-          if (!SecurityUtils.validateEmail(email)) {
-            errorDiv.textContent = "❌ البريد الإلكتروني غير صحيح";
-            errorDiv.classList.remove("hidden");
-            return;
-          }
-
-          // فحص Rate Limiting
-          if (!RateLimiterManager.canLogin(email)) {
-            const blockMsg = RateLimiterManager.getLoginBlockMessage(email);
-            errorDiv.textContent = blockMsg;
-            errorDiv.classList.remove("hidden");
-            return;
-          }
-
-          try {
-            loginBtn.disabled = true;
-            loginBtn.textContent = "جاري تسجيل الدخول...";
-
-            // تنظيف المدخلات
-            const cleanEmail = SecurityUtils.sanitizeInput(email);
-
-            // تسجيل الدخول عبر Supabase
-            const { user, session } = await SupabaseDB.signIn(cleanEmail, password);
-
-            // تسجيل نجاح تسجيل الدخول
-            RateLimiterManager.recordLoginAttempt(email, true);
-
-            // الانتقال إلى صفحة فاتورة جديدة مباشرة
-            window.location.href = "new-invoice.html";
-          } catch (error) {
-            console.error("خطأ في تسجيل الدخول:", error);
-
-            // تسجيل فشل تسجيل الدخول
-            RateLimiterManager.recordLoginAttempt(email, false);
-
-            let errorMessage = "خطأ في تسجيل الدخول";
-
-            if (error.message.includes("Invalid login credentials")) {
-              const remaining = RateLimiterManager.login.getRemainingAttempts(email);
-              errorMessage = `❌ البريد الإلكتروني أو كلمة المرور غير صحيحة\n\n⚠️ المحاولات المتبقية: ${remaining}`;
-            } else if (error.message.includes("Email not confirmed")) {
-              errorMessage = "يرجى تأكيد بريدك الإلكتروني أولاً";
-            } else {
-              errorMessage = error.message;
+            if (!email || !password) {
+                showAlert('يرجى إدخال البريد الإلكتروني وكلمة المرور');
+                return;
             }
 
-            errorDiv.textContent = errorMessage;
-            errorDiv.classList.remove("hidden");
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'جاري تسجيل الدخول...';
 
-            loginBtn.disabled = false;
-            loginBtn.textContent = "تسجيل الدخول";
-          }
+            try {
+                const { data, error } = await SupabaseDB.signIn(email, password);
+
+                if (error) {
+                    throw error;
+                }
+
+                showAlert('✅ تم تسجيل الدخول بنجاح!', 'success');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1000);
+            } catch (error) {
+                console.error('خطأ في تسجيل الدخول:', error);
+                
+                if (error.message.includes('Invalid login')) {
+                    showAlert('البريد الإلكتروني أو كلمة المرور غير صحيحة');
+                } else if (error.message.includes('Email not confirmed')) {
+                    showAlert('يرجى تأكيد بريدك الإلكتروني أولاً');
+                } else {
+                    showAlert('حدث خطأ أثناء تسجيل الدخول: ' + error.message);
+                }
+                
+                loginBtn.disabled = false;
+                loginBtn.textContent = '🔐 تسجيل الدخول';
+            }
         });
 
-      async function signInAsGuest() {
-        const guestBtn = document.getElementById("guestBtn");
-        const errorDiv = document.getElementById("errorMessage");
-        const guestEmail = "guest@demo.com";
-        const guestPass = "guest123456";
+        // الدخول كزائر
+        async function guestLogin() {
+            try {
+                const guestEmail = 'guest@demo.com';
+                const guestPassword = 'guest123456';
 
-        try {
-          guestBtn.disabled = true;
-          guestBtn.textContent = "جاري تحضير الحساب التجريبي...";
-          errorDiv.classList.add("hidden");
+                const { data, error } = await SupabaseDB.signIn(guestEmail, guestPassword);
 
-          localStorage.setItem("is_guest", "true");
+                if (error) {
+                    // إذا لم يكن الضيف موجوداً، قم بإنشائه
+                    const { data: signUpData, error: signUpError } = await SupabaseDB.signUp(guestEmail, guestPassword);
+                    
+                    if (signUpError) {
+                        throw signUpError;
+                    }
 
-          // محاولة تسجيل الدخول
-          try {
-            await SupabaseDB.signIn(guestEmail, guestPass);
-          } catch (loginError) {
-            // إذا كان الحساب غير موجود، نقوم بإنشائه تلقائياً
-            if (loginError.message.includes("Invalid login credentials") || loginError.status === 400) {
-              guestBtn.textContent = "جاري إنشاء حساب تجريبي جديد...";
-              await SupabaseDB.signUp(guestEmail, guestPass);
-              
-              // محاولة تسجيل الدخول مرة أخرى بعد التسجيل
-              await SupabaseDB.signIn(guestEmail, guestPass);
-              
-              // تهيئة ملف التعريف للضيف إذا لزم الأمر
-              const user = await SupabaseDB.getCurrentUser();
-              await SupabaseDB.updateProfile(user.id, {
-                store_name: "محل التجربة (نسخة العرض)",
-                phone: "07700000000",
-                address: "بغداد - نسخة تجريبية",
-                agent_name: "مدير العرض",
-                invoice_prefix: "DEMO"
-              });
-            } else {
-              throw loginError;
+                    showAlert('✅ تم إنشاء حساب ضيف وتسجيل الدخول', 'success');
+                } else {
+                    showAlert('✅ مرحباً بك كزائر!', 'success');
+                }
+
+                setTimeout(() => {
+                    window.location.href = 'setup.html';
+                }, 1000);
+            } catch (error) {
+                console.error('خطأ في دخول الزائر:', error);
+                showAlert('حدث خطأ: ' + error.message);
             }
-          }
-
-          window.location.href = "dashboard.html";
-        } catch (error) {
-          console.error("خطأ في دخول الضيف:", error);
-          errorDiv.textContent = "عذراً، فشل الدخول التلقائي: " + error.message;
-          errorDiv.classList.remove("hidden");
-          guestBtn.disabled = false;
-          guestBtn.textContent = "🌐 تجربة النظام (حساب تجريبي)";
-          localStorage.removeItem("is_guest");
         }
-      }
     </script>
-  </body>
+</body>
+
 </html>

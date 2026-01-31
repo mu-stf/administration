@@ -1,62 +1,64 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>????????? - ???? ????? ?????</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>الإيصالات - نظام الإدارة المتكامل</title>
+    <link rel="stylesheet" href="css/style-responsive.css">
 </head>
+
 <body>
     <div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
-        <div style="text-align: center;"><div style="font-size: 48px; margin-bottom: 20px;">??</div><div style="font-size: 18px; color: #666;">???? ???????...</div></div>
+        <div style="text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 20px;">🧾</div>
+            <div style="font-size: 18px; color: #666;">جاري التحميل...</div>
+        </div>
     </div>
-    
+
     <header class="header">
-        <h1>?? <span id="storeName">???? ????? ?????</span></h1>
-        <div class="header-actions"><button class="btn" onclick="logout()">?? ????? ??????</button></div>
+        <h1>أهلاً <span id="storeName">نظام الإدارة المتكامل</span></h1>
+        <div class="header-actions">
+            <button class="btn" onclick="logout()">تسجيل الخروج</button>
+        </div>
     </header>
 
     <div class="main-layout">
         <nav class="sidebar">
             <ul class="nav-menu">
-                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">??</span>???? ??????</a></li>
-                <li class="nav-item"><a href="customer-accounts.html" class="nav-link"><span class="icon">??</span>?????? ???????</a></li>
-                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">??</span>?????? ??????</a></li>
-                <li class="nav-item"><a href="receipts.html" class="nav-link active"><span class="icon">??</span>?????????</a></li>
-                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">??</span>?????????</a></li>
+                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">📊</span>لوحة التحكم</a></li>
+                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">➕</span>فاتورة جديدة</a></li>
+                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">📋</span>الفواتير</a></li>
+                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">📦</span>المنتجات</a></li>
+                <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">👥</span>الزبائن</a></li>
+                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">🚚</span>التوريدات</a></li>
+                <li class="nav-item"><a href="statistics.html" class="nav-link"><span class="icon">📈</span>الإحصائيات</a></li>
+                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">⚙️</span>الإعدادات</a></li>
             </ul>
         </nav>
 
         <main class="main-content">
             <div class="card">
                 <div class="card-header">
-                    <h2>?? ?????????</h2>
-                    <a href="new-receipt.html" class="btn btn-primary">? ????? ????</a>
+                    <h2>🧾 إيصالات الدفع</h2>
+                    <a href="new-receipt.html" class="btn btn-primary">➕ إيصال جديد</a>
                 </div>
                 <div class="card-body">
-                    <!-- ????? -->
-                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                        <select id="typeFilter" class="form-control" style="max-width: 200px;" onchange="loadReceipts()">
-                            <option value="">???? ???????</option>
-                            <option value="???">??????? ????? ???</option>
-                            <option value="???">??????? ????? ???</option>
-                        </select>
-                    </div>
-
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>??? ???????</th>
-                                    <th>?????</th>
-                                    <th>?????</th>
-                                    <th>??????</th>
-                                    <th>???????</th>
-                                    <th>?????????</th>
+                                    <th>رقم الإيصال</th>
+                                    <th>التاريخ</th>
+                                    <th>الزبون</th>
+                                    <th>المبلغ</th>
+                                    <th>الإجراءات</th>
                                 </tr>
                             </thead>
                             <tbody id="receiptsTable">
-                                <tr><td colspan="6" class="text-center text-muted">?? ???? ???????</td></tr>
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">لا توجد إيصالات</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -69,60 +71,16 @@
     <script src="js/config.js"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/page-protection.js"></script>
+    <script src="js/utils.js"></script>
     <script>
-        let currentUser = null;
-        let receipts = [];
-
         protectPage().then(authorized => { if (authorized) loadPage(); });
 
         async function loadPage() {
             const { user, profile } = await getCurrentUserData();
-            currentUser = user;
             document.getElementById('storeName').textContent = profile.store_name;
-            
-            await loadReceipts();
             hideLoading();
-        }
-
-        async function loadReceipts() {
-            try {
-                const typeFilter = document.getElementById('typeFilter').value;
-                const filters = {};
-                if (typeFilter) filters.type = typeFilter;
-
-                receipts = await SupabaseDB.getReceipts(currentUser.id, filters);
-                renderReceipts();
-            } catch (error) {
-                console.error('??? ?? ????? ?????????:', error);
-            }
-        }
-
-        function renderReceipts() {
-            const tbody = document.getElementById('receiptsTable');
-            if (receipts.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">?? ???? ???????</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = receipts.map(r => {
-                const typeBadge = r.receipt_type === '???' ? 
-                    '<span class="badge badge-success">???</span>' : 
-                    '<span class="badge badge-warning">???</span>';
-                
-                return `
-                    <tr>
-                        <td><strong>${r.receipt_number}</strong></td>
-                        <td>${typeBadge}</td>
-                        <td>${r.entity_name}</td>
-                        <td><strong>${r.amount.toLocaleString()} ?.?</strong></td>
-                        <td>${new Date(r.created_at).toLocaleDateString('ar-IQ')}</td>
-                        <td class="actions">
-                            <a href="print-receipt.html?id=${r.id}" class="btn btn-sm btn-secondary">??? ?????</a>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
         }
     </script>
 </body>
+
 </html>

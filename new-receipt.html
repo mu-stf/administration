@@ -1,80 +1,66 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>????? ???? - ???? ????? ?????</title>
+    <title>إيصال جديد - نظام الإدارة المتكامل</title>
     <link rel="stylesheet" href="css/style-responsive.css">
 </head>
+
 <body>
     <div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
-        <div style="text-align: center;"><div style="font-size: 48px; margin-bottom: 20px;">??</div><div style="font-size: 18px; color: #666;">???? ???????...</div></div>
+        <div style="text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 20px;">🧾</div>
+            <div style="font-size: 18px; color: #666;">جاري التحميل...</div>
+        </div>
     </div>
-    
+
     <header class="header">
-        <h1>?? <span id="storeName">???? ????? ?????</span></h1>
-        <div class="header-actions"><button class="btn" onclick="logout()">?? ????? ??????</button></div>
+        <h1>أهلاً <span id="storeName">نظام الإدارة المتكامل</span></h1>
+        <div class="header-actions">
+            <button class="btn" onclick="logout()">تسجيل الخروج</button>
+        </div>
     </header>
 
     <div class="main-layout">
         <nav class="sidebar">
             <ul class="nav-menu">
-                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">??</span>???? ??????</a></li>
-                <li class="nav-item"><a href="customer-accounts.html" class="nav-link"><span class="icon">??</span>?????? ???????</a></li>
-                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">??</span>?????? ??????</a></li>
-                <li class="nav-item"><a href="receipts.html" class="nav-link active"><span class="icon">??</span>?????????</a></li>
+                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">📊</span>لوحة التحكم</a></li>
+                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">➕</span>فاتورة جديدة</a></li>
+                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">📋</span>الفواتير</a></li>
+                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">📦</span>المنتجات</a></li>
+                <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">👥</span>الزبائن</a></li>
+                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">🚚</span>التوريدات</a></li>
+                <li class="nav-item"><a href="statistics.html" class="nav-link"><span class="icon">📈</span>الإحصائيات</a></li>
+                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">⚙️</span>الإعدادات</a></li>
             </ul>
         </nav>
 
         <main class="main-content">
             <div class="card">
                 <div class="card-header">
-                    <h2>?? ????? ????</h2>
+                    <h2>🧾 إيصال دفع جديد</h2>
                 </div>
-                <div class="card-body">
-                    <form id="receiptForm">
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 20px;">
-                            <div class="form-group">
-                                <label>??? ??????? *</label>
-                                <select id="receiptType" class="form-control" onchange="updateEntityOptions()" required>
-                                    <option value="">????...</option>
-                                    <option value="???">????? ??? (?? ??????)</option>
-                                    <option value="???">????? ??? (??????)</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label id="entityLabel">????? *</label>
-                                <select id="entityId" class="form-control" required>
-                                    <option value="">???? ??? ??????? ?????...</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label>?????? *</label>
-                                <input type="number" id="amount" class="form-control" min="0" step="0.01" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label>????? ?????</label>
-                                <select id="paymentMethod" class="form-control">
-                                    <option value="???">???</option>
-                                    <option value="???">???</option>
-                                    <option value="?????">????? ????</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>???????</label>
-                            <textarea id="notes" class="form-control" rows="3"></textarea>
-                        </div>
-
-                        <div style="display: flex; gap: 10px; margin-top: 20px;">
-                            <button type="submit" class="btn btn-success" id="saveBtn">?? ??? ??????</button>
-                            <button type="button" class="btn btn-secondary" onclick="window.location.href='receipts.html'">?????</button>
-                        </div>
-                    </form>
+                <div class="card-body" style="max-width: 500px;">
+                    <div class="form-group">
+                        <label>الزبون *</label>
+                        <select id="customerId" class="form-control" required>
+                            <option value="">اختر الزبون...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>المبلغ *</label>
+                        <input type="number" id="amount" class="form-control" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>ملاحظة</label>
+                        <input type="text" id="note" class="form-control" placeholder="اختياري">
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-success" onclick="saveReceipt()">💾 حفظ الإيصال</button>
+                        <a href="receipts.html" class="btn btn-secondary">إلغاء</a>
+                    </div>
                 </div>
             </div>
         </main>
@@ -84,10 +70,9 @@
     <script src="js/config.js"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/page-protection.js"></script>
+    <script src="js/utils.js"></script>
     <script>
         let currentUser = null;
-        let customers = [];
-        let suppliers = [];
 
         protectPage().then(authorized => { if (authorized) loadPage(); });
 
@@ -96,65 +81,35 @@
             currentUser = user;
             document.getElementById('storeName').textContent = profile.store_name;
             
-            // ????? ??????? ?????????
-            customers = await SupabaseDB.getCustomers(user.id);
-            suppliers = await SupabaseDB.getSuppliers(user.id);
+            // تحميل الزبائن
+            const customers = await SupabaseDB.getCustomers(user.id);
+            const select = document.getElementById('customerId');
+            select.innerHTML = '<option value="">اختر الزبون...</option>' +
+                customers.map(c => `<option value="${c.id}">${c.name} (رصيد: ${Utils.formatCurrency(c.balance)})</option>`).join('');
             
             hideLoading();
         }
 
-        function updateEntityOptions() {
-            const type = document.getElementById('receiptType').value;
-            const entitySelect = document.getElementById('entityId');
-            const entityLabel = document.getElementById('entityLabel');
+        async function saveReceipt() {
+            const customerId = document.getElementById('customerId').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const note = document.getElementById('note').value.trim();
 
-            if (type === '???') {
-                entityLabel.textContent = '?????? *';
-                entitySelect.innerHTML = '<option value="">???? ????...</option>' + 
-                    customers.map(c => `<option value="${c.id}" data-name="${c.name}">${c.name} - ????: ${(c.balance || 0).toLocaleString()} ?.?</option>`).join('');
-            } else if (type === '???') {
-                entityLabel.textContent = '?????? *';
-                entitySelect.innerHTML = '<option value="">???? ????...</option>' + 
-                    suppliers.map(s => `<option value="${s.id}" data-name="${s.name}">${s.name} - ????: ${(s.balance || 0).toLocaleString()} ?.?</option>`).join('');
-            } else {
-                entitySelect.innerHTML = '<option value="">???? ??? ??????? ?????...</option>';
+            if (!customerId || !amount || amount <= 0) {
+                alert('يرجى اختيار الزبون وإدخال مبلغ صحيح');
+                return;
             }
-        }
-
-        document.getElementById('receiptForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const saveBtn = document.getElementById('saveBtn');
-            saveBtn.disabled = true;
-            saveBtn.textContent = '???? ?????...';
 
             try {
-                const type = document.getElementById('receiptType').value;
-                const entityId = document.getElementById('entityId').value;
-                const entitySelect = document.getElementById('entityId');
-                const entityName = entitySelect.options[entitySelect.selectedIndex].dataset.name;
-
-                const receiptData = {
-                    receipt_type: type,
-                    entity_type: type === '???' ? 'customer' : 'supplier',
-                    entity_id: entityId,
-                    entity_name: entityName,
-                    amount: parseFloat(document.getElementById('amount').value),
-                    payment_method: document.getElementById('paymentMethod').value,
-                    notes: document.getElementById('notes').value.trim()
-                };
-
-                const receipt = await SupabaseDB.createReceipt(currentUser.id, receiptData);
-
-                alert('? ?? ??? ??????? ?????!');
-                window.location.href = `print-receipt.html?id=${receipt.id}`;
+                await SupabaseDB.addCustomerPayment(customerId, amount, note || 'إيصال دفع');
+                alert('✅ تم حفظ الإيصال بنجاح');
+                window.location.href = 'receipts.html';
             } catch (error) {
-                console.error('??? ?? ??? ???????:', error);
-                alert('??? ???: ' + error.message);
-                saveBtn.disabled = false;
-                saveBtn.textContent = '?? ??? ??????';
+                console.error(error);
+                alert('❌ خطأ: ' + error.message);
             }
-        });
+        }
     </script>
 </body>
+
 </html>

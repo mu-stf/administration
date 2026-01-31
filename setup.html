@@ -4,49 +4,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>????? ??????? ????? - ???? ????? ?????</title>
+    <title>إعداد المتجر - نظام الإدارة المتكامل</title>
     <link rel="stylesheet" href="css/style-responsive.css">
+    <style>
+        .setup-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            padding: 20px;
+        }
+
+        .setup-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .setup-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .setup-header h1 {
+            color: #1f2937;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .setup-header p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .setup-logo {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .setup-form .form-group {
+            margin-bottom: 20px;
+        }
+
+        .setup-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .setup-form .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        .setup-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .setup-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="auth-container">
-        <div class="auth-box">
-            <div class="icon">??</div>
-            <h1>?????? ??!</h1>
-            <p>?? ?????? ??????? ???? ?????</p>
+    <div class="setup-container">
+        <div class="setup-card">
+            <div class="setup-header">
+                <div class="setup-logo">🏪</div>
+                <h1>إعداد المتجر</h1>
+                <p>أدخل معلومات متجرك لبدء العمل</p>
+            </div>
 
-            <form id="setupForm">
+            <form id="setupForm" class="setup-form">
                 <div class="form-group">
-                    <label for="storeName">??? ????? *</label>
-                    <input type="text" id="storeName" class="form-control" placeholder="??? ????" required>
+                    <label for="storeName">اسم المتجر *</label>
+                    <input type="text" id="storeName" class="form-control" placeholder="مثال: متجر السلام" required>
                 </div>
-
                 <div class="form-group">
-                    <label for="phone">??? ??????</label>
+                    <label for="phone">رقم الهاتف</label>
                     <input type="tel" id="phone" class="form-control" placeholder="07XXXXXXXXX">
                 </div>
-
                 <div class="form-group">
-                    <label for="address">???????</label>
-                    <input type="text" id="address" class="form-control" placeholder="????? ?????">
+                    <label for="address">العنوان</label>
+                    <input type="text" id="address" class="form-control" placeholder="عنوان المتجر">
                 </div>
-
                 <div class="form-group">
-                    <label for="agentName">??? ??????</label>
-                    <input type="text" id="agentName" class="form-control" placeholder="??? ???? ?? ???? ?????">
+                    <label for="agentName">اسم صاحب المتجر</label>
+                    <input type="text" id="agentName" class="form-control" placeholder="الاسم الكامل">
                 </div>
-
                 <div class="form-group">
-                    <label for="invoicePrefix">????? ???????? *</label>
-                    <input type="text" id="invoicePrefix" class="form-control" placeholder="INV" value="INV" required
-                        maxlength="10">
-                    <small class="text-muted">????? ??? ??? ???????? (????: INV-00001)</small>
+                    <label for="invoicePrefix">بادئة رقم الفاتورة</label>
+                    <input type="text" id="invoicePrefix" class="form-control" placeholder="مثال: INV" value="INV">
                 </div>
-
-                <div id="errorMessage" class="alert alert-danger hidden"></div>
-
-                <button type="submit" class="btn btn-primary btn-block" id="setupBtn">
-                    ??? ?????????
+                <button type="submit" class="setup-btn" id="setupBtn">
+                    ✅ حفظ وبدء العمل
                 </button>
             </form>
         </div>
@@ -55,94 +124,77 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
     <script src="js/supabase-client.js"></script>
-    <script src="js/utils.js"></script>
     <script>
         let currentUser = null;
-        const setupFlag = sessionStorage.getItem('in_setup');
 
-        // ?????? ?? ????? ??????
         async function checkAuth() {
-            // ??? infinite loop
-            if (setupFlag) {
-                sessionStorage.removeItem('in_setup');
-                return;
-            }
-
-            sessionStorage.setItem('in_setup', 'true');
-
             try {
                 const session = await SupabaseDB.getSession();
                 if (!session) {
-                    sessionStorage.removeItem('in_setup');
                     window.location.href = 'index.html';
                     return;
                 }
 
                 currentUser = await SupabaseDB.getCurrentUser();
 
-                // ?????? ?? ???? profile
+                // التحقق مما إذا كان الإعداد مكتملاً
                 try {
                     const profile = await SupabaseDB.getProfile(currentUser.id);
-                    if (profile && profile.store_name !== '?????') {
-                        // ???????? ???? ??????? ??????
-                        sessionStorage.removeItem('in_setup');
-                        sessionStorage.setItem('setup_complete', 'true');
+                    if (profile && profile.store_name && profile.store_name !== 'متجر جديد') {
                         window.location.href = 'dashboard.html';
+                        return;
                     }
-                } catch (error) {
-                    console.log('?? ??? ????? ????? ?????? ???');
+                    // ملء البيانات الموجودة
+                    if (profile) {
+                        document.getElementById('storeName').value = profile.store_name === 'متجر جديد' ? '' : (profile.store_name || '');
+                        document.getElementById('phone').value = profile.phone || '';
+                        document.getElementById('address').value = profile.address || '';
+                        document.getElementById('agentName').value = profile.agent_name || '';
+                        document.getElementById('invoicePrefix').value = profile.invoice_prefix || 'INV';
+                    }
+                } catch (e) {
+                    console.log('لا يوجد profile - سيتم إنشاؤه');
                 }
-
-                sessionStorage.removeItem('in_setup');
             } catch (error) {
-                console.error('??? ?? ??????:', error);
-                sessionStorage.removeItem('in_setup');
+                console.error('خطأ في التحقق:', error);
                 window.location.href = 'index.html';
             }
         }
-
         checkAuth();
 
         document.getElementById('setupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const storeName = document.getElementById('storeName').value;
-            const phone = document.getElementById('phone').value;
-            const address = document.getElementById('address').value;
-            const agentName = document.getElementById('agentName').value;
-            const invoicePrefix = document.getElementById('invoicePrefix').value;
-            const errorDiv = document.getElementById('errorMessage');
-            const setupBtn = document.getElementById('setupBtn');
+            const storeName = document.getElementById('storeName').value.trim();
+            if (!storeName) {
+                alert('يرجى إدخال اسم المتجر');
+                return;
+            }
 
-            // ????? ????? ?????
-            errorDiv.classList.add('hidden');
+            const setupBtn = document.getElementById('setupBtn');
+            setupBtn.disabled = true;
+            setupBtn.textContent = 'جاري الحفظ...';
 
             try {
-                setupBtn.disabled = true;
-                setupBtn.textContent = '???? ?????...';
-
-                // ????? ??????? ?????
-                await SupabaseDB.updateProfile(currentUser.id, {
+                const profileData = {
                     store_name: storeName,
-                    phone: phone || null,
-                    address: address || null,
-                    agent_name: agentName || null,
-                    invoice_prefix: invoicePrefix || 'INV'
-                });
+                    phone: document.getElementById('phone').value.trim(),
+                    address: document.getElementById('address').value.trim(),
+                    agent_name: document.getElementById('agentName').value.trim(),
+                    invoice_prefix: document.getElementById('invoicePrefix').value.trim() || 'INV',
+                    current_invoice_number: 1,
+                    current_purchase_number: 1
+                };
 
-                // ??????? ????? ???? ??????
-                Utils.showAlert('?? ??? ??????? ????? ?????!', 'success');
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 1000);
-
+                await SupabaseDB.updateProfile(currentUser.id, profileData);
+                
+                alert('✅ تم إعداد المتجر بنجاح!');
+                window.location.href = 'dashboard.html';
             } catch (error) {
-                console.error('??? ?? ?????:', error);
-                errorDiv.textContent = '??? ??? ????? ??? ????????: ' + error.message;
-                errorDiv.classList.remove('hidden');
-
+                console.error('خطأ في الحفظ:', error);
+                alert('حدث خطأ: ' + error.message);
                 setupBtn.disabled = false;
-                setupBtn.textContent = '??? ?????????';
+                setupBtn.textContent = '✅ حفظ وبدء العمل';
             }
         });
     </script>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>?????? ?????? - ???? ????? ?????</title>
+    <title>التوريدات - نظام الإدارة المتكامل</title>
     <link rel="stylesheet" href="css/style-responsive.css">
 </head>
 
@@ -12,90 +12,60 @@
     <div id="loadingOverlay"
         style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
         <div style="text-align: center;">
-            <div style="font-size: 48px; margin-bottom: 20px;">??</div>
-            <div style="font-size: 18px; color: #666;">???? ???????...</div>
+            <div style="font-size: 48px; margin-bottom: 20px;">🚚</div>
+            <div style="font-size: 18px; color: #666;">جاري التحميل...</div>
         </div>
     </div>
 
     <header class="header">
-        <h1>?? <span id="storeName">???? ????? ?????</span></h1>
-        <div class="header-actions"><button class="btn" onclick="logout()">?? ????? ??????</button></div>
+        <h1>أهلاً <span id="storeName">نظام الإدارة المتكامل</span></h1>
+        <div class="header-actions">
+            <button class="btn" onclick="logout()">تسجيل الخروج</button>
+        </div>
     </header>
 
     <div class="main-layout">
         <nav class="sidebar">
             <ul class="nav-menu">
-                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">??</span>????
-                        ??????</a></li>
-                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">?</span>??????
-                        ??????</a></li>
-                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">??</span>??????
-                        ????????</a></li>
-                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">??</span>????????</a>
-                </li>
-                <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">??</span>???????</a>
-                </li>
-                <li class="nav-item"><a href="customer-accounts.html" class="nav-link"><span
-                            class="icon">??</span>?????? ???????</a></li>
-                <li class="nav-item"><a href="supplies.html" class="nav-link active"><span class="icon">??</span>??????
-                        ??????</a></li>
-                <li class="nav-item"><a href="statistics.html" class="nav-link"><span
-                            class="icon">??</span>??????????</a></li>
-                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">??</span>?????????</a>
-                </li>
+                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">📊</span>لوحة التحكم</a></li>
+                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">➕</span>فاتورة جديدة</a></li>
+                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">📋</span>الفواتير</a></li>
+                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">📦</span>المنتجات</a></li>
+                <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">👥</span>الزبائن</a></li>
+                <li class="nav-item"><a href="supplies.html" class="nav-link active"><span class="icon">🚚</span>التوريدات</a></li>
+                <li class="nav-item"><a href="statistics.html" class="nav-link"><span class="icon">📈</span>الإحصائيات</a></li>
+                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">⚙️</span>الإعدادات</a></li>
             </ul>
         </nav>
 
         <main class="main-content">
-            <!-- ???????? -->
-            <div class="card" style="margin-bottom: 20px;">
-                <div class="card-header">
-                    <h2>?? ????????</h2>
-                    <button class="btn btn-primary" onclick="openSupplierModal()">? ????? ????</button>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>??? ??????</th>
-                                    <th>??????</th>
-                                    <th>??????</th>
-                                    <th>?????????</th>
-                                </tr>
-                            </thead>
-                            <tbody id="suppliersTable">
-                                <tr>
-                                    <td colspan="4" class="text-center text-muted">?? ???? ??????</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ?????? ?????? -->
             <div class="card">
                 <div class="card-header">
-                    <h2>?? ?????? ??????</h2>
-                    <a href="new-purchase-invoice.html" class="btn btn-success">? ?????? ???? ?????</a>
+                    <h2>🚚 إدارة التوريدات</h2>
+                    <a href="new-purchase-invoice.html" class="btn btn-primary">➕ فاتورة شراء جديدة</a>
                 </div>
                 <div class="card-body">
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <input type="text" id="searchSupply" class="form-control" placeholder="بحث برقم الفاتورة..." style="max-width: 300px;">
+                        <input type="date" id="dateFrom" class="form-control" style="max-width: 150px;" onchange="loadSupplies()">
+                        <input type="date" id="dateTo" class="form-control" style="max-width: 150px;" onchange="loadSupplies()">
+                    </div>
+
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>??? ????????</th>
-                                    <th>???????</th>
-                                    <th>??????</th>
-                                    <th>????????</th>
-                                    <th>??? ?????</th>
-                                    <th>?????????</th>
+                                    <th>رقم الفاتورة</th>
+                                    <th>التاريخ</th>
+                                    <th>المورد</th>
+                                    <th>المبلغ</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
                                 </tr>
                             </thead>
-                            <tbody id="invoicesTable">
+                            <tbody id="suppliesTable">
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted">?? ???? ?????? ????</td>
+                                    <td colspan="6" class="text-center text-muted">لا توجد فواتير شراء</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -105,42 +75,14 @@
         </main>
     </div>
 
-    <!-- Modal ????? ???? -->
-    <div class="modal-overlay" id="supplierModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 id="supplierModalTitle">????? ???? ????</h3>
-                <button class="modal-close" onclick="closeSupplierModal()">�</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>??? ?????? *</label>
-                    <input type="text" id="supplierName" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label>??? ??????</label>
-                    <input type="text" id="supplierPhone" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label>???????</label>
-                    <textarea id="supplierAddress" class="form-control" rows="2"></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" id="saveSupplierBtn" onclick="saveSupplier()">?? ???</button>
-                <button class="btn btn-secondary" onclick="closeSupplierModal()">?????</button>
-            </div>
-        </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/page-protection.js"></script>
+    <script src="js/utils.js"></script>
     <script>
         let currentUser = null;
-        let suppliers = [];
-        let invoices = [];
+        let supplies = [];
 
         protectPage().then(authorized => { if (authorized) loadPage(); });
 
@@ -149,191 +91,57 @@
             currentUser = user;
             document.getElementById('storeName').textContent = profile.store_name;
 
-            await loadSuppliers();
-            await loadInvoices();
+            await loadSupplies();
             hideLoading();
+
+            document.getElementById('searchSupply').addEventListener('input', filterSupplies);
         }
 
-        async function loadSuppliers() {
+        async function loadSupplies() {
             try {
-                suppliers = await SupabaseDB.getSuppliers(currentUser.id);
-                renderSuppliers();
+                supplies = await SupabaseDB.getPurchaseInvoices(currentUser.id);
+                renderSupplies(supplies);
             } catch (error) {
-                console.error('??? ?? ????? ????????:', error);
+                console.error('خطأ في تحميل التوريدات:', error);
             }
         }
 
-        function renderSuppliers() {
-            const tbody = document.getElementById('suppliersTable');
-            if (suppliers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">?? ???? ??????</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = suppliers.map(s => {
-                const balanceColor = (s.balance || 0) > 0 ? '#dc2626' : '#10b981';
-                return `
-                    <tr>
-                        <td><strong>${s.name}</strong></td>
-                        <td>${s.phone || '-'}</td>
-                        <td style="color:${balanceColor}; font-weight:600;">${(s.balance || 0).toLocaleString()} ?.?</td>
-                        <td class="actions">
-                            ${(s.balance || 0) > 0 ? `<button class="btn btn-sm btn-success" onclick='paySupplier(${JSON.stringify(s).replace(/'/g, "&apos;")})'>?? ?????</button>` : ''}
-                            <button class="btn btn-sm btn-primary" onclick='editSupplier(${JSON.stringify(s).replace(/'/g, "&apos;")})' title="?????">?? ?????</button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteSupplier('${s.id}', '${escapeHtml(s.name)}')" title="???">??? ???</button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        async function loadInvoices() {
-            try {
-                const allSupplies = await SupabaseDB.getSupplies(currentUser.id);
-                invoices = allSupplies.filter(s => s.invoice_number); // ??? ???????? ???????
-                renderInvoices();
-            } catch (error) {
-                console.error('??? ?? ????? ????????:', error);
-            }
-        }
-
-        function renderInvoices() {
-            const tbody = document.getElementById('invoicesTable');
-            if (invoices.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">?? ???? ?????? ????</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = invoices.map(inv => {
-                const paymentBadge = inv.payment_type === 'cash' ?
-                    '<span class="badge badge-success">???</span>' :
-                    '<span class="badge badge-warning">???</span>';
-
-                return `
-                    <tr>
-                        <td><strong>${inv.invoice_number}</strong></td>
-                        <td>${new Date(inv.date).toLocaleDateString('ar-IQ')}</td>
-                        <td>${inv.supplier_name || '???? ????'}</td>
-                        <td><strong>${(inv.total || 0).toLocaleString()} ?.?</strong></td>
-                        <td>${paymentBadge}</td>
-                        <td class="actions">
-                            <a href="edit-purchase-invoice.html?id=${inv.id}" class="btn btn-sm btn-primary" title="?????">??</a>
-                            <a href="print-purchase-invoice.html?id=${inv.id}" class="btn btn-sm btn-secondary" title="???">???</a>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        let editingSupplier = null;
-
-        function openSupplierModal() {
-            editingSupplier = null;
-            document.getElementById('supplierModal').classList.add('active');
-            document.getElementById('supplierName').value = '';
-            document.getElementById('supplierPhone').value = '';
-            document.getElementById('supplierAddress').value = '';
-            document.getElementById('supplierModalTitle').textContent = '????? ???? ????';
-            document.getElementById('saveSupplierBtn').textContent = '?? ???';
-        }
-
-        function editSupplier(supplier) {
-            editingSupplier = supplier;
-            document.getElementById('supplierModal').classList.add('active');
-            document.getElementById('supplierName').value = supplier.name;
-            document.getElementById('supplierPhone').value = supplier.phone || '';
-            document.getElementById('supplierAddress').value = supplier.address || '';
-            document.getElementById('supplierModalTitle').textContent = '????? ??????';
-            document.getElementById('saveSupplierBtn').textContent = '?? ?????';
-        }
-
-        function closeSupplierModal() {
-            document.getElementById('supplierModal').classList.remove('active');
-        }
-
-        async function saveSupplier() {
-            const name = document.getElementById('supplierName').value.trim();
-            if (!name) {
-                alert('???? ??? ??????');
-                return;
-            }
-
-            // ??? ??? ??????? (??? ?? ???? ??????? ??? ??? ??????)
-            const exists = suppliers.find(s => 
-                s.name.toLowerCase() === name.toLowerCase() && 
-                (!editingSupplier || s.id !== editingSupplier.id)
+        function filterSupplies() {
+            const search = document.getElementById('searchSupply').value.toLowerCase();
+            const filtered = supplies.filter(s => 
+                s.invoice_number.toLowerCase().includes(search) ||
+                (s.supplier_name && s.supplier_name.toLowerCase().includes(search))
             );
-            if (exists) {
-                alert('?? ???? ???? ????? ????? ??????!');
+            renderSupplies(filtered);
+        }
+
+        function renderSupplies(data) {
+            const tbody = document.getElementById('suppliesTable');
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">لا توجد فواتير شراء</td></tr>';
                 return;
             }
 
-            try {
-                const supplierData = {
-                    name: name,
-                    phone: document.getElementById('supplierPhone').value.trim(),
-                    address: document.getElementById('supplierAddress').value.trim()
-                };
-
-                if (editingSupplier) {
-                    // ?????
-                    await SupabaseDB.updateSupplier(editingSupplier.id, supplierData);
-                    alert('? ?? ????? ?????? ?????!');
-                } else {
-                    // ????? ????
-                    await SupabaseDB.addSupplier(currentUser.id, supplierData);
-                    alert('? ?? ????? ?????? ?????!');
-                }
-                
-                closeSupplierModal();
-                await loadSuppliers();
-            } catch (error) {
-                console.error('??? ?? ??? ??????:', error);
-                alert('??? ???: ' + error.message);
-            }
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        async function deleteSupplier(id, name) {
-            if (!confirm(`?? ??? ????? ?? ??? ?????? "${name}"?\n\n?? ???? ??? ???? ?????? ?????? ???????? ???? ??????!`)) {
-                return;
-            }
-
-            try {
-                await SupabaseDB.deleteSupplier(id);
-                alert('? ?? ??? ?????? ?????!');
-                await loadSuppliers();
-                await loadInvoices(); // ????? ????? ????????
-            } catch (error) {
-                console.error('??? ?? ??? ??????:', error);
-                alert('??? ???: ' + error.message);
-            }
-        }
-
-        async function paySupplier(supplier) {
-            const amount = prompt(`????? ??????: ${supplier.name}\n?????? ??????: ${(supplier.balance || 0).toLocaleString()} ?.?\n\n???? ?????? ???????:`);
-
-            if (!amount || parseFloat(amount) <= 0) return;
-
-            try {
-                await SupabaseDB.addSupplierPayment(currentUser.id, {
-                    supplier_id: supplier.id,
-                    amount: parseFloat(amount),
-                    notes: '?????',
-                    payment_date: new Date().toISOString()
-                });
-
-                alert('? ?? ??????? ?????!');
-                await loadSuppliers();
-            } catch (error) {
-                console.error('??? ?? ???????:', error);
-                alert('??? ???: ' + error.message);
-            }
+            tbody.innerHTML = data
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .map(s => `
+                    <tr>
+                        <td><strong>${s.invoice_number}</strong></td>
+                        <td>${Utils.formatDateTime(s.date)}</td>
+                        <td>${s.supplier_name || '-'}</td>
+                        <td>${Utils.formatCurrency(s.total)}</td>
+                        <td>
+                            <span class="badge ${s.status === 'active' ? 'badge-success' : 'badge-danger'}">
+                                ${s.status === 'active' ? 'نشطة' : 'ملغاة'}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="print-purchase-invoice.html?id=${s.id}" class="btn btn-sm btn-secondary">🖨️ طباعة</a>
+                            <a href="edit-purchase-invoice.html?id=${s.id}" class="btn btn-sm btn-primary">✏️ تعديل</a>
+                        </td>
+                    </tr>
+                `).join('');
         }
     </script>
 </body>

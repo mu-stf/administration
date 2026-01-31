@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>?????? ???? ????? - ???? ????? ?????</title>
+    <title>فاتورة شراء جديدة - نظام الإدارة المتكامل</title>
     <link rel="stylesheet" href="css/style-responsive.css">
 </head>
 
@@ -12,161 +12,113 @@
     <div id="loadingOverlay"
         style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
         <div style="text-align: center;">
-            <div style="font-size: 48px; margin-bottom: 20px;">??</div>
-            <div style="font-size: 18px; color: #666;">???? ???????...</div>
+            <div style="font-size: 48px; margin-bottom: 20px;">🚚</div>
+            <div style="font-size: 18px; color: #666;">جاري التحميل...</div>
         </div>
     </div>
 
     <header class="header">
-        <h1>?? <span id="storeName">???? ????? ?????</span></h1>
-        <div class="header-actions"><button class="btn" onclick="logout()">?? ????? ??????</button></div>
+        <h1>أهلاً <span id="storeName">نظام الإدارة المتكامل</span></h1>
+        <div class="header-actions">
+            <button class="btn" onclick="logout()">تسجيل الخروج</button>
+        </div>
     </header>
 
     <div class="main-layout">
         <nav class="sidebar">
             <ul class="nav-menu">
-                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">??</span>????
-                        ??????</a></li>
-                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">?</span>??????
-                        ??????</a></li>
-                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">??</span>??????
-                        ????????</a></li>
-                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">??</span>????????</a>
-                </li>
-                <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">??</span>???????</a>
-                </li>
-                <li class="nav-item"><a href="customer-accounts.html" class="nav-link"><span
-                            class="icon">??</span>?????? ???????</a></li>
-                <li class="nav-item"><a href="supplies.html" class="nav-link active"><span class="icon">??</span>??????
-                        ??????</a></li>
-                <li class="nav-item"><a href="statistics.html" class="nav-link"><span
-                            class="icon">??</span>??????????</a></li>
-                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">??</span>?????????</a>
-                </li>
+                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">📊</span>لوحة التحكم</a></li>
+                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">➕</span>فاتورة جديدة</a></li>
+                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">📋</span>الفواتير</a></li>
+                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">📦</span>المنتجات</a></li>
+                <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">👥</span>الزبائن</a></li>
+                <li class="nav-item"><a href="supplies.html" class="nav-link active"><span class="icon">🚚</span>التوريدات</a></li>
+                <li class="nav-item"><a href="statistics.html" class="nav-link"><span class="icon">📈</span>الإحصائيات</a></li>
+                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">⚙️</span>الإعدادات</a></li>
             </ul>
         </nav>
 
         <main class="main-content">
             <div class="card">
                 <div class="card-header">
-                    <h2>?? ?????? ???? ?????</h2>
+                    <h2>🚚 فاتورة شراء جديدة</h2>
                 </div>
                 <div class="card-body">
-                    <!-- ??????? ???????? -->
-                    <div
-                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                    <!-- معلومات الفاتورة -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
                         <div class="form-group">
-                            <label>????? ????????</label>
+                            <label>تاريخ الفاتورة</label>
                             <input type="date" id="invoiceDate" class="form-control">
                         </div>
-                        <div class="form-group" id="supplierSelectGroup">
-                            <label>??????</label>
-                            <div style="display: flex; gap: 5px;">
-                                <select id="supplierId" class="form-control">
-                                    <option value="">???? ????</option>
-                                </select>
-                                <button class="btn btn-secondary" onclick="quickAddSupplier()" title="????? ???? ????" style="padding: 0 10px;">?</button>
-                            </div>
+                        <div class="form-group">
+                            <label>اسم المورد</label>
+                            <input type="text" id="supplierName" class="form-control" placeholder="اسم المورد">
                         </div>
                         <div class="form-group">
-                            <label>??? ???????? (??? ??????)</label>
-                            <input type="text" id="invoiceNumber" class="form-control" placeholder="???????">
-                        </div>
-                        <div class="form-group">
-                            <label>??? ????? *</label>
-                            <select id="paymentType" class="form-control" onchange="handlePaymentTypeChange()">
-                                <option value="cash">??? ??</option>
-                                <option value="credit">??? ??</option>
-                            </select>
+                            <label>رقم فاتورة المورد</label>
+                            <input type="text" id="supplierInvoice" class="form-control" placeholder="اختياري">
                         </div>
                     </div>
 
-                    <!-- ????? ???? -->
+                    <!-- إضافة منتج -->
                     <div class="card" style="background: #f8f9fa; margin-bottom: 20px;">
                         <div class="card-body">
-                            <div
-                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                                <h3 style="margin: 0; font-size: 16px;">????? ????</h3>
-                                <button class="btn btn-sm btn-success" onclick="openAddProductModal()">? ????
-                                    ????</button>
-                            </div>
-                            <div
-                                style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 12px; align-items: end;">
+                            <h3 style="margin: 0 0 15px; font-size: 16px;">إضافة منتج للفاتورة</h3>
+                            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 12px; align-items: end;">
                                 <div class="form-group" style="margin:0">
-                                    <label>??? ?? ????</label>
-                                    <input type="text" id="productSearch" list="productsList" class="form-control" placeholder="???? ??? ??????..." oninput="handleProductSelect()">
+                                    <label>المنتج</label>
+                                    <input type="text" id="productSearch" list="productsList" class="form-control" placeholder="اختر أو ابحث عن منتج">
                                     <datalist id="productsList"></datalist>
                                     <input type="hidden" id="selectedProductId">
                                 </div>
                                 <div class="form-group" style="margin:0">
-                                    <label>??????</label>
-                                    <input type="number" id="quantity" class="form-control" value="1" min="1">
+                                    <label>سعر الشراء</label>
+                                    <input type="number" id="purchasePrice" class="form-control" min="0">
                                 </div>
                                 <div class="form-group" style="margin:0">
-                                    <label>??? ??????</label>
-                                    <input type="number" id="purchasePrice" class="form-control" min="0" step="100">
+                                    <label>الكمية</label>
+                                    <input type="number" id="productQuantity" class="form-control" value="1" min="1">
                                 </div>
                                 <div class="form-group" style="margin:0">
-                                    <label>????? ???????</label>
-                                    <select id="stockAction" class="form-control" title="????? ?????? ??????? ?? ?????????">
-                                        <option value="add">????? ?</option>
-                                        <option value="replace">??????? ??</option>
-                                    </select>
+                                    <label>سعر البيع</label>
+                                    <input type="number" id="salePrice" class="form-control" min="0">
                                 </div>
-                                <button class="btn btn-primary" onclick="addItem()">? ?????</button>
+                                <button class="btn btn-primary" onclick="addProductToInvoice()">+ إضافة</button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ???? ???????? -->
+                    <!-- جدول المنتجات -->
                     <div class="table-responsive" style="margin-bottom: 20px;">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>??????</th>
-                                    <th>??????? ??????</th>
-                                    <th>?????? ???????</th>
-                                    <th>??? ??????</th>
-                                    <th>???????</th>
+                                    <th>المنتج</th>
+                                    <th>سعر الشراء</th>
+                                    <th>الكمية</th>
+                                    <th>سعر البيع</th>
+                                    <th>المجموع</th>
                                     <th></th>
                                 </tr>
                             </thead>
-                            <tbody id="itemsTable">
+                            <tbody id="invoiceItems">
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted">?? ???? ?????? ???</td>
+                                    <td colspan="6" class="text-center text-muted">لا توجد منتجات بعد</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- ?????? -->
-                    <div
-                        style="max-width: 400px; margin-right: auto; background: #f8f9fa; padding: 20px; border-radius: 8px;">
-                        <div
-                            style="display: flex; justify-content: space-between; padding-bottom: 10px; border-bottom: 2px solid #ddd; font-size: 18px;">
-                            <strong>????????:</strong>
-                            <strong id="total" style="color: #2563eb;">0 ?.?</strong>
-                        </div>
-
-                        <div id="creditOptions"
-                            style="display:none; margin-top: 16px; padding-top: 16px; border-top: 2px solid #ddd;">
-                            <div class="form-group">
-                                <label>?????? ???????</label>
-                                <input type="number" id="paidAmount" class="form-control" value="0" min="0"
-                                    oninput="calculateRemaining()">
-                            </div>
-                            <div
-                                style="display: flex; justify-content: space-between; color: #dc2626; font-weight: 600;">
-                                <span>???????:</span>
-                                <span id="remainingAmount">0 ?.?</span>
-                            </div>
+                    <!-- الملخص -->
+                    <div style="max-width: 400px; margin-right: auto; background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 2px solid #ddd; font-size: 18px;">
+                            <strong>الإجمالي:</strong>
+                            <strong id="finalTotal" style="color: #2563eb;">0 د.ع</strong>
                         </div>
 
                         <div style="margin-top: 20px; display: flex; gap: 10px;">
-                            <button class="btn btn-success" onclick="saveInvoice()" id="saveBtn" style="flex:1">?? ???
-                                ????????</button>
-                            <button class="btn btn-secondary"
-                                onclick="window.location.href='supplies.html'">?????</button>
+                            <button class="btn btn-success" onclick="saveInvoice()" id="saveBtn" style="flex:1">💾 حفظ فاتورة الشراء</button>
+                            <button class="btn btn-secondary" onclick="window.location.href='supplies.html'">إلغاء</button>
                         </div>
                     </div>
                 </div>
@@ -174,351 +126,146 @@
         </main>
     </div>
 
-    <!-- Modal ????? ???? ???? -->
-    <div class="modal-overlay" id="addProductModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>? ????? ???? ????</h3>
-                <button class="modal-close" onclick="closeAddProductModal()">�</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>??? ?????? *</label>
-                    <input type="text" id="newProductName" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label>????????</label>
-                    <input type="text" id="newProductBarcode" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label>???????</label>
-                    <input type="text" id="newProductCategory" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label>??? ????? *</label>
-                    <input type="number" id="newProductSalePrice" class="form-control" min="0">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-success" onclick="addNewProduct()">?? ?????</button>
-                <button class="btn btn-secondary" onclick="closeAddProductModal()">?????</button>
-            </div>
-        </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
-    <script src="js/cache-manager.js"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/page-protection.js"></script>
+    <script src="js/utils.js"></script>
     <script>
         let currentUser = null;
-        let suppliers = [];
+        let currentProfile = null;
         let products = [];
-        let items = [];
+        let invoiceItems = [];
 
         protectPage().then(authorized => { if (authorized) loadPage(); });
 
         async function loadPage() {
             const { user, profile } = await getCurrentUserData();
             currentUser = user;
+            currentProfile = profile;
             document.getElementById('storeName').textContent = profile.store_name;
-
-            // ????? ????? ?????
+            
             document.getElementById('invoiceDate').valueAsDate = new Date();
 
-            await loadSuppliers();
             await loadProducts();
-
             hideLoading();
         }
 
-        async function loadSuppliers() {
-            suppliers = await loadWithCache(
-                `suppliers_${currentUser.id}`,
-                () => SupabaseDB.getSuppliers(currentUser.id)
-            );
-            
-            const supplierSelect = document.getElementById('supplierId');
-            const currentVal = supplierSelect.value;
-            supplierSelect.innerHTML = '<option value="">???? ????</option>' +
-                suppliers.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-            if (currentVal) supplierSelect.value = currentVal;
-        }
-
         async function loadProducts() {
-            products = await loadWithCache(
-                `products_${currentUser.id}`,
-                () => SupabaseDB.getProducts(currentUser.id)
-            );
-            
+            products = await SupabaseDB.getProducts(currentUser.id);
             const datalist = document.getElementById('productsList');
-            datalist.innerHTML = products.map(p => `<option value="${p.name}">${p.barcode ? 'Bar: ' + p.barcode : ''} - ???: ${p.sale_price}</option>`).join('');
+            datalist.innerHTML = products.map(p => `<option value="${p.name}">${p.barcode || '-'}</option>`).join('');
         }
 
-        async function handleProductSelection() {
-            const inputName = document.getElementById('productSearch').value.trim(); // Changed from 'productName' to 'productSearch'
-            
-            // ????? ????? ???????? ?????? ?? ???? ???????
-            products = await loadWithCache(
-                `products_${currentUser.id}`,
-                () => SupabaseDB.getProducts(currentUser.id),
-                true // ????? ???????
-            );
-            
-            // ????? ????? datalist
-            const datalist = document.getElementById('productsList');
-            datalist.innerHTML = products.map(p => `<option value="${p.name}">${p.barcode ? 'Bar: ' + p.barcode : ''} - ???: ${p.sale_price}</option>`).join('');
-            
-            const product = products.find(p => p.name === inputName);
-            if (!product) {
-                document.getElementById('selectedProductId').value = ''; // Changed from 'productId' to 'selectedProductId'
-                document.getElementById('purchasePrice').value = '';
-                return;
+        document.getElementById('productSearch').addEventListener('change', function() {
+            const product = products.find(p => p.name === this.value);
+            if (product) {
+                document.getElementById('selectedProductId').value = product.id;
+                document.getElementById('purchasePrice').value = product.purchase_price;
+                document.getElementById('salePrice').value = product.sale_price;
             }
+        });
 
-            document.getElementById('selectedProductId').value = product.id; // Changed from 'productId' to 'selectedProductId'
-            document.getElementById('purchasePrice').value = product.purchase_price || 0;
-            document.getElementById('quantity').focus(); // Added focus and select for quantity
-            document.getElementById('quantity').select(); // Added focus and select for quantity
-        }
-
-        function handlePaymentTypeChange() {
-            const type = document.getElementById('paymentType').value;
-            document.getElementById('creditOptions').style.display = type === 'credit' ? 'block' : 'none';
-            calculateRemaining();
-        }
-
-        async function quickAddSupplier() {
-            const name = prompt('???? ??? ?????? ??????:');
-            if (!name) return;
-
-            try {
-                const newSupplier = await SupabaseDB.addSupplier(currentUser.id, {
-                    name: name,
-                    phone: '',
-                    address: '???? ????',
-                    balance: 0
-                });
-                
-                // ??? ?????
-                CacheManager.remove(`suppliers_${currentUser.id}`);
-                
-                await loadSuppliers();
-                document.getElementById('supplierId').value = newSupplier.id;
-                alert('? ?? ????? ?????? ???????!');
-            } catch (error) {
-                console.error(error);
-                alert('??? ?? ????? ??????: ' + error.message);
-            }
-        }
-
-        function addItem() {
+        function addProductToInvoice() {
+            const productName = document.getElementById('productSearch').value;
             const productId = document.getElementById('selectedProductId').value;
-            const quantity = parseInt(document.getElementById('quantity').value) || 1;
-            const purchasePrice = parseFloat(document.getElementById('purchasePrice').value);
-            const stockAction = document.getElementById('stockAction').value;
+            const purchasePrice = parseFloat(document.getElementById('purchasePrice').value) || 0;
+            const quantity = parseInt(document.getElementById('productQuantity').value) || 1;
+            const salePrice = parseFloat(document.getElementById('salePrice').value) || 0;
 
-            if (!productId) {
-                alert('???? ?????? ???? ?? ???????');
+            if (!productName) {
+                alert('يرجى اختيار منتج');
                 return;
             }
 
-            if (isNaN(purchasePrice) || purchasePrice < 0) {
-                alert('???? ??? ???? ????');
-                return;
-            }
+            invoiceItems.push({
+                product_id: productId || null,
+                product_name: productName,
+                purchase_price: purchasePrice,
+                sale_price: salePrice,
+                quantity: quantity,
+                total: purchasePrice * quantity
+            });
 
-            const product = products.find(p => p.id === productId);
-            if (!product) return;
-
-            const existing = items.find(item => item.product_id === productId);
-            if (existing) {
-                existing.quantity += quantity;
-                existing.purchase_price = purchasePrice;
-                existing.stock_action = stockAction;
-            } else {
-                items.push({
-                    product_id: productId,
-                    product_name: product.name,
-                    current_stock: product.stock || 0,
-                    quantity: quantity,
-                    purchase_price: purchasePrice,
-                    stock_action: stockAction
-                });
-            }
-
-            renderItems();
+            renderInvoiceItems();
             
-            // ????? ??????
+            // تفريغ الحقول
             document.getElementById('productSearch').value = '';
             document.getElementById('selectedProductId').value = '';
-            document.getElementById('quantity').value = 1;
             document.getElementById('purchasePrice').value = '';
-            document.getElementById('stockAction').value = 'add';
-            document.getElementById('productSearch').focus();
+            document.getElementById('productQuantity').value = '1';
+            document.getElementById('salePrice').value = '';
         }
 
-        function renderItems() {
-            const tbody = document.getElementById('itemsTable');
-            if (items.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">?? ???? ?????? ???</td></tr>';
+        function renderInvoiceItems() {
+            const tbody = document.getElementById('invoiceItems');
+            if (invoiceItems.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">لا توجد منتجات بعد</td></tr>';
                 calculateTotal();
                 return;
             }
 
-            tbody.innerHTML = items.map((item, index) => {
-                const total = item.quantity * item.purchase_price;
-                const currentStock = item.current_stock || 0;
-                const newStock = item.stock_action === 'add' ? currentStock + item.quantity : item.quantity;
-                const stockDisplay = item.stock_action === 'add' 
-                    ? `${currentStock} ? <strong style="color: #16a34a;">${newStock}</strong>` 
-                    : `${currentStock} ? <strong style="color: #2563eb;">${newStock}</strong>`;
-                
-                return `
-                    <tr>
-                        <td>${item.product_name}</td>
-                        <td>${stockDisplay}</td>
-                        <td><input type="number" value="${item.quantity}" min="1" style="width:80px;padding:4px;" onchange="updateQuantity(${index}, this.value)"></td>
-                        <td><input type="number" value="${item.purchase_price}" min="0" step="100" style="width:120px;padding:4px;" onchange="updatePrice(${index}, this.value)"></td>
-                        <td>${total.toLocaleString()} ?.?</td>
-                        <td><button class="btn btn-sm btn-danger" onclick="removeItem(${index})">???</button></td>
-                    </tr>
-                `;
-            }).join('');
+            tbody.innerHTML = invoiceItems.map((item, index) => `
+                <tr>
+                    <td>${item.product_name}</td>
+                    <td>${item.purchase_price.toLocaleString()} د.ع</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.sale_price.toLocaleString()} د.ع</td>
+                    <td>${item.total.toLocaleString()} د.ع</td>
+                    <td><button class="btn btn-sm btn-danger" onclick="removeItem(${index})">🗑️</button></td>
+                </tr>
+            `).join('');
 
             calculateTotal();
         }
 
-        function updateQuantity(index, newQty) {
-            items[index].quantity = parseInt(newQty) || 1;
-            renderItems();
-        }
-
-        function updatePrice(index, newPrice) {
-            items[index].purchase_price = parseFloat(newPrice) || 0;
-            renderItems();
-        }
-
         function removeItem(index) {
-            items.splice(index, 1);
-            renderItems();
+            invoiceItems.splice(index, 1);
+            renderInvoiceItems();
         }
 
         function calculateTotal() {
-            const total = items.reduce((sum, item) => sum + (item.quantity * item.purchase_price), 0);
-            document.getElementById('total').textContent = total.toLocaleString() + ' ?.?';
-            calculateRemaining();
-        }
-
-        function calculateRemaining() {
-            const total = items.reduce((sum, item) => sum + (item.quantity * item.purchase_price), 0);
-            const paid = parseFloat(document.getElementById('paidAmount').value) || 0;
-            const remaining = Math.max(0, total - paid);
-            document.getElementById('remainingAmount').textContent = remaining.toLocaleString() + ' ?.?';
-        }
-
-        function openAddProductModal() {
-            document.getElementById('addProductModal').classList.add('active');
-            document.getElementById('newProductName').value = '';
-            document.getElementById('newProductBarcode').value = '';
-            document.getElementById('newProductCategory').value = '???';
-            document.getElementById('newProductSalePrice').value = '';
-        }
-
-        function closeAddProductModal() {
-            document.getElementById('addProductModal').classList.remove('active');
-        }
-
-        async function addNewProduct() {
-            const name = document.getElementById('newProductName').value.trim();
-            const salePrice = parseFloat(document.getElementById('newProductSalePrice').value);
-
-            if (!name || isNaN(salePrice)) {
-                alert('???? ??? ?????? ???? ????? ??? ?????');
-                return;
-            }
-
-            try {
-                const productData = {
-                    name: name,
-                    barcode: document.getElementById('newProductBarcode').value.trim(),
-                    category: document.getElementById('newProductCategory').value.trim(),
-                    sale_price: salePrice,
-                    purchase_price: 0,
-                    stock: 0
-                };
-
-                const newProduct = await SupabaseDB.addProduct(currentUser.id, productData);
-                await loadProducts();
-
-                // ?????? ?????? ?????? ????????
-                document.getElementById('productSearch').value = newProduct.name;
-                handleProductSelect();
-
-                closeAddProductModal();
-                alert('? ?? ????? ?????? ?????!');
-            } catch (error) {
-                console.error('??? ?? ????? ??????:', error);
-                alert('??? ???: ' + error.message);
-            }
+            const total = invoiceItems.reduce((sum, item) => sum + item.total, 0);
+            document.getElementById('finalTotal').textContent = total.toLocaleString() + ' د.ع';
         }
 
         async function saveInvoice() {
-            if (items.length === 0) {
-                alert('??? ?????? ????????!');
-                return;
-            }
-
-            const dateVal = document.getElementById('invoiceDate').value;
-            if (!dateVal) {
-                alert('???? ????? ???????');
+            if (invoiceItems.length === 0) {
+                alert('يجب إضافة منتجات للفاتورة!');
                 return;
             }
 
             const saveBtn = document.getElementById('saveBtn');
             saveBtn.disabled = true;
-            saveBtn.textContent = '???? ?????...';
+            saveBtn.textContent = 'جاري الحفظ...';
 
             try {
-                const supplierId = document.getElementById('supplierId').value || null;
-                const supplierName = supplierId ? suppliers.find(s => s.id === supplierId)?.name : '???? ????';
-                const invoiceNumber = document.getElementById('invoiceNumber').value.trim() || `PUR-${Date.now()}`;
-                const paymentType = document.getElementById('paymentType').value;
-                const total = items.reduce((sum, item) => sum + (item.quantity * item.purchase_price), 0);
-                const paidAmount = paymentType === 'cash' ? total : (parseFloat(document.getElementById('paidAmount').value) || 0);
-                const remaining = total - paidAmount;
+                const total = invoiceItems.reduce((sum, item) => sum + item.total, 0);
+                const invoiceNumber = `PUR-${String(currentProfile.current_purchase_number).padStart(5, '0')}`;
 
                 const invoiceData = {
-                    supplier_id: supplierId,
-                    supplier_name: supplierName,
                     invoice_number: invoiceNumber,
-                    payment_type: paymentType,
+                    supplier_name: document.getElementById('supplierName').value.trim() || 'مورد',
+                    supplier_invoice: document.getElementById('supplierInvoice').value.trim(),
                     total: total,
-                    paid_amount: paidAmount,
-                    remaining_amount: remaining,
-                    date: new Date(dateVal).toISOString()
+                    date: new Date(document.getElementById('invoiceDate').value).toISOString(),
+                    status: 'active'
                 };
 
-                const itemsWithTotal = items.map(item => ({
-                    ...item,
-                    total: item.quantity * item.purchase_price
-                }));
+                await SupabaseDB.createPurchaseInvoice(currentUser.id, invoiceData, invoiceItems);
 
-                const invoice = await SupabaseDB.createPurchaseInvoice(currentUser.id, invoiceData, itemsWithTotal);
+                // تحديث رقم الفاتورة
+                await SupabaseDB.updateProfile(currentUser.id, {
+                    current_purchase_number: currentProfile.current_purchase_number + 1
+                });
 
-                // ??? ?????
-                CacheManager.remove(`products_${currentUser.id}`);
-                CacheManager.remove(`suppliers_${currentUser.id}`);
-
-                alert('? ?? ??? ?????? ?????? ?????!');
-                // ?????? ????? ?????? ?????? ????? ?? ???????
+                alert(`✅ تم حفظ فاتورة الشراء ${invoiceNumber} بنجاح!`);
                 window.location.href = 'supplies.html';
             } catch (error) {
-                console.error('??? ?? ??? ????????:', error);
-                alert('??? ???: ' + error.message);
+                console.error('خطأ في حفظ الفاتورة:', error);
+                alert('حدث خطأ: ' + error.message);
                 saveBtn.disabled = false;
-                saveBtn.textContent = '?? ??? ????????';
+                saveBtn.textContent = '💾 حفظ فاتورة الشراء';
             }
         }
     </script>

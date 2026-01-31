@@ -4,68 +4,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>???????? - ???? ????? ?????</title>
-    <link rel="stylesheet" href="css/style-responsive.css">ponsive.css">
+    <title>الفواتير - نظام الإدارة المتكامل</title>
+    <link rel="stylesheet" href="css/style-responsive.css">
 </head>
 
 <body>
     <div id="loadingOverlay"
         style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
         <div style="text-align: center;">
-            <div style="font-size: 48px; margin-bottom: 20px;">??</div>
-            <div style="font-size: 18px; color: #666;">???? ???????...</div>
+            <div style="font-size: 48px; margin-bottom: 20px;">📋</div>
+            <div style="font-size: 18px; color: #666;">جاري التحميل...</div>
         </div>
     </div>
 
     <header class="header">
-        <h1>?? <span id="storeName">???? ????? ?????</span></h1>
-        <div class="header-actions"><button class="btn" onclick="logout()">?? ????? ??????</button></div>
+        <h1>أهلاً <span id="storeName">نظام الإدارة المتكامل</span></h1>
+        <div class="header-actions">
+            <button class="btn" onclick="logout()">تسجيل الخروج</button>
+        </div>
     </header>
 
     <div class="main-layout">
         <nav class="sidebar">
             <ul class="nav-menu">
-                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">??</span>????
-                        ??????</a></li>
-                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">?</span>??????
-                        ?????</a></li>
-                <li class="nav-item"><a href="invoices.html" class="nav-link active"><span
-                            class="icon">??</span>????????</a></li>
-                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">??</span>????????</a>
-                </li>
-                <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">??</span>???????</a>
-                </li>
-                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">??</span>?????????</a>
-                </li>
-                <li class="nav-item"><a href="statistics.html" class="nav-link"><span
-                            class="icon">??</span>??????????</a></li>
-                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">??</span>?????????</a>
-                </li>
+                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">📊</span>لوحة التحكم</a></li>
+                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">➕</span>فاتورة جديدة</a></li>
+                <li class="nav-item"><a href="invoices.html" class="nav-link active"><span class="icon">📋</span>الفواتير</a></li>
+                <li class="nav-item"><a href="products.html" class="nav-link"><span class="icon">📦</span>المنتجات</a></li>
+                <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">👥</span>الزبائن</a></li>
+                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">🚚</span>التوريدات</a></li>
+                <li class="nav-item"><a href="statistics.html" class="nav-link"><span class="icon">📈</span>الإحصائيات</a></li>
+                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">⚙️</span>الإعدادات</a></li>
             </ul>
         </nav>
 
         <main class="main-content">
             <div class="card">
                 <div class="card-header">
-                    <h2>?? ????????</h2>
-                    <a href="new-invoice.html" class="btn btn-primary">? ?????? ?????</a>
+                    <h2>📋 جميع الفواتير</h2>
+                    <a href="new-invoice.html" class="btn btn-primary">➕ فاتورة جديدة</a>
                 </div>
                 <div class="card-body">
+                    <!-- فلاتر البحث -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <input type="text" id="searchInvoice" class="form-control" placeholder="بحث برقم الفاتورة أو اسم الزبون..." style="max-width: 300px;">
+                        <select id="statusFilter" class="form-control" style="max-width: 150px;" onchange="loadInvoices()">
+                            <option value="">جميع الحالات</option>
+                            <option value="active">نشطة</option>
+                            <option value="cancelled">ملغاة</option>
+                        </select>
+                        <input type="date" id="dateFrom" class="form-control" style="max-width: 150px;" onchange="loadInvoices()">
+                        <input type="date" id="dateTo" class="form-control" style="max-width: 150px;" onchange="loadInvoices()">
+                    </div>
+
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>??? ????????</th>
-                                    <th>???????</th>
-                                    <th>??????</th>
-                                    <th>???????</th>
-                                    <th>??????</th>
-                                    <th>?????????</th>
+                                    <th>رقم الفاتورة</th>
+                                    <th>التاريخ</th>
+                                    <th>الزبون</th>
+                                    <th>المبلغ</th>
+                                    <th>نوع الدفع</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
                                 </tr>
                             </thead>
                             <tbody id="invoicesTable">
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted">?? ???? ?????? ???</td>
+                                    <td colspan="7" class="text-center text-muted">لا توجد فواتير</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -82,6 +89,7 @@
     <script src="js/utils.js"></script>
     <script>
         let currentUser = null;
+        let invoices = [];
 
         protectPage().then(authorized => { if (authorized) loadPage(); });
 
@@ -89,50 +97,99 @@
             const { user, profile } = await getCurrentUserData();
             currentUser = user;
             document.getElementById('storeName').textContent = profile.store_name;
+
             await loadInvoices();
             hideLoading();
+
+            // إضافة حدث البحث
+            document.getElementById('searchInvoice').addEventListener('input', filterInvoices);
         }
 
         async function loadInvoices() {
             try {
-                const invoices = await SupabaseDB.getInvoices(currentUser.id);
-                const tbody = document.getElementById('invoicesTable');
+                const statusFilter = document.getElementById('statusFilter').value;
+                const dateFrom = document.getElementById('dateFrom').value;
+                const dateTo = document.getElementById('dateTo').value;
 
-                if (invoices.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">?? ???? ?????? ???</td></tr>';
-                    return;
+                invoices = await SupabaseDB.getInvoices(currentUser.id);
+
+                // تطبيق الفلاتر
+                let filtered = invoices;
+                
+                if (statusFilter) {
+                    filtered = filtered.filter(inv => inv.status === statusFilter);
+                }
+                
+                if (dateFrom) {
+                    filtered = filtered.filter(inv => new Date(inv.date) >= new Date(dateFrom));
+                }
+                
+                if (dateTo) {
+                    filtered = filtered.filter(inv => new Date(inv.date) <= new Date(dateTo + 'T23:59:59'));
                 }
 
-                tbody.innerHTML = invoices.map(inv => `
-                    <tr>
-                        <td><a href="print-invoice.html?id=${inv.id}">${inv.invoice_number}</a></td>
-                        <td>${new Date(inv.date).toLocaleDateString('ar')}</td>
-                        <td>${inv.customer_name}</td>
-                        <td>${Utils.formatCurrency && Utils.formatCurrency(inv.final_total) || inv.final_total + ' ?.?'}</td>
-                        <td><span class="badge ${inv.status === 'active' ? 'badge-success' : 'badge-danger'}">${inv.status === 'active' ? '????' : '?????'}</span></td>
-                        <td class="actions">
-                            <a href="print-invoice.html?id=${inv.id}" class="btn btn-sm btn-secondary" title="?????">???</a>
-                            ${inv.status === 'active' ? `<a href="edit-invoice.html?id=${inv.id}" class="btn btn-sm btn-primary" title="?????">??</a>` : ''}
-                            <button class="btn btn-sm btn-danger" onclick="deleteInvoice('${inv.id}')" title="??? ???????? ???????">???</button>
-                        </td>
-                    </tr>
-                `).join('');
+                renderInvoices(filtered);
             } catch (error) {
-                console.error('??? ?? ????? ????????:', error);
-                alert('??? ??? ?? ????? ????????');
+                console.error('خطأ في تحميل الفواتير:', error);
             }
         }
 
-        async function deleteInvoice(id) {
-            if (!confirm('?? ?????: ?? ??? ????? ?? ??? ??? ???????? ????????\n\n- ???? ????? ???????? ???????\n- ???? ????? ???? ???? ?????? (?????)\n- ?? ???? ??????? ?? ??? ???????!')) return;
+        function filterInvoices() {
+            const search = document.getElementById('searchInvoice').value.toLowerCase();
+            const filtered = invoices.filter(inv => 
+                inv.invoice_number.toLowerCase().includes(search) ||
+                (inv.customer_name && inv.customer_name.toLowerCase().includes(search))
+            );
+            renderInvoices(filtered);
+        }
+
+        function renderInvoices(data) {
+            const tbody = document.getElementById('invoicesTable');
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">لا توجد فواتير</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .map(inv => `
+                    <tr>
+                        <td><strong>${inv.invoice_number}</strong></td>
+                        <td>${Utils.formatDateTime(inv.date)}</td>
+                        <td>${inv.customer_name || 'زبون عام'}</td>
+                        <td>${Utils.formatCurrency(inv.final_total)}</td>
+                        <td>
+                            <span class="badge ${inv.payment_type === 'cash' ? 'badge-success' : 'badge-warning'}">
+                                ${inv.payment_type === 'cash' ? 'نقد' : 'آجل'}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge ${inv.status === 'active' ? 'badge-success' : 'badge-danger'}">
+                                ${inv.status === 'active' ? 'نشطة' : 'ملغاة'}
+                            </span>
+                        </td>
+                        <td class="actions">
+                            <a href="print-invoice.html?id=${inv.id}" class="btn btn-sm btn-secondary">🖨️ طباعة</a>
+                            ${inv.status === 'active' ? `
+                                <a href="edit-invoice.html?id=${inv.id}" class="btn btn-sm btn-primary">✏️ تعديل</a>
+                                <button class="btn btn-sm btn-danger" onclick="cancelInvoice('${inv.id}')">❌ إلغاء</button>
+                            ` : ''}
+                        </td>
+                    </tr>
+                `).join('');
+        }
+
+        async function cancelInvoice(id) {
+            if (!confirm('هل أنت متأكد من إلغاء هذه الفاتورة؟ سيتم إرجاع المخزون.')) return;
 
             try {
-                await SupabaseDB.deleteInvoice(id);
-                alert('? ?? ??? ???????? ?????!');
+                await SupabaseDB.cancelInvoice(id);
+                alert('✅ تم إلغاء الفاتورة بنجاح');
                 await loadInvoices();
             } catch (error) {
-                console.error('??? ?? ?????:', error);
-                alert('??? ???: ' + error.message);
+                console.error(error);
+                alert('❌ خطأ في إلغاء الفاتورة: ' + error.message);
             }
         }
     </script>

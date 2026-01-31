@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>???? ?????? - ???? ????? ?????</title>
+    <title>لوحة التحكم - نظام الإدارة المتكامل</title>
     <link rel="stylesheet" href="css/style-responsive.css">
 </head>
 
@@ -13,18 +13,18 @@
     <div id="loadingOverlay"
         style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
         <div style="text-align: center;">
-            <div style="font-size: 48px; margin-bottom: 20px;">??</div>
-            <div style="font-size: 18px; color: #666;">???? ???????...</div>
+            <div style="font-size: 48px; margin-bottom: 20px;">📊</div>
+            <div style="font-size: 18px; color: #666;">جاري التحميل...</div>
         </div>
     </div>
 
     <!-- Header -->
     <header class="header">
-        <h1>?? <span id="storeName">???? ????? ?????</span></h1>
+        <h1>أهلاً <span id="storeName">نظام الإدارة المتكامل</span></h1>
         <div class="header-actions">
             <span id="currentDate"></span>
             <button class="btn" onclick="logout()">
-                ?? ????? ??????
+                تسجيل الخروج
             </button>
         </div>
     </header>
@@ -35,56 +35,56 @@
             <ul class="nav-menu">
                 <li class="nav-item">
                     <a href="dashboard.html" class="nav-link active">
-                        <span class="icon">??</span>
-                        ???? ??????
+                        <span class="icon">📊</span>
+                        لوحة التحكم
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="new-invoice.html" class="nav-link">
-                        <span class="icon">?</span>
-                        ?????? ?????
+                        <span class="icon">➕</span>
+                        فاتورة جديدة
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="invoices.html" class="nav-link">
-                        <span class="icon">??</span>
-                        ????????
+                        <span class="icon">📋</span>
+                        الفواتير
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="products.html" class="nav-link">
-                        <span class="icon">??</span>
-                        ????????
+                        <span class="icon">📦</span>
+                        المنتجات
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="customers.html" class="nav-link">
-                        <span class="icon">??</span>
-                        ???????
+                        <span class="icon">👥</span>
+                        الزبائن
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="supplies.html" class="nav-link">
-                        <span class="icon">??</span>
-                        ?????????
+                        <span class="icon">🚚</span>
+                        التوريدات
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="statistics.html" class="nav-link">
-                        <span class="icon">??</span>
-                        ??????????
+                        <span class="icon">📈</span>
+                        الإحصائيات
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="settings.html" class="nav-link">
-                        <span class="icon">??</span>
-                        ?????????
+                        <span class="icon">⚙️</span>
+                        الإعدادات
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="manage-users.html" class="nav-link">
-                        <span class="icon">??</span>
-                        ??????????
+                        <span class="icon">👤</span>
+                        المستخدمون
                     </a>
                 </li>
             </ul>
@@ -95,31 +95,31 @@
             <!-- Stats Cards -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-icon blue">??</div>
+                    <div class="stat-icon blue">📋</div>
                     <div class="stat-info">
                         <h3 id="todayInvoices">0</h3>
-                        <p>?????? ?????</p>
+                        <p>فواتير اليوم</p>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon green">??</div>
+                    <div class="stat-icon green">💰</div>
                     <div class="stat-info">
-                        <h3 id="todaySales">0 ?.?</h3>
-                        <p>?????? ?????</p>
+                        <h3 id="todaySales">0 د.ع</h3>
+                        <p>مبيعات اليوم</p>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon orange">??</div>
+                    <div class="stat-icon orange">📈</div>
                     <div class="stat-info">
-                        <h3 id="todayProfit">0 ?.?</h3>
-                        <p>????? ?????</p>
+                        <h3 id="todayProfit">0 د.ع</h3>
+                        <p>أرباح اليوم</p>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon red">??</div>
+                    <div class="stat-icon red">⚠️</div>
                     <div class="stat-info">
                         <h3 id="lowStock">0</h3>
-                        <p>?????? ?????? ???????</p>
+                        <p>منتجات قليلة المخزون</p>
                     </div>
                 </div>
             </div>
@@ -127,21 +127,21 @@
             <!-- Quick Actions -->
             <div class="card mb-3">
                 <div class="card-header">
-                    <h2>? ??????? ?????</h2>
+                    <h2>⚡ الإجراءات السريعة</h2>
                 </div>
                 <div class="card-body">
                     <div class="d-flex gap-2" style="flex-wrap: wrap;">
                         <a href="new-invoice.html" class="btn btn-primary">
-                            ? ?????? ?????
+                            ➕ فاتورة جديدة
                         </a>
                         <a href="products.html" class="btn btn-success">
-                            ?? ????? ????
+                            📦 إضافة منتج
                         </a>
                         <a href="supplies.html" class="btn btn-warning">
-                            ?? ????? ?????
+                            🚚 إضافة توريد
                         </a>
                         <a href="statistics.html" class="btn btn-secondary">
-                            ?? ??? ??????????
+                            📊 عرض الإحصائيات
                         </a>
                     </div>
                 </div>
@@ -150,25 +150,25 @@
             <!-- Recent Invoices -->
             <div class="card mb-3">
                 <div class="card-header">
-                    <h2>?? ??? ????????</h2>
-                    <a href="invoices.html" class="btn btn-sm btn-secondary">??? ????</a>
+                    <h2>📋 آخر الفواتير</h2>
+                    <a href="invoices.html" class="btn btn-sm btn-secondary">عرض الكل</a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>??? ????????</th>
-                                    <th>???????</th>
-                                    <th>??????</th>
-                                    <th>????????</th>
-                                    <th>??????</th>
+                                    <th>رقم الفاتورة</th>
+                                    <th>التاريخ</th>
+                                    <th>الزبون</th>
+                                    <th>المبلغ</th>
+                                    <th>الحالة</th>
                                 </tr>
                             </thead>
                             <tbody id="recentInvoices">
                                 <tr>
                                     <td colspan="5" class="text-center text-muted">
-                                        ?? ???? ?????? ???
+                                        لا توجد فواتير بعد
                                     </td>
                                 </tr>
                             </tbody>
@@ -180,23 +180,23 @@
             <!-- Low Stock Products -->
             <div class="card">
                 <div class="card-header">
-                    <h2>?? ?????? ?????? ???????</h2>
-                    <a href="products.html" class="btn btn-sm btn-secondary">????? ????????</a>
+                    <h2>⚠️ المنتجات قليلة المخزون</h2>
+                    <a href="products.html" class="btn btn-sm btn-secondary">إدارة المنتجات</a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>??????</th>
-                                    <th>?????? ????????</th>
-                                    <th>?????</th>
+                                    <th>المنتج</th>
+                                    <th>المخزون الحالي</th>
+                                    <th>الإجراء</th>
                                 </tr>
                             </thead>
                             <tbody id="lowStockProducts">
                                 <tr>
                                     <td colspan="3" class="text-center text-muted">
-                                        ?? ???? ?????? ?????? ???????
+                                        لا توجد منتجات قليلة المخزون
                                     </td>
                                 </tr>
                             </tbody>
@@ -215,7 +215,7 @@
     <script>
         const dashboardFlag = sessionStorage.getItem('in_dashboard');
 
-        // ????? ?????? ?? Supabase
+        // التحقق الكامل من Supabase
         async function protectDashboard() {
             if (dashboardFlag) {
                 sessionStorage.removeItem('in_dashboard');
@@ -234,10 +234,10 @@
 
                 const user = await SupabaseDB.getCurrentUser();
 
-                // ?????? ?? ????? setup
+                // التحقق من صفحة setup
                 try {
                     const profile = await SupabaseDB.getProfile(user.id);
-                    if (!profile || profile.store_name === ' ?????') {
+                    if (!profile || profile.store_name === 'متجر جديد') {
                         sessionStorage.removeItem('in_dashboard');
                         window.location.href = 'setup.html';
                         return false;
@@ -251,14 +251,14 @@
                 sessionStorage.removeItem('in_dashboard');
                 return true;
             } catch (error) {
-                console.error('??? ?? ????????:', error);
+                console.error('خطأ في المصادقة:', error);
                 sessionStorage.removeItem('in_dashboard');
                 window.location.href = 'index.html';
                 return false;
             }
         }
 
-        // ?????? ?? ??????? ?? ????? ????????
+        // التأكد من التحقق قبل تحميل البيانات
         protectDashboard().then(isAuthorized => {
             if (isAuthorized) {
                 loadDashboard();
@@ -271,30 +271,30 @@
             if (overlay) overlay.style.display = 'none';
         }
 
-        // ????? ??????
+        // تسجيل الخروج
         async function logout() {
             try {
                 await SupabaseDB.signOut();
                 window.location.href = 'index.html';
             } catch (error) {
-                console.error('??? ?? ????? ??????:', error);
-                alert('??? ??? ????? ????? ??????');
+                console.error('خطأ في تسجيل الخروج:', error);
+                alert('حدث خطأ أثناء تسجيل الخروج');
             }
         }
 
-        // ????? ????????
+        // تحميل البيانات
         async function loadDashboard() {
             try {
                 const user = await SupabaseDB.getCurrentUser();
                 const profile = await SupabaseDB.getProfile(user.id);
 
-                // ????? ??? ?????
-                document.getElementById('storeName').textContent = profile.store_name || '???? ????? ?????';
+                // تحديث اسم المتجر
+                document.getElementById('storeName').textContent = profile.store_name || 'نظام الإدارة المتكامل';
 
-                // ??? ???????
+                // عرض التاريخ
                 document.getElementById('currentDate').textContent = Utils.formatDate(new Date());
 
-                // ??? ???????? ?? Supabase
+                // جلب الإحصائيات من Supabase
                 const stats = await SupabaseDB.getStatistics(
                     user.id,
                     Utils.getStartOfDay(new Date()),
@@ -305,12 +305,12 @@
                 document.getElementById('todaySales').textContent = Utils.formatCurrency(stats.totalSales);
                 document.getElementById('todayProfit').textContent = Utils.formatCurrency(stats.profit);
 
-                // ???????? ?????? ???????
+                // المنتجات قليلة المخزون
                 const products = await SupabaseDB.getProducts(user.id);
                 const lowStockProducts = products.filter(p => p.stock <= p.min_stock);
                 document.getElementById('lowStock').textContent = lowStockProducts.length;
 
-                // ??? ??? ????????
+                // آخر عشر فواتير
                 const invoices = await SupabaseDB.getInvoices(user.id);
                 const recentInvoices = invoices
                     .sort((a, b) => new Date(b.date) - new Date(a.date))
@@ -326,14 +326,14 @@
                             <td>${Utils.formatCurrency(inv.final_total)}</td>
                             <td>
                                 <span class="badge ${inv.status === 'active' ? 'badge-success' : 'badge-danger'}">
-                                    ${inv.status === 'active' ? '????' : '?????'}
+                                    ${inv.status === 'active' ? 'نشطة' : 'ملغاة'}
                                 </span>
                             </td>
                         </tr>
                     `).join('');
                 }
 
-                // ??? ???????? ?????? ???????
+                // عرض المنتجات قليلة المخزون
                 const lowStockTable = document.getElementById('lowStockProducts');
                 if (lowStockProducts.length > 0) {
                     lowStockTable.innerHTML = lowStockProducts.map(p => `
@@ -342,16 +342,16 @@
                             <td class="stock-low">${p.stock}</td>
                             <td>
                                 <a href="supplies.html?product=${p.id}" class="btn btn-sm btn-warning">
-                                    ?? ?????
+                                    🚚 طلب توريد
                                 </a>
                             </td>
                         </tr>
                     `).join('');
                 }
             } catch (error) {
-                console.error('??? ?? ????? ????????:', error);
-                // ??? ????? ??? ????????
-                document.getElementById('storeName').textContent = '??? ?? ????? ????????';
+                console.error('خطأ في تحميل البيانات:', error);
+                // عرض رسالة خطأ للمستخدم
+                document.getElementById('storeName').textContent = 'خطأ في تحميل البيانات';
             }
         }
 

@@ -1,408 +1,270 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>المنتجات - نظام إدارة المحل</title>
-    <link rel="stylesheet" href="css/style-responsive.css" />
-  </head>
 
-  <body>
-    <div
-      id="loadingOverlay"
-      style="
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #f5f5f5;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-      "
-    >
-      <div style="text-align: center">
-        <div style="font-size: 48px; margin-bottom: 20px">🏪</div>
-        <div style="font-size: 18px; color: #666">جاري التحميل...</div>
-      </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المنتجات - نظام الإدارة المتكامل</title>
+    <link rel="stylesheet" href="css/style-responsive.css">
+</head>
+
+<body>
+    <div id="loadingOverlay"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
+        <div style="text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 20px;">📦</div>
+            <div style="font-size: 18px; color: #666;">جاري التحميل...</div>
+        </div>
     </div>
 
     <header class="header">
-      <h1>🏪 <span id="storeName">نظام إدارة المحل</span></h1>
-      <div class="header-actions">
-        <button class="btn" onclick="logout()">🚪 تسجيل الخروج</button>
-      </div>
+        <h1>أهلاً <span id="storeName">نظام الإدارة المتكامل</span></h1>
+        <div class="header-actions">
+            <button class="btn" onclick="logout()">تسجيل الخروج</button>
+        </div>
     </header>
 
     <div class="main-layout">
-      <nav class="sidebar">
-        <ul class="nav-menu">
-          <li class="nav-item">
-            <a href="dashboard.html" class="nav-link"
-              ><span class="icon">📊</span>لوحة التحكم</a
-            >
-          </li>
-          <li class="nav-item">
-            <a href="new-invoice.html" class="nav-link"
-              ><span class="icon">➕</span>فاتورة جديدة</a
-            >
-          </li>
-          <li class="nav-item">
-            <a href="invoices.html" class="nav-link"
-              ><span class="icon">📋</span>الفواتير</a
-            >
-          </li>
-          <li class="nav-item">
-            <a href="products.html" class="nav-link active"
-              ><span class="icon">📦</span>المنتجات</a
-            >
-          </li>
-          <li class="nav-item">
-            <a href="customers.html" class="nav-link"
-              ><span class="icon">👥</span>الزبائن</a
-            >
-          </li>
-          <li class="nav-item">
-            <a href="supplies.html" class="nav-link"
-              ><span class="icon">📥</span>التوريدات</a
-            >
-          </li>
-          <li class="nav-item">
-            <a href="statistics.html" class="nav-link"
-              ><span class="icon">📈</span>الإحصائيات</a
-            >
-          </li>
-          <li class="nav-item">
-            <a href="settings.html" class="nav-link"
-              ><span class="icon">⚙️</span>الإعدادات</a
-            >
-          </li>
-        </ul>
-      </nav>
+        <nav class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="icon">📊</span>لوحة التحكم</a></li>
+                <li class="nav-item"><a href="new-invoice.html" class="nav-link"><span class="icon">➕</span>فاتورة جديدة</a></li>
+                <li class="nav-item"><a href="invoices.html" class="nav-link"><span class="icon">📋</span>الفواتير</a></li>
+                <li class="nav-item"><a href="products.html" class="nav-link active"><span class="icon">📦</span>المنتجات</a></li>
+                <li class="nav-item"><a href="customers.html" class="nav-link"><span class="icon">👥</span>الزبائن</a></li>
+                <li class="nav-item"><a href="supplies.html" class="nav-link"><span class="icon">🚚</span>التوريدات</a></li>
+                <li class="nav-item"><a href="statistics.html" class="nav-link"><span class="icon">📈</span>الإحصائيات</a></li>
+                <li class="nav-item"><a href="settings.html" class="nav-link"><span class="icon">⚙️</span>الإعدادات</a></li>
+            </ul>
+        </nav>
 
-      <main class="main-content">
-        <div class="card">
-          <div class="card-header">
-            <h2>📦 إدارة المنتجات</h2>
-            <button class="btn btn-primary" onclick="openProductModal()">
-              ➕ إضافة منتج
-            </button>
-          </div>
-          <div class="card-body">
-            <div class="filters-bar">
-              <div class="search-box">
-                <span class="search-icon">🔍</span>
-                <input
-                  type="text"
-                  id="searchInput"
-                  placeholder="البحث عن منتج..."
-                  onkeyup="filterProducts()"
-                />
-              </div>
+        <main class="main-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>📦 إدارة المنتجات</h2>
+                    <button class="btn btn-primary" onclick="openAddModal()">➕ منتج جديد</button>
+                </div>
+                <div class="card-body">
+                    <!-- بحث -->
+                    <div style="margin-bottom: 20px;">
+                        <input type="text" id="searchProduct" class="form-control" placeholder="بحث بالاسم أو الباركود..." style="max-width: 300px;">
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>اسم المنتج</th>
+                                    <th>الباركود</th>
+                                    <th>سعر الشراء</th>
+                                    <th>سعر البيع</th>
+                                    <th>المخزون</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTable">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">لا توجد منتجات</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            <div class="table-responsive">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>الاسم</th>
-                    <th>الباركود</th>
-                    <th>سعر الشراء السابق</th>
-                    <th>سعر الشراء الحالي</th>
-                    <th>سعر البيع</th>
-                    <th>المخزون</th>
-                    <th>الإجراءات</th>
-                  </tr>
-                </thead>
-                <tbody id="productsTable">
-                  <tr>
-                    <td colspan="7" class="text-center text-muted">
-                      لا توجد منتجات بعد
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </main>
+        </main>
     </div>
 
+    <!-- Modal -->
     <div class="modal-overlay" id="productModal">
-      <div class="modal">
-        <div class="modal-header">
-          <h3 id="modalTitle">إضافة منتج جديد</h3>
-          <button class="modal-close" onclick="closeProductModal()">×</button>
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">➕ إضافة منتج جديد</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="productId">
+                <div class="form-group">
+                    <label>اسم المنتج *</label>
+                    <input type="text" id="productName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>الباركود</label>
+                    <input type="text" id="productBarcode" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>التصنيف</label>
+                    <input type="text" id="productCategory" class="form-control" value="عام">
+                </div>
+                <div class="form-group">
+                    <label>سعر الشراء</label>
+                    <input type="number" id="purchasePrice" class="form-control" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label>سعر البيع *</label>
+                    <input type="number" id="salePrice" class="form-control" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>المخزون</label>
+                    <input type="number" id="productStock" class="form-control" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label>الحد الأدنى للمخزون</label>
+                    <input type="number" id="minStock" class="form-control" min="0" value="5">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" onclick="saveProduct()">💾 حفظ</button>
+                <button class="btn btn-secondary" onclick="closeModal()">إلغاء</button>
+            </div>
         </div>
-        <div class="modal-body">
-          <form id="productForm">
-            <input type="hidden" id="productId" />
-            <div class="form-group">
-              <label>اسم المنتج *</label>
-              <input
-                type="text"
-                id="productName"
-                class="form-control"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label>الباركود</label>
-              <input type="text" id="productBarcode" class="form-control" />
-            </div>
-            <div class="form-group">
-              <label>سعر الشراء *</label>
-              <input
-                type="number"
-                id="purchasePrice"
-                class="form-control"
-                min="0"
-                step="100"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label>سعر البيع *</label>
-              <input
-                type="number"
-                id="salePrice"
-                class="form-control"
-                min="0"
-                step="100"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label>المخزون *</label>
-              <input
-                type="number"
-                id="stock"
-                class="form-control"
-                min="0"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label>الحد الأدنى للمخزون</label>
-              <input
-                type="number"
-                id="minStock"
-                class="form-control"
-                min="0"
-                value="5"
-              />
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-primary" onclick="saveProduct()">
-            💾 حفظ
-          </button>
-          <button class="btn btn-secondary" onclick="closeProductModal()">
-            إلغاء
-          </button>
-        </div>
-      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
-    <script src="js/cache-manager.js"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/page-protection.js"></script>
     <script src="js/utils.js"></script>
     <script>
-      let currentUser = null;
-      let allProducts = [];
+        let currentUser = null;
+        let products = [];
 
-      protectPage().then((authorized) => {
-        if (authorized) loadPage();
-      });
+        protectPage().then(authorized => { if (authorized) loadPage(); });
 
         async function loadPage() {
             const { user, profile } = await getCurrentUserData();
             currentUser = user;
             document.getElementById('storeName').textContent = profile.store_name;
-            
-            // استعادة حالة البحث
-            const pageState = CacheManager.getPageState('products');
-            if (pageState && pageState.searchQuery) {
-                document.getElementById('searchInput').value = pageState.searchQuery;
-            }
-            
+
             await loadProducts();
             hideLoading();
+
+            document.getElementById('searchProduct').addEventListener('input', filterProducts);
         }
 
-        async function loadProducts(forceRefresh = false) {
+        async function loadProducts() {
             try {
-                // استخدام الكاش لتحسين الأداء
-                allProducts = await loadWithCache(
-                    `products_${currentUser.id}`,
-                    () => SupabaseDB.getProducts(currentUser.id),
-                    forceRefresh
-                );
-                
-                // تطبيق الفلتر إذا كان موجود
-                const searchQuery = document.getElementById('searchInput').value;
-                if (searchQuery) {
-                    filterProducts();
-                } else {
-                    renderProducts(allProducts);
-                }
+                products = await SupabaseDB.getProducts(currentUser.id);
+                renderProducts(products);
             } catch (error) {
                 console.error('خطأ في تحميل المنتجات:', error);
-                alert('حدث خطأ في تحميل المنتجات');
             }
         }
 
-      function renderProducts(products) {
-        const tbody = document.getElementById("productsTable");
-        if (products.length === 0) {
-          tbody.innerHTML =
-            '<tr><td colspan="7" class="text-center text-muted">لا توجد منتجات بعد</td></tr>';
-          return;
-        }
-
-        tbody.innerHTML = products
-          .map((p) => {
-            const prevPrice = p.previous_purchase_price || 0;
-            const currPrice = p.purchase_price || 0;
-            const priceChanged = prevPrice !== currPrice;
-            const priceIncreased = currPrice > prevPrice;
-
-            return `
-                <tr data-name="${(p.name || "").toLowerCase()}">
-                    <td><strong>${p.name}</strong></td>
-                    <td>${p.barcode || "-"}</td>
-                    <td>${Utils.formatCurrency(prevPrice)}</td>
-                    <td>
-                        ${Utils.formatCurrency(currPrice)}
-                        ${
-                          priceChanged
-                            ? priceIncreased
-                              ? '<span style="color: #dc2626; font-size: 12px;">▲</span>'
-                              : '<span style="color: #16a34a; font-size: 12px;">▼</span>'
-                            : ""
-                        }
-                    </td>
-                    <td>${Utils.formatCurrency(p.sale_price)}</td>
-                    <td><span class="${
-                      p.stock <= p.min_stock ? "stock-low" : "stock-ok"
-                    }">${p.stock}</span></td>
-                    <td class="actions">
-                        <button class="btn btn-sm btn-primary" onclick='editProduct(${JSON.stringify(
-                          p,
-                        ).replace(/'/g, "&apos;")})' title="تعديل">✏️</button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteProduct('${
-                          p.id
-                        }', '${p.name}')" title="حذف">🗑️</button>
-                    </td>
-                </tr>
-            `;
-          })
-          .join("");
-      }
-
         function filterProducts() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            
-            // حفظ حالة البحث
-            CacheManager.savePageState('products', { searchQuery: query });
-            
-            const filtered = query ? allProducts.filter(p => p.name.toLowerCase().includes(query)) : allProducts;
+            const search = document.getElementById('searchProduct').value.toLowerCase();
+            const filtered = products.filter(p => 
+                p.name.toLowerCase().includes(search) ||
+                (p.barcode && p.barcode.toLowerCase().includes(search))
+            );
             renderProducts(filtered);
         }
 
-        function openProductModal(product = null) {
-            document.getElementById('productModal').classList.add('active');
-            document.getElementById('productForm').reset();
-
-            if (product) {
-                document.getElementById('modalTitle').textContent = 'تعديل المنتج';
-                document.getElementById('productId').value = product.id;
-                document.getElementById('productName').value = product.name;
-                document.getElementById('productBarcode').value = product.barcode || '';
-                document.getElementById('purchasePrice').value = product.purchase_price;
-                document.getElementById('salePrice').value = product.sale_price;
-                document.getElementById('stock').value = product.stock;
-                document.getElementById('minStock').value = product.min_stock || 5;
-            } else {
-                document.getElementById('modalTitle').textContent = 'إضافة منتج جديد';
-                document.getElementById('productId').value = '';
+        function renderProducts(data) {
+            const tbody = document.getElementById('productsTable');
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">لا توجد منتجات</td></tr>';
+                return;
             }
+
+            tbody.innerHTML = data.map(p => `
+                <tr class="${p.stock <= p.min_stock ? 'stock-warning' : ''}">
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.barcode || '-'}</td>
+                    <td>${Utils.formatCurrency(p.purchase_price)}</td>
+                    <td>${Utils.formatCurrency(p.sale_price)}</td>
+                    <td class="${p.stock <= p.min_stock ? 'text-danger' : ''}">${p.stock}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="editProduct('${p.id}')">✏️ تعديل</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteProduct('${p.id}')">🗑️ حذف</button>
+                    </td>
+                </tr>
+            `).join('');
         }
 
-        function closeProductModal() {
+        function openAddModal() {
+            document.getElementById('modalTitle').textContent = '➕ إضافة منتج جديد';
+            document.getElementById('productId').value = '';
+            document.getElementById('productName').value = '';
+            document.getElementById('productBarcode').value = '';
+            document.getElementById('productCategory').value = 'عام';
+            document.getElementById('purchasePrice').value = '0';
+            document.getElementById('salePrice').value = '';
+            document.getElementById('productStock').value = '0';
+            document.getElementById('minStock').value = '5';
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        function editProduct(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+
+            document.getElementById('modalTitle').textContent = '✏️ تعديل منتج';
+            document.getElementById('productId').value = product.id;
+            document.getElementById('productName').value = product.name;
+            document.getElementById('productBarcode').value = product.barcode || '';
+            document.getElementById('productCategory').value = product.category || 'عام';
+            document.getElementById('purchasePrice').value = product.purchase_price;
+            document.getElementById('salePrice').value = product.sale_price;
+            document.getElementById('productStock').value = product.stock;
+            document.getElementById('minStock').value = product.min_stock || 5;
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        function closeModal() {
             document.getElementById('productModal').classList.remove('active');
         }
 
         async function saveProduct() {
-            const id = document.getElementById('productId').value;
-            const productData = {
-                name: document.getElementById('productName').value.trim(),
-                barcode: document.getElementById('productBarcode').value.trim() || null,
-                purchase_price: parseFloat(document.getElementById('purchasePrice').value) || 0,
-                sale_price: parseFloat(document.getElementById('salePrice').value) || 0,
-                stock: parseInt(document.getElementById('stock').value) || 0,
-                min_stock: parseInt(document.getElementById('minStock').value) || 5
-            };
+            const name = document.getElementById('productName').value.trim();
+            const salePrice = parseFloat(document.getElementById('salePrice').value);
 
-            if (!productData.name) {
-                alert('يرجى إدخال اسم المنتج');
+            if (!name || isNaN(salePrice)) {
+                alert('يرجى إدخال اسم المنتج وسعر البيع');
                 return;
             }
 
-            // فحص عدم التكرار (إلا إذا كان تعديل)
-            if (!id) {
-                const exists = allProducts.find(p => p.name.toLowerCase() === productData.name.toLowerCase());
-                if (exists) {
-                    alert('⚠️ منتج بنفس الاسم موجود مسبقاً!');
-                    return;
-                }
-            }
+            const productData = {
+                name: name,
+                barcode: document.getElementById('productBarcode').value.trim(),
+                category: document.getElementById('productCategory').value.trim() || 'عام',
+                purchase_price: parseFloat(document.getElementById('purchasePrice').value) || 0,
+                sale_price: salePrice,
+                stock: parseInt(document.getElementById('productStock').value) || 0,
+                min_stock: parseInt(document.getElementById('minStock').value) || 5
+            };
+
+            const productId = document.getElementById('productId').value;
 
             try {
-                if (id) {
-                    await SupabaseDB.updateProduct(id, productData);
-                    Utils.showAlert && Utils.showAlert('تم تحديث المنتج بنجاح', 'success') || alert('تم التحديث');
+                if (productId) {
+                    await SupabaseDB.updateProduct(productId, productData);
+                    alert('✅ تم تحديث المنتج بنجاح');
                 } else {
                     await SupabaseDB.addProduct(currentUser.id, productData);
-                    Utils.showAlert && Utils.showAlert('تم إضافة المنتج بنجاح', 'success') || alert('تم الإضافة');
+                    alert('✅ تم إضافة المنتج بنجاح');
                 }
-                
-                // مسح الكاش لإعادة تحميل البيانات
-                CacheManager.remove(`products_${currentUser.id}`);
-                
-                closeProductModal();
-                await loadProducts(true); // إعادة تحميل مع تحديث
+                closeModal();
+                await loadProducts();
             } catch (error) {
-                console.error('خطأ في حفظ المنتج:', error);
-                alert('حدث خطأ أثناء الحفظ');
+                console.error(error);
+                alert('❌ حدث خطأ: ' + error.message);
             }
         }
 
-        function editProduct(product) {
-            openProductModal(product);
-        }
-
-        async function deleteProduct(id, name) {
-            if (!confirm(`هل أنت متأكد من حذف "${name}"؟`)) return;
+        async function deleteProduct(id) {
+            if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
 
             try {
                 await SupabaseDB.deleteProduct(id);
-                
-                // مسح الكاش
-                CacheManager.remove(`products_${currentUser.id}`);
-                
-                Utils.showAlert && Utils.showAlert('تم حذف المنتج', 'success') || alert('تم الحذف');
-                await loadProducts(true);
+                alert('✅ تم حذف المنتج');
+                await loadProducts();
             } catch (error) {
-                console.error('خطأ في الحذف:', error);
-                alert('حدث خطأ أثناء الحذف');
+                console.error(error);
+                alert('❌ خطأ في الحذف: ' + error.message);
             }
         }
     </script>
-  </body>
+</body>
+
 </html>
